@@ -6,3 +6,5 @@ cache/
 *.onnx
 Thumbs.db
 .DS_Store
+# SFX .wav cua skill phai len git (ngoai le cho *.wav)
+!skills/*/assets/sfx/*.wav

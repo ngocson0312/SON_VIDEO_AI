@@ -1,0 +1,747 @@
+{
+ "phien_ban": 1,
+ "ten": "Sơn",
+ "nhac": null,
+ "sub_nho": true,
+ "nhoe": true,
+ "dur": 54.31,
+ "canh": [
+  {
+   "id": 1,
+   "loai": "noi",
+   "t0": 0.0,
+   "t1": 8.72,
+   "zoom": 1.55,
+   "toi_tren": true,
+   "loi": "Nếu một ngày thức dậy… bạn có muốn sống ở đây không? Cùng em Sơn khám phá một ngày làm cư dân",
+   "chu": [
+    {
+     "y": 300,
+     "t1": 1.05,
+     "dong": [
+      {
+       "text": "Nếu một ngày",
+       "vai": "dan",
+       "t": 0.05,
+       "co": 60
+      },
+      {
+       "text": "THỨC DẬY",
+       "vai": "khoa",
+       "t": 0.36,
+       "mau": "xanh_ngoc"
+      }
+     ],
+     "ra": "tat"
+    },
+    {
+     "y": 330,
+     "t1": 1.72,
+     "dong": [
+      {
+       "text": "THỂ THAO",
+       "vai": "tu_lon",
+       "t": 1.1,
+       "vao": "hien",
+       "mau": "xanh_ngoc_sang"
+      }
+     ],
+     "ra": "tat"
+    },
+    {
+     "y": 330,
+     "t1": 2.55,
+     "dong": [
+      {
+       "text": "GOLF",
+       "vai": "tu_lon",
+       "t": 1.75,
+       "vao": "hien",
+       "mau": "vang"
+      }
+     ],
+     "ra": "tat"
+    },
+    {
+     "y": 330,
+     "t1": 4.0,
+     "dong": [
+      {
+       "text": "ĐẠI DƯƠNG",
+       "vai": "tu_lon",
+       "t": 2.6,
+       "vao": "hien",
+       "mau": "xanh_ngoc"
+      }
+     ],
+     "ra": "tat"
+    },
+    {
+     "y": 330,
+     "t1": 5.05,
+     "dong": [
+      {
+       "text": "HOÀNG HÔN",
+       "vai": "tu_lon",
+       "t": 4.05,
+       "vao": "hien",
+       "mau": "cam_dao"
+      }
+     ],
+     "ra": "tat"
+    },
+    {
+     "y": 290,
+     "t1": 6.84,
+     "dong": [
+      {
+       "text": "Bạn có muốn",
+       "vai": "dan",
+       "t": 5.15,
+       "co": 60
+      },
+      {
+       "text": "SỐNG Ở ĐÂY",
+       "vai": "khoa",
+       "t": 5.85,
+       "vao": "nhay",
+       "mau": "tim_hong"
+      },
+      {
+       "text": "không?",
+       "vai": "viet_tay",
+       "t": 6.25,
+       "co": 150
+      }
+     ],
+     "ra": "tat"
+    },
+    {
+     "y": 300,
+     "t1": 8.52,
+     "dong": [
+      {
+       "text": "Cùng em Sơn khám phá",
+       "vai": "dan",
+       "t": 6.97,
+       "co": 60
+      },
+      {
+       "text": "một ngày làm cư dân",
+       "vai": "viet_tay",
+       "t": 7.77,
+       "co": 150
+      }
+     ]
+    }
+   ],
+   "tam": [
+    560,
+    1080
+   ],
+   "hieu_ung": [
+    {
+     "kieu": "phong_lui",
+     "t": 0.0
+    },
+    {
+     "kieu": "loe",
+     "t": 5.9
+    },
+    {
+     "kieu": "phong_nhanh",
+     "t": 6.9
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "loai": "noi",
+   "t0": 8.72,
+   "t1": 10.17,
+   "zoom": 1.0,
+   "toi_tren": true,
+   "loi": "của Vinhomes Global Gate Hạ Long",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 9.97,
+     "dong": [
+      {
+       "text": "VINHOMES",
+       "vai": "dan",
+       "t": 8.77,
+       "co": 60
+      },
+      {
+       "text": "GLOBAL GATE",
+       "vai": "khoa",
+       "t": 9.14,
+       "vao": "nhay",
+       "mau": "xanh_ngoc"
+      },
+      {
+       "text": "Hạ Long",
+       "vai": "viet_tay",
+       "t": 9.67
+      }
+     ]
+    }
+   ],
+   "hieu_ung": [
+    {
+     "kieu": "phong_lui",
+     "t": 8.72
+    },
+    {
+     "kieu": "nhan_ban",
+     "t": 9.94
+    }
+   ],
+   "the3d": {
+    "nguon": [
+     "01_Toan_canh_vinh_Ha_Long.mp4",
+     "02_Dao_da_va_bai_bien.mp4",
+     "03_Du_thuyen_tren_vinh.mp4"
+    ],
+    "t0": 8.77,
+    "t1": 10.17,
+    "x": 880,
+    "y": 1150
+   }
+  },
+  {
+   "id": 3,
+   "loai": "ghep3",
+   "t0": 10.17,
+   "t1": 13.41,
+   "buom": true,
+   "loi": "trải nghiệm đi khắp thế giới hội tụ quanh tổ ấm",
+   "the": [
+    {
+     "nguon": "01_Toan_canh_vinh_Ha_Long.mp4",
+     "nhan": "VỊNH DI SẢN",
+     "t": 10.17,
+     "ss": 2.0
+    },
+    {
+     "nguon": "02_Dao_da_va_bai_bien.mp4",
+     "nhan": "BÃI BIỂN",
+     "t": 10.32,
+     "ss": 12.5
+    },
+    {
+     "nguon": "03_Du_thuyen_tren_vinh.mp4",
+     "nhan": "DU THUYỀN",
+     "t": 10.47,
+     "ss": 1.0
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "loai": "video",
+   "nguon": "02_Dao_da_va_bai_bien.mp4",
+   "ss": 4.0,
+   "speed": 1.0,
+   "t0": 13.41,
+   "t1": 16.33,
+   "loi": "mỗi ngày sống sẽ mở ra bao điều đáng mong chờ",
+   "chu": [
+    {
+     "y": 300,
+     "t1": 15.93,
+     "dong": [
+      {
+       "text": "Mỗi ngày sống",
+       "vai": "dan",
+       "t": 13.44
+      },
+      {
+       "text": "bao điều đáng mong chờ",
+       "vai": "viet_tay",
+       "t": 14.82,
+       "co": 140
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "loai": "noi",
+   "t0": 16.33,
+   "t1": 19.09,
+   "zoom": 1.3,
+   "toi_tren": true,
+   "loi": "6h30 sáng giao bóng đón bình minh",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 18.89,
+     "dong": [
+      {
+       "text": "Vào lúc",
+       "vai": "dan",
+       "t": 16.37
+      },
+      {
+       "text": "6h30",
+       "vai": "so",
+       "t": 16.76,
+       "vao": "roi"
+      },
+      {
+       "text": "giao bóng đón bình minh",
+       "vai": "viet_tay",
+       "t": 17.72
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "loai": "noi",
+   "t0": 19.09,
+   "t1": 21.57,
+   "zoom": 1.0,
+   "toi_tren": true,
+   "loi": "tại Sport District với 150 sân thể thao",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 21.37,
+     "dong": [
+      {
+       "text": "Sport District",
+       "vai": "dan",
+       "t": 19.22
+      },
+      {
+       "text": "150",
+       "vai": "so",
+       "t": 20.42,
+       "vao": "roi"
+      },
+      {
+       "text": "sân thể thao",
+       "vai": "chu_thich",
+       "t": 20.82
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "loai": "noi",
+   "t0": 21.57,
+   "t1": 23.87,
+   "zoom": 1.3,
+   "toi_tren": true,
+   "loi": "8h sáng chinh phục đam mê",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 23.67,
+     "dong": [
+      {
+       "text": "Vào lúc",
+       "vai": "dan",
+       "t": 21.62
+      },
+      {
+       "text": "8h",
+       "vai": "so",
+       "t": 22.16,
+       "vao": "roi"
+      },
+      {
+       "text": "chinh phục đam mê",
+       "vai": "viet_tay",
+       "t": 22.72
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "loai": "noi",
+   "t0": 23.87,
+   "t1": 26.21,
+   "zoom": 1.0,
+   "toi_tren": true,
+   "loi": "quần thể 12 sân golf rộng 950 ha",
+   "chu": [
+    {
+     "y": 290,
+     "t1": 26.01,
+     "dong": [
+      {
+       "text": "Quần thể 12 sân golf",
+       "vai": "dan",
+       "t": 23.92
+      },
+      {
+       "text": "950 ha",
+       "vai": "so",
+       "t": 25.04,
+       "vao": "roi"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "loai": "noi",
+   "t0": 26.21,
+   "t1": 29.61,
+   "zoom": 1.3,
+   "toi_tren": true,
+   "loi": "mỗi cú swing đều mang đến một trải nghiệm khác biệt",
+   "chu": [
+    {
+     "y": 300,
+     "t1": 28.87,
+     "dong": [
+      {
+       "text": "Mỗi cú swing",
+       "vai": "dan",
+       "t": 26.92
+      },
+      {
+       "text": "một trải nghiệm khác biệt",
+       "vai": "viet_tay",
+       "t": 27.92,
+       "co": 135
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "loai": "noi",
+   "t0": 29.61,
+   "t1": 33.05,
+   "zoom": 1.0,
+   "toi_tren": true,
+   "loi": "12h30 ẩm thực giữa lòng đại dương tại thủy cung VinWonders",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 32.39,
+     "dong": [
+      {
+       "text": "12h30",
+       "vai": "so",
+       "t": 29.62,
+       "vao": "roi"
+      },
+      {
+       "text": "ẩm thực giữa lòng đại dương",
+       "vai": "chu_thich",
+       "t": 30.36
+      },
+      {
+       "text": "Thủy cung VinWonders",
+       "vai": "viet_tay",
+       "t": 31.41
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "loai": "noi",
+   "t0": 33.05,
+   "t1": 35.87,
+   "zoom": 1.3,
+   "toi_tren": true,
+   "loi": "14h30 từ bến du thuyền Global Marina",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 35.41,
+     "dong": [
+      {
+       "text": "14h30",
+       "vai": "so",
+       "t": 33.06,
+       "vao": "roi"
+      },
+      {
+       "text": "bến du thuyền",
+       "vai": "chu_thich",
+       "t": 33.97
+      },
+      {
+       "text": "Global Marina",
+       "vai": "viet_tay",
+       "t": 34.52
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "loai": "video",
+   "nguon": "03_Du_thuyen_tren_vinh.mp4",
+   "ss": 12.0,
+   "speed": 1.0,
+   "t0": 35.87,
+   "t1": 38.73,
+   "loi": "du ngoạn kỳ quan, lênh đênh ngắm hoàng hôn trên vịnh",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 38.53,
+     "dong": [
+      {
+       "text": "Du ngoạn kỳ quan",
+       "vai": "dan",
+       "t": 35.88
+      },
+      {
+       "text": "HOÀNG HÔN",
+       "vai": "khoa",
+       "t": 37.88,
+       "mau": "cam_dao"
+      },
+      {
+       "text": "trên vịnh",
+       "vai": "viet_tay",
+       "t": 38.18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "loai": "noi",
+   "t0": 38.73,
+   "t1": 41.69,
+   "zoom": 1.0,
+   "toi_tren": true,
+   "loi": "20h tối hòa nhịp sự kiện quốc tế tại sân khấu view biển",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 41.49,
+     "dong": [
+      {
+       "text": "20h tối",
+       "vai": "so",
+       "t": 38.74,
+       "vao": "roi"
+      },
+      {
+       "text": "sự kiện quốc tế",
+       "vai": "chu_thich",
+       "t": 40.18
+      },
+      {
+       "text": "sân khấu view biển",
+       "vai": "viet_tay",
+       "t": 40.88
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "loai": "noi",
+   "t0": 41.69,
+   "t1": 43.55,
+   "zoom": 1.3,
+   "toi_tren": true,
+   "loi": "thăng hoa cùng âm nhạc và ánh sáng",
+   "chu": [
+    {
+     "y": 300,
+     "t1": 43.35,
+     "dong": [
+      {
+       "text": "Thăng hoa cùng",
+       "vai": "dan",
+       "t": 41.7
+      },
+      {
+       "text": "ÂM NHẠC",
+       "vai": "khoa",
+       "t": 42.46,
+       "vao": "nhay",
+       "mau": "vang"
+      },
+      {
+       "text": "và ánh sáng",
+       "vai": "viet_tay",
+       "t": 42.93
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "loai": "noi",
+   "t0": 43.55,
+   "t1": 46.53,
+   "zoom": 1.0,
+   "toi_tren": true,
+   "loi": "sở hữu một ngôi nhà mở cả thế giới tận hưởng",
+   "chu": [
+    {
+     "y": 300,
+     "t1": 46.33,
+     "dong": [
+      {
+       "text": "Sở hữu một ngôi nhà",
+       "vai": "dan",
+       "t": 43.58
+      },
+      {
+       "text": "mở cả thế giới tận hưởng",
+       "vai": "viet_tay",
+       "t": 44.82,
+       "co": 130
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "loai": "video",
+   "nguon": "01_Toan_canh_vinh_Ha_Long.mp4",
+   "ss": 5.0,
+   "speed": 1.0,
+   "t0": 46.53,
+   "t1": 49.77,
+   "loi": "sức hút của cuộc sống mới bên Vịnh Di sản",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 49.45,
+     "dong": [
+      {
+       "text": "Sức hút của",
+       "vai": "dan",
+       "t": 46.58
+      },
+      {
+       "text": "CUỘC SỐNG MỚI",
+       "vai": "khoa",
+       "t": 47.64,
+       "mau": "tu_dong"
+      },
+      {
+       "text": "bên Vịnh Di sản",
+       "vai": "viet_tay",
+       "t": 48.78
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "loai": "noi",
+   "t0": 49.77,
+   "t1": 54.31,
+   "zoom": 1.3,
+   "toi_tren": true,
+   "loi": "Anh chị nghĩ sao về một nơi mà mỗi ngày đều như một kỳ nghỉ? Cùng để lại bình luận phía dưới nhé!",
+   "chu": [
+    {
+     "y": 280,
+     "t1": 52.48,
+     "dong": [
+      {
+       "text": "Anh chị nghĩ sao về nơi",
+       "vai": "dan",
+       "t": 49.8,
+       "co": 56
+      },
+      {
+       "text": "MỖI NGÀY",
+       "vai": "khoa",
+       "t": 51.16,
+       "vao": "nhay",
+       "mau": "xanh_ngoc"
+      },
+      {
+       "text": "đều như kỳ nghỉ?",
+       "vai": "viet_tay",
+       "t": 51.7
+      }
+     ]
+    },
+    {
+     "y": 300,
+     "t1": 54.31,
+     "dong": [
+      {
+       "text": "Cùng để lại",
+       "vai": "dan",
+       "t": 52.6,
+       "co": 56
+      },
+      {
+       "text": "BÌNH LUẬN",
+       "vai": "khoa",
+       "t": 53.05,
+       "vao": "nhay",
+       "mau": "vang"
+      },
+      {
+       "text": "phía dưới nhé!",
+       "vai": "viet_tay",
+       "t": 53.4
+      }
+     ],
+     "ra": "giu"
+    }
+   ]
+  }
+ ],
+ "chuyen": [
+  {
+   "t": 16.33,
+   "kieu": "loe_cam"
+  },
+  {
+   "t": 38.73,
+   "kieu": "loe_cam"
+  },
+  {
+   "t": 49.77,
+   "kieu": "loe_cam"
+  }
+ ],
+ "CAN_CLAUDE_SUA": false,
+ "video": "C:\\----Claude----\\SON_AI_VIDEO\\OUT\\bietthu_halong\\input\\video_final_capcut.mp4",
+ "resources": "C:\\----Claude----\\SON_AI_VIDEO\\OUT\\bietthu_halong\\input\\Resources",
+ "sua_loi": {
+  "đánh gốc": "đánh golf",
+  "hòa hôn": "hoàng hôn",
+  "hồi tụ": "hội tụ",
+  "tủ ấm": "tổ ấm",
+  "sân gốc": "sân golf",
+  "hectare": "ha",
+  "sở huynh": "swing",
+  "Thủy Cung": "thủy cung",
+  "Vinwunder": "VinWonders",
+  "lưng ni": "lênh đênh",
+  "viêu biển": "view biển",
+  "ảnh sáng": "ánh sáng"
+ },
+ "_ghi_chu": "Plan mẫu lần chạy thật 1 (bản 3, 04/11/2026): video_final_capcut.mp4 (Vinhomes Global Gate Hạ Long, KHÔNG cắt lặng) + 4 clip dọc trong Resources. Mốc theo timeline gốc. Mở file này để xem cách viết khối chữ, cảnh người nói luân phiên zoom, ghép 3, kính 3D, loé cam. Đường dẫn đã rút về tên file."
+}
