@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+cache/
+*.mp4
+*.wav
+*.onnx
+Thumbs.db
+.DS_Store

@@ -1,0 +1,493 @@
+{
+  "_huong_dan": "Claude điền theo SKILL.md mục 3. Mốc giây = giây AUDIO. Không bịa toạ độ/số liệu.",
+  "audio": "..\\ho_dan_audio.mp3",
+  "res": null,
+  "thoi_luong": 72.448,
+  "kenh": {
+    "ten": "",
+    "logo": null,
+    "cta": null
+  },
+  "khu_vuc": {
+    "ten": "Hà Nội",
+    "lat": 21.0,
+    "lon": 105.75,
+    "_vi_sao": "sông Đáy đoạn qua Hà Nội"
+  },
+  "hook": {
+    "tu": 0.0,
+    "den": 4.9,
+    "dong1": "Hơn 6.000 hộ dân có nguy cơ phải di dời",
+    "dong2": "Mặt cắt sông Đáy mở rộng tới gần 500m",
+    "dong3": "Theo hồ sơ đề xuất dự án cải tạo sông Đáy"
+  },
+  "dia_diem": {
+    "song_day": {
+      "ten": "Sông Đáy",
+      "loai": "tuyen",
+      "osm": "R2155608"
+    },
+    "dap_day": {
+      "ten": "Đập Đáy",
+      "loai": "diem",
+      "osm": "W771639138"
+    },
+    "ba_tha": {
+      "ten": "Ba Thá",
+      "loai": "diem",
+      "osm": "W762168602"
+    },
+    "mai_linh": {
+      "ten": "Mai Lĩnh",
+      "loai": "diem",
+      "osm": "W601961155"
+    },
+    "ha_noi": {
+      "ten": "Hà Nội",
+      "loai": "vung",
+      "osm": "R1903516"
+    },
+    "dau_song": {
+      "ten": "Sông Hồng",
+      "dau_tuyen": "song_day"
+    },
+    "dl_tl": {
+      "ten": "Đại lộ Thăng Long",
+      "giao": {
+        "tuyen": "song_day",
+        "duong": "Đại lộ Thăng Long",
+        "quanh": [
+          21.0057,
+          105.6632
+        ]
+      }
+    },
+    "ra_hn": {
+      "ten": "Địa phận Ninh Bình",
+      "giao": {
+        "tuyen": "song_day",
+        "ra_khoi": "ha_noi",
+        "sau": "ba_tha"
+      }
+    },
+    "quoc_oai": {
+      "ten": "Huyện Quốc Oai",
+      "loai": "vung",
+      "osm": "R7115194",
+      "cap": "huyen_cu"
+    },
+    "chuong_my": {
+      "ten": "Huyện Chương Mỹ",
+      "loai": "vung",
+      "osm": "R7115367",
+      "cap": "huyen_cu"
+    },
+    "thanh_oai": {
+      "ten": "Huyện Thanh Oai",
+      "loai": "vung",
+      "osm": "R7115593",
+      "cap": "huyen_cu"
+    },
+    "my_duc": {
+      "ten": "Huyện Mỹ Đức",
+      "loai": "vung",
+      "osm": "R7115398",
+      "cap": "huyen_cu"
+    }
+  },
+  "canh": [
+    {
+      "tu": 0.0,
+      "den": 5.0,
+      "loai": "bay_tuyen",
+      "tuyen": "song_day",
+      "tu_diem": "dl_tl",
+      "zoom": 15.4,
+      "toc_do": 110,
+      "hanh_lang_m": 500,
+      "hanh_lang_tu": 3.66,
+      "em": 0.6,
+      "_loi": "Hơn 6.000 hộ dân … mặt cắt sông Đáy … mở rộng tới gần 500m",
+      "ve_tuyen": true,
+      "nhan": [
+        {
+          "diem": "dl_tl",
+          "text": "Đại lộ Thăng Long"
+        }
+      ]
+    },
+    {
+      "tu": 5.0,
+      "den": 10.5,
+      "loai": "to_vung",
+      "vung": [
+        "quoc_oai",
+        "chuong_my",
+        "thanh_oai",
+        "my_duc"
+      ],
+      "hien": {
+        "quoc_oai": 7.1,
+        "chuong_my": 7.68,
+        "thanh_oai": 8.22,
+        "my_duc": 8.88
+      },
+      "nhan": {
+        "quoc_oai": "Quốc Oai",
+        "chuong_my": "Chương Mỹ",
+        "thanh_oai": "Thanh Oai",
+        "my_duc": "Mỹ Đức"
+      },
+      "tuyen": "song_day",
+      "vung_y": [
+        0.1,
+        0.72
+      ],
+      "tieu_de": "Nhà đất dọc hai bên sông Đáy",
+      "phu": "Ranh giới huyện cũ (trước sáp nhập)",
+      "_loi": "nhà đất … dọc hai bên sông tại Quốc Oai, Chương Mỹ, Thanh Oai hay Mỹ Đức"
+    },
+    {
+      "tu": 10.5,
+      "den": 17.8,
+      "loai": "ban_do_tong",
+      "tuyen": "song_day",
+      "bbox_doan": [
+        "dau_song",
+        "ra_hn"
+      ],
+      "vung_y": [
+        0.12,
+        0.7
+      ],
+      "tieu_de": "Dự án cải tạo sông Đáy",
+      "phu": "Dài khoảng 110km, qua 23 xã và 2 phường của Hà Nội",
+      "doan": [
+        {
+          "t": 12.2,
+          "tu_diem": "dau_song",
+          "den_diem": "ra_hn",
+          "dai_ve": 2.6,
+          "zoom_vao": false,
+          "nhan": "",
+          "nhan_dau": "Sông Hồng",
+          "nhan_cuoi": "Hết địa phận Hà Nội",
+          "huy_hieu": "≈ 110 km",
+          "huy_hieu_tu": 13.4
+        }
+      ],
+      "_loi": "dự án cải tạo sông Đáy … khoảng 110km, đi qua 23 xã và 2 phường"
+    },
+    {
+      "tu": 17.8,
+      "den": 26.1,
+      "loai": "ban_do_tong",
+      "tuyen": "song_day",
+      "bbox_doan": [
+        "dau_song",
+        "ra_hn"
+      ],
+      "vung_y": [
+        0.12,
+        0.7
+      ],
+      "tieu_de": "Toàn tuyến chia thành 3 đoạn",
+      "doan": [
+        {
+          "t": 17.94,
+          "tu_diem": "dau_song",
+          "den_diem": "dap_day",
+          "nhan": "Sông Hồng – đập Đáy",
+          "phu": "Khoảng 12km",
+          "phu_tu": 19.3,
+          "nhan_dau": "Sông Hồng",
+          "nhan_cuoi": "Đập Đáy",
+          "huy_hieu": "12 km",
+          "huy_hieu_tu": 19.6
+        },
+        {
+          "t": 20.46,
+          "tu_diem": "dap_day",
+          "den_diem": "ba_tha",
+          "nhan": "Đập Đáy – Ba Thá",
+          "phu": "Khoảng 54km",
+          "phu_tu": 21.86,
+          "nhan_dau": "Đập Đáy",
+          "nhan_cuoi": "Ba Thá",
+          "huy_hieu": "54 km",
+          "huy_hieu_tu": 22.14
+        },
+        {
+          "t": 23.28,
+          "tu_diem": "ba_tha",
+          "den_diem": "ra_hn",
+          "nhan": "Ba Thá – địa phận Ninh Bình",
+          "phu": "Khoảng 44km",
+          "phu_tu": 24.78,
+          "nhan_dau": "Ba Thá",
+          "nhan_cuoi": "Địa phận Ninh Bình",
+          "huy_hieu": "44 km",
+          "huy_hieu_tu": 25.08
+        }
+      ],
+      "_loi": "Từ sông Hồng đến đập Đáy 12km, đập Đáy – Ba Thá 54km, Ba Thá – Ninh Bình 44km"
+    },
+    {
+      "tu": 26.1,
+      "den": 32.4,
+      "loai": "bay_tuyen",
+      "tuyen": "song_day",
+      "tu_diem": "dap_day",
+      "zoom": 15.2,
+      "toc_do": 110,
+      "hanh_lang_m": 500,
+      "hanh_lang_tu": 26.3,
+      "thuoc": {
+        "t": 29.28,
+        "nhan": "350 – 500 M",
+        "rong_m": 500
+      },
+      "dau_de": [
+        {
+          "t": 27.5,
+          "tieu_de": "Phương án kênh hóa sông Đáy",
+          "phu": "Bề rộng mặt nước 350 – 500m"
+        },
+        {
+          "t": 30.8,
+          "tieu_de": "Phương án kênh hóa sông Đáy",
+          "phu": "Kết hợp xây dựng 2 tuyến đê mới"
+        }
+      ],
+      "_loi": "phương án kênh hóa … mặt nước từ 350 đến 500m … 2 tuyến đê mới",
+      "ve_tuyen": true,
+      "nhan": [
+        {
+          "diem": "dap_day",
+          "text": "Đập Đáy"
+        }
+      ]
+    },
+    {
+      "tu": 32.4,
+      "den": 37.8,
+      "loai": "bay_tuyen",
+      "tuyen": "song_day",
+      "tu_diem": "ba_tha",
+      "zoom": 15.0,
+      "toc_do": 120,
+      "hanh_lang_m": 500,
+      "dau_de": [
+        {
+          "t": 33.4,
+          "tieu_de": "Tổng diện tích dự kiến thu hồi"
+        },
+        {
+          "t": 35.2,
+          "tieu_de": "Tổng diện tích dự kiến thu hồi",
+          "phu": "Khoảng 3.002 ha"
+        }
+      ],
+      "_loi": "tổng diện tích đất dự kiến thu hồi khoảng 3.002 ha",
+      "ve_tuyen": true,
+      "nhan": [
+        {
+          "diem": "ba_tha",
+          "text": "Ba Thá"
+        }
+      ]
+    },
+    {
+      "tu": 37.8,
+      "den": 43.7,
+      "loai": "bay_tuyen",
+      "tuyen": "song_day",
+      "tu_diem": "mai_linh",
+      "nguoc": true,
+      "zoom": 15.6,
+      "toc_do": 90,
+      "hanh_lang_m": 500,
+      "dau_de": [
+        {
+          "t": 37.9,
+          "tieu_de": "Khoảng 6.068 hộ phải di dời",
+          "phu": "Bị ảnh hưởng đất ở"
+        },
+        {
+          "t": 41.4,
+          "tieu_de": "6.724 hộ bị ảnh hưởng",
+          "phu": "Đất nông nghiệp"
+        }
+      ],
+      "_loi": "khoảng 6.068 hộ bị ảnh hưởng đất ở … và 6.724 hộ … đất nông nghiệp",
+      "ve_tuyen": true,
+      "nhan": [
+        {
+          "diem": "mai_linh",
+          "text": "Mai Lĩnh"
+        }
+      ]
+    },
+    {
+      "tu": 43.7,
+      "den": 57.1,
+      "loai": "ban_do_tong",
+      "tuyen": "song_day",
+      "bbox_doan": [
+        "dau_song",
+        "ra_hn"
+      ],
+      "vung_y": [
+        0.12,
+        0.7
+      ],
+      "tieu_de": "Số hộ bị ảnh hưởng đất ở",
+      "doan": [
+        {
+          "t": 44.44,
+          "tu_diem": "dau_song",
+          "den_diem": "dl_tl",
+          "nhan": "Sông Hồng – đại lộ Thăng Long",
+          "phu": "Dự kiến 1.217 hộ bị ảnh hưởng đất ở",
+          "phu_tu": 46.6,
+          "nhan_dau": "Sông Hồng",
+          "nhan_cuoi": "Đại lộ Thăng Long",
+          "huy_hieu": "1.217 hộ",
+          "huy_hieu_tu": 46.9
+        },
+        {
+          "t": 49.0,
+          "tu_diem": "dl_tl",
+          "den_diem": "mai_linh",
+          "nhan": "Đại lộ Thăng Long – Mai Lĩnh",
+          "phu": "1.074 hộ",
+          "phu_tu": 51.1,
+          "nhan_dau": "Đại lộ Thăng Long",
+          "nhan_cuoi": "Mai Lĩnh",
+          "huy_hieu": "1.074 hộ",
+          "huy_hieu_tu": 51.3
+        },
+        {
+          "t": 53.16,
+          "tu_diem": "mai_linh",
+          "den_diem": "ra_hn",
+          "nhan": "Mai Lĩnh – hết địa phận Hà Nội",
+          "phu": "Đoạn lớn nhất: khoảng 3.777 hộ",
+          "phu_tu": 55.3,
+          "nhan_dau": "Mai Lĩnh",
+          "nhan_cuoi": "Hết địa phận Hà Nội",
+          "huy_hieu": "3.777 hộ",
+          "huy_hieu_tu": 55.7
+        }
+      ],
+      "_loi": "đoạn sông Hồng – ĐL Thăng Long 1.217 hộ, ĐL Thăng Long – Mai Lĩnh 1.074 hộ, Mai Lĩnh – hết HN 3.777 hộ"
+    },
+    {
+      "tu": 57.1,
+      "den": 60.6,
+      "loai": "bay_tuyen",
+      "tuyen": "song_day",
+      "tu_diem": "ba_tha",
+      "nguoc": true,
+      "zoom": 14.8,
+      "toc_do": 150,
+      "ve_tuyen": true,
+      "dau_de": [
+        {
+          "t": 57.3,
+          "tieu_de": "Nâng cấp đê điều"
+        },
+        {
+          "t": 59.75,
+          "tieu_de": "Nâng cấp đê điều",
+          "phu": "Phát triển giao thông"
+        }
+      ],
+      "_loi": "dự án còn nâng cấp đê điều, phát triển giao thông",
+      "nhan": [
+        {
+          "diem": "ba_tha",
+          "text": "Ba Thá"
+        }
+      ]
+    },
+    {
+      "tu": 60.6,
+      "den": 63.65,
+      "loai": "diem",
+      "diem": "dap_day",
+      "zoom": 16.6,
+      "zoom_tu": 14.8,
+      "t_zoom": 1.8,
+      "dau_de": [
+        {
+          "t": 60.7,
+          "tieu_de": "Xử lý nước thải",
+          "phu": "Cải thiện môi trường, chống ngập lụt"
+        }
+      ],
+      "_loi": "xử lý nước thải nhằm cải thiện môi trường, chống ngập lụt",
+      "dinh_vi": "song_day"
+    },
+    {
+      "tu": 63.65,
+      "den": 69.65,
+      "loai": "bay_tuyen",
+      "tuyen": "song_day",
+      "tu_diem": "dau_song",
+      "zoom": 14.2,
+      "toc_do": 160,
+      "ve_tuyen": true,
+      "_loi": "thủ đô phát triển không còn lo ngập lụt … ổn định cho người dân",
+      "nhan": [
+        {
+          "diem": "dau_song",
+          "text": "Sông Hồng"
+        }
+      ]
+    },
+    {
+      "tu": 69.65,
+      "den": null,
+      "loai": "cta",
+      "_loi": "Nhớ theo dõi kênh để cập nhật thêm những thông tin mới nhất nhé!",
+      "dong": [
+        "Theo dõi kênh",
+        "để cập nhật thông tin mới nhất"
+      ]
+    }
+  ],
+  "the_tai_lieu": [],
+  "sua_chu": {
+    "di rời": "di dời",
+    "Trường Mỹ": "Chương Mỹ",
+    "canh hóa": "kênh hóa",
+    "đêm mới": "đê mới",
+    "hectare": "ha",
+    "sông đáy": "sông Đáy",
+    "đập đáy": "đập Đáy"
+  },
+  "cai_dat": {
+    "sub_kieu": "karaoke",
+    "sub_y": 1545,
+    "sub_co": 56,
+    "sub_max_chu": 6,
+    "sub_max_ky_tu": 30,
+    "hoa_tan": 0.25,
+    "lufs": -14.0,
+    "duoi": 0.9,
+    "nguon_anh": true,
+    "sfx": true,
+    "nhac": "khong",
+    "dinh_vi_doan": [
+      "dau_song",
+      "ra_hn"
+    ],
+    "dia_danh": true,
+    "dinh_vi": true
+  },
+  "_doan": {
+    "kenh": "ĐOÁN: chưa có tên kênh / logo / clip CTA — hỏi người dùng ở cổng duyệt",
+    "the_tai_lieu": "Không có: bài CafeBiz đã đổi nội dung, không xác minh được 6.068 / 3.002 trên trang gốc"
+  }
+}

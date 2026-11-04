@@ -1,0 +1,572 @@
+{
+ "phien_ban": 1,
+ "khung": {
+  "rong": 1080,
+  "cao": 1920,
+  "fps": 30
+ },
+ "audio": "F:\\VIDA_TEST\\0411\\Beo\\beo_audio.mp3",
+ "nhac": "khong",
+ "sub": {
+  "toi_da_tu": 3
+ },
+ "thoi_luong": 50.75,
+ "nhip": [
+  {
+   "id": "n01",
+   "t": 0.0,
+   "loi": "Biển Đông lại tiếp tục trở thành tâm điểm chú ý của toàn cầu khi các tuyến hàng hải năng lượng và địa chính trị căng thẳng trở lại.",
+   "camera": [
+    {
+     "luc": 0.0,
+     "toi": [
+      114,
+      12
+     ],
+     "rong_km": 2800,
+     "nghieng": 35
+    },
+    {
+     "luc": 3.4,
+     "toi": [
+      111,
+      12
+     ],
+     "rong_km": 2200,
+     "nghieng": 35
+    }
+   ],
+   "dong_tac": [
+    {
+     "loai": "chu_neon",
+     "tai": [
+      114,
+      12
+     ],
+     "chu": "Biển Đông",
+     "luc": 0.1,
+     "den": 3.5,
+     "co_km": 357
+    },
+    {
+     "loai": "tuyen",
+     "tu": [
+      105.2,
+      1.4
+     ],
+     "toi": [
+      113.26,
+      23.13
+     ],
+     "bien": true,
+     "luc": 2.9,
+     "keo_dai": 2.2,
+     "den": 5.1
+    }
+   ]
+  },
+  {
+   "id": "n02",
+   "t": 5.12,
+   "loi": "Bất chấp hàng loạt lệnh trừng phạt khắc nghiệt từ phương Tây, các siêu tàu chở dầu thô từ Nga",
+   "camera": [
+    {
+     "luc": 8.6,
+     "toi": [
+      115,
+      50
+     ],
+     "rong_km": 5200,
+     "nghieng": 35
+    }
+   ],
+   "dong_tac": [
+    {
+     "loai": "vat_the",
+     "tai": [
+      132.9,
+      42.7
+     ],
+     "vat": "tau_dau",
+     "luc": 7.9,
+     "den": 9.9,
+     "co_km": 500,
+     "hieu_ung": "noi_len"
+    },
+    {
+     "loai": "to_nuoc",
+     "nuoc": "Nga",
+     "co": true,
+     "luc": 8.5,
+     "den": 11.5
+    },
+    {
+     "loai": "nhan",
+     "tai": [
+      95,
+      62
+     ],
+     "chu": "Nga",
+     "luc": 8.6,
+     "co_km": 900
+    }
+   ]
+  },
+  {
+   "id": "n03",
+   "t": 8.86,
+   "loi": "vẫn nhộn nhịp đi qua tuyến hàng hải Biển Đông để hướng về các cảng biển Trung Quốc.",
+   "camera": [
+    {
+     "luc": 9.6,
+     "toi": [
+      113,
+      36
+     ],
+     "rong_km": 7800,
+     "nghieng": 35
+    },
+    {
+     "luc": 11.8,
+     "toi": [
+      113,
+      17
+     ],
+     "rong_km": 3400,
+     "nghieng": 35
+    }
+   ],
+   "dong_tac": [
+    {
+     "loai": "tuyen",
+     "tu": [
+      105.2,
+      1.4
+     ],
+     "toi": [
+      113.26,
+      23.13
+     ],
+     "bien": true,
+     "vat": "tau_dau",
+     "luc": 9.8,
+     "keo_dai": 2.6,
+     "den": 15.0,
+     "co_km": 380
+    },
+    {
+     "loai": "chu_neon",
+     "tai": [
+      112,
+      12
+     ],
+     "chu": "Biển Đông",
+     "luc": 10.5,
+     "den": 14.0,
+     "co_km": 302
+    },
+    {
+     "loai": "ghim",
+     "tai": [
+      113.26,
+      23.13
+     ],
+     "chu": "Quảng Châu",
+     "luc": 11.6,
+     "den": 15.0
+    },
+    {
+     "loai": "to_nuoc",
+     "nuoc": "Trung Quốc",
+     "co": true,
+     "luc": 11.9,
+     "den": 19.0
+    },
+    {
+     "loai": "nhan",
+     "tai": [
+      103,
+      35
+     ],
+     "chu": "Trung Quốc",
+     "luc": 11.9,
+     "co_km": 900
+    }
+   ]
+  },
+  {
+   "id": "n04",
+   "t": 12.56,
+   "loi": "Với mức giá trích khấu hấp dẫn, nguồn cung này đóng vai trò cực kỳ then chốt giúp Bắc Kinh vừa tiết kiệm hàng tỷ USD",
+   "camera": [
+    {
+     "luc": 16.0,
+     "toi": [
+      114,
+      32
+     ],
+     "rong_km": 4200,
+     "nghieng": 35
+    }
+   ],
+   "dong_tac": [
+    {
+     "loai": "so",
+     "chu": "GIÁ CHIẾT KHẤU",
+     "phu": "hấp dẫn",
+     "luc": 12.9,
+     "den": 15.3,
+     "vi_tri": [
+      0.5,
+      0.2
+     ]
+    },
+    {
+     "loai": "ghim",
+     "tai": [
+      116.4,
+      39.9
+     ],
+     "chu": "Bắc Kinh",
+     "luc": 16.3,
+     "den": 19.0
+    },
+    {
+     "loai": "vat_the",
+     "tai": [
+      116.4,
+      39.9
+     ],
+     "vat": "tien",
+     "luc": 17.4,
+     "den": 20.4,
+     "co_km": 260,
+     "hieu_ung": "noi_len",
+     "lech": [
+      0.0,
+      -0.06
+     ]
+    }
+   ]
+  },
+  {
+   "id": "n05",
+   "t": 18.12,
+   "loi": "vừa đảm bảo an toàn cho an ninh năng lượng quốc gia.",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": [
+    {
+     "loai": "radar",
+     "tai": [
+      116.4,
+      39.9
+     ],
+     "luc": 19.4,
+     "den": 22.0,
+     "ban_kinh_km": 500
+    }
+   ]
+  },
+  {
+   "id": "n06",
+   "t": 20.58,
+   "loi": "Tuy nhiên, bàn cờ địa chính trị càng thêm nóng lên khi Hải quân Mỹ bất ngờ điều động nhóm tác chiến tàu sân bay quy mô lớn tiến vào hiện diện ngay tại Biển Đông",
+   "camera": [
+    {
+     "luc": 22.5,
+     "toi": [
+      118,
+      17
+     ],
+     "rong_km": 5000,
+     "nghieng": 35
+    },
+    {
+     "luc": 25.2,
+     "toi": [
+      126,
+      14
+     ],
+     "rong_km": 4200,
+     "nghieng": 35
+    },
+    {
+     "luc": 27.0,
+     "toi": [
+      114,
+      13
+     ],
+     "rong_km": 2500,
+     "nghieng": 35
+    }
+   ],
+   "dong_tac": [
+    {
+     "loai": "lan",
+     "tai": [
+      114,
+      13
+     ],
+     "luc": 22.6,
+     "keo_dai": 2.4,
+     "ban_kinh_km": 800,
+     "den": 26.0,
+     "mau": "#ff3b30"
+    },
+    {
+     "loai": "tuyen",
+     "tu": [
+      144.8,
+      13.4
+     ],
+     "toi": [
+      116.5,
+      13
+     ],
+     "bien": true,
+     "vat": "tau_san_bay",
+     "luc": 24.6,
+     "keo_dai": 2.6,
+     "den": 29.0,
+     "co_km": 520
+    },
+    {
+     "loai": "chu_neon",
+     "tai": [
+      113,
+      12.5
+     ],
+     "chu": "Biển Đông",
+     "luc": 26.9,
+     "den": 30.0,
+     "co_km": 286
+    }
+   ]
+  },
+  {
+   "id": "n07",
+   "t": 27.22,
+   "loi": "Washington khẳng định động thái này nhằm duy trì sự tự do hàng hải và bảo vệ các đồng minh trong khu vực",
+   "camera": [
+    {
+     "luc": 29.5,
+     "toi": [
+      114,
+      13
+     ],
+     "rong_km": 3000,
+     "nghieng": 35
+    }
+   ],
+   "dong_tac": [
+    {
+     "loai": "so",
+     "chu": "WASHINGTON",
+     "phu": "khẳng định",
+     "luc": 27.3,
+     "den": 29.3
+    },
+    {
+     "loai": "anh",
+     "file": "D:\\____TTT_____\\SON_AI_VIDEO\\.claude\\skills\\skill-bando-tintuc-chinhtri\\cache\\co\\us.png",
+     "tieu_de": "HOA KỲ",
+     "luc": 29.6,
+     "den": 32.0,
+     "rong": 0.55,
+     "vi_tri": [
+      0.5,
+      0.3
+     ]
+    }
+   ]
+  },
+  {
+   "id": "n08",
+   "t": 32.06,
+   "loi": "Dù vậy, việc một bên nỗ lực đảm bảo dòng chảy dầu, còn một bên phô trương sức mạnh quân sự đã tạo nên thế đối đầu vô cùng nảy lửa",
+   "camera": [
+    {
+     "luc": 35.4,
+     "toi": [
+      113,
+      14
+     ],
+     "rong_km": 3400,
+     "nghieng": 35
+    },
+    {
+     "luc": 37.4,
+     "toi": [
+      115,
+      14
+     ],
+     "rong_km": 2300,
+     "nghieng": 35
+    }
+   ],
+   "dong_tac": [
+    {
+     "loai": "tuyen",
+     "tu": [
+      105.2,
+      1.4
+     ],
+     "toi": [
+      113.26,
+      23.13
+     ],
+     "bien": true,
+     "vat": "tau_dau",
+     "luc": 34.2,
+     "keo_dai": 2.6,
+     "den": 40.0,
+     "co_km": 340
+    },
+    {
+     "loai": "vat_the",
+     "tai": [
+      116.5,
+      13
+     ],
+     "vat": "tau_san_bay",
+     "luc": 35.5,
+     "den": 38.0,
+     "co_km": 420,
+     "hieu_ung": "noi_len"
+    },
+    {
+     "loai": "lan",
+     "tai": [
+      115,
+      14
+     ],
+     "luc": 36.9,
+     "keo_dai": 1.8,
+     "ban_kinh_km": 600,
+     "den": 40.0,
+     "mau": "#ff3b30"
+    }
+   ]
+  },
+  {
+   "id": "n09",
+   "t": 38.04,
+   "loi": "ngay trên tuyến đường huyết mạch vận chuyển năng lượng của thế giới",
+   "camera": [
+    {
+     "luc": 40.4,
+     "toi": [
+      112,
+      14
+     ],
+     "rong_km": 4400,
+     "nghieng": 35
+    }
+   ],
+   "dong_tac": [
+    {
+     "loai": "chu_neon",
+     "tai": [
+      112,
+      12
+     ],
+     "chu": "Biển Đông",
+     "luc": 38.4,
+     "den": 41.0,
+     "co_km": 330
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "t": 41.12,
+   "loi": "Liệu sự xuất hiện của tàu sân bay Mỹ có làm gián đoạn dòng chảy dầu Nga về Trung Quốc hay không?",
+   "camera": [
+    {
+     "luc": 43.6,
+     "toi": [
+      118,
+      31
+     ],
+     "rong_km": 7400,
+     "nghieng": 35
+    }
+   ],
+   "dong_tac": [
+    {
+     "loai": "vat_the",
+     "tai": [
+      116.5,
+      13
+     ],
+     "vat": "tau_san_bay",
+     "luc": 41.9,
+     "den": 44.6,
+     "co_km": 520,
+     "hieu_ung": "noi_len"
+    },
+    {
+     "loai": "tuyen",
+     "tu": [
+      132.9,
+      42.7
+     ],
+     "toi": [
+      113.26,
+      23.13
+     ],
+     "bien": true,
+     "vat": "tau_dau",
+     "luc": 43.5,
+     "keo_dai": 2.8,
+     "den": 47.0,
+     "co_km": 420
+    },
+    {
+     "loai": "nhan",
+     "tai": [
+      103,
+      35
+     ],
+     "chu": "Trung Quốc",
+     "luc": 44.2,
+     "co_km": 900
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "t": 44.9,
+   "loi": "Bạn đánh giá thế nào về diễn biến căng thẳng này?",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": [
+    {
+     "loai": "so",
+     "chu": "?",
+     "luc": 45.0,
+     "den": 46.8
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "t": 46.94,
+   "loi": "Hãy để lại ý kiến dưới phần bình luận và bấm theo dõi kênh nhé!",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": [
+    {
+     "loai": "cta",
+     "chu": "THEO DÕI KÊNH",
+     "phu": "Bấm chuông để không bỏ lỡ",
+     "luc": 47.1
+    }
+   ]
+  }
+ ]
+}

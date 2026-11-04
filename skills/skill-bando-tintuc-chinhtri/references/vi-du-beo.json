@@ -1,0 +1,573 @@
+{
+ "_ghi_chu": "Kịch bản dựng lại từ video mẫu beo.mp4 (Triều Tiên phóng Hwasong-20 sang Mỹ, 69 s). Mốc giây = giây tuyệt đối của audio. Mỗi câu lời = 1 nhịp, mỗi nhịp 1 việc chính trên bản đồ, danh từ đọc tới đâu hiện tới đó, cao trào (nổ) rơi vào cuối câu, câu chuyển/câu hỏi thì camera lùi ra (kieu vong).",
+ "phien_ban": 1,
+ "khung": {
+  "rong": 1080,
+  "cao": 1920,
+  "fps": 30
+ },
+ "audio": "F:/VIDA_TEST/0411/Beo/beo.mp4",
+ "nhac": "auto",
+ "sub": {
+  "toi_da_tu": 3
+ },
+ "nhip": [
+  {
+   "id": "n01",
+   "t": 0.0,
+   "loi": "Điều gì sẽ thực sự xảy ra nếu Triều Tiên phóng tên lửa Hwasong-20 về phía Hoa Kỳ?",
+   "camera": {
+    "toi": "Triều Tiên",
+    "rong_km": 2200,
+    "nghieng": 35
+   },
+   "dong_tac": [
+    {
+     "loai": "to_nuoc",
+     "nuoc": "Triều Tiên",
+     "mau": "#ff4a1f",
+     "luc": 0.0
+    },
+    {
+     "loai": "nhan",
+     "tai": "Triều Tiên",
+     "chu": "North Korea",
+     "luc": 0.0
+    },
+    {
+     "loai": "to_nuoc",
+     "nuoc": "Mỹ",
+     "co": true,
+     "luc": 0.0
+    },
+    {
+     "loai": "phong",
+     "tu": "Triều Tiên",
+     "toi": "Mỹ",
+     "luc": 0.2,
+     "bay_trong": 3.0,
+     "so_luong": 3,
+     "du_kien": true
+    }
+   ]
+  },
+  {
+   "id": "n02",
+   "t": 3.72,
+   "loi": "Câu trả lời có một tình tiết bất ngờ mà hầu hết mọi người đều bỏ lỡ.",
+   "camera": {
+    "toi": "Mỹ",
+    "rong_km": 6000,
+    "kieu": "bay",
+    "bay_trong": 1.0
+   },
+   "dong_tac": [
+    {
+     "loai": "no",
+     "tai": "Mỹ",
+     "luc": 3.9,
+     "co_km": 1200
+    }
+   ]
+  },
+  {
+   "id": "n03",
+   "t": 6.76,
+   "loi": "Ngày tên lửa đó bay đi cũng là ngày cuối cùng của chính Triều Tiên.",
+   "camera": {
+    "toi": "Triều Tiên",
+    "rong_km": 1500,
+    "kieu": "vong",
+    "bay_trong": 1.6
+   },
+   "dong_tac": [
+    {
+     "loai": "vat_the",
+     "tai": "Triều Tiên",
+     "vat": "ten_lua",
+     "luc": 6.9,
+     "den": 9.3,
+     "co_dinh": true,
+     "co": 0.16,
+     "hieu_ung": "noi_len"
+    },
+    {
+     "loai": "vo_vun",
+     "nuoc": "Triều Tiên",
+     "luc": 9.2
+    },
+    {
+     "loai": "no",
+     "tai": "Triều Tiên",
+     "luc": 9.2,
+     "co_km": 700
+    }
+   ]
+  },
+  {
+   "id": "n04",
+   "t": 9.66,
+   "loi": "Dưới đây là lý do.",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": [
+    {
+     "loai": "to_nuoc",
+     "nuoc": "Triều Tiên",
+     "mau": "#ff4a1f",
+     "luc": 10.6
+    },
+    {
+     "loai": "nhan",
+     "tai": "Triều Tiên",
+     "chu": "North Korea",
+     "luc": 10.6
+    }
+   ]
+  },
+  {
+   "id": "n05",
+   "t": 10.84,
+   "loi": "Hwasong-20 là tên lửa mạnh nhất của Triều Tiên.",
+   "camera": {
+    "toi": "Triều Tiên",
+    "rong_km": 1300,
+    "kieu": "bay",
+    "bay_trong": 1.2
+   },
+   "dong_tac": [
+    {
+     "loai": "vat_the",
+     "tai": "Triều Tiên",
+     "vat": "ten_lua",
+     "luc": 10.9,
+     "den": 16.3,
+     "co_dinh": true,
+     "co": 0.24,
+     "hieu_ung": "noi_len",
+     "lech": [
+      0.0,
+      -0.02
+     ]
+    },
+    {
+     "loai": "nhan",
+     "tai": "Triều Tiên",
+     "chu": "Hwasong-20",
+     "kieu": "doc",
+     "luc": 11.0,
+     "den": 16.3,
+     "lech_km": [
+      -80,
+      0
+     ]
+    },
+    {
+     "loai": "nguoi",
+     "ten": "Kim Jong-un",
+     "tai": "Triều Tiên",
+     "luc": 12.4,
+     "den": 15.6,
+     "co": 0.4,
+     "lech": [
+      0.0,
+      0.04
+     ]
+    }
+   ]
+  },
+  {
+   "id": "n06",
+   "t": 13.0,
+   "loi": "Họ nói rằng nó có thể bay qua hành tinh và vươn tới bất kỳ thành phố nào ở Mỹ.",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": []
+  },
+  {
+   "id": "n07",
+   "t": 16.72,
+   "loi": "Vì vậy, hãy tưởng tượng họ phóng một quả ngày hôm nay.",
+   "camera": {
+    "toi": "Mỹ",
+    "rong_km": 7000,
+    "kieu": "vong",
+    "bay_trong": 1.5
+   },
+   "dong_tac": []
+  },
+  {
+   "id": "n08",
+   "t": 19.3,
+   "loi": "Điều gì thực sự xảy ra tiếp theo?",
+   "camera": {
+    "toi": "Triều Tiên",
+    "rong_km": 2500,
+    "kieu": "vong",
+    "bay_trong": 1.3
+   },
+   "dong_tac": [
+    {
+     "loai": "phong",
+     "tu": "Triều Tiên",
+     "toi": "Mỹ",
+     "luc": 19.6,
+     "bay_trong": 18.0,
+     "du_kien": false
+    }
+   ]
+  },
+  {
+   "id": "n09",
+   "t": 20.8,
+   "loi": "Gần như ngay lập tức, có vẻ như các vệ tinh phát hiện sức nóng trong vòng vài giây",
+   "camera": {
+    "toi": "Biển Nhật Bản",
+    "rong_km": 5000,
+    "kieu": "bay",
+    "bay_trong": 1.5
+   },
+   "dong_tac": [
+    {
+     "loai": "vat_the",
+     "tai": "Biển Okhotsk",
+     "vat": "ve_tinh",
+     "luc": 21.0,
+     "den": 25.5,
+     "co_dinh": true,
+     "co": 0.3,
+     "hieu_ung": "truot_vao",
+     "tu_huong": "tren",
+     "lech": [
+      0.0,
+      -0.3
+     ]
+    },
+    {
+     "loai": "radar",
+     "tai": "Biển Okhotsk",
+     "luc": 22.6,
+     "den": 25.8,
+     "ban_kinh_km": 2500
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "t": 24.46,
+   "loi": "và đồng hồ bắt đầu đếm ngược ở Washington, Seoul và Tokyo.",
+   "camera": {
+    "toi": "Nhật Bản",
+    "rong_km": 3200,
+    "kieu": "bay",
+    "bay_trong": 1.4
+   },
+   "dong_tac": [
+    {
+     "loai": "ghim",
+     "tai": "Seoul",
+     "chu": "Seoul",
+     "luc": 26.1
+    },
+    {
+     "loai": "ghim",
+     "tai": "Tokyo",
+     "chu": "Tokyo",
+     "luc": 26.7
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "t": 27.84,
+   "loi": "Nhưng nhìn thấy nó và chặn đứng nó là hai việc hoàn toàn khác nhau.",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": [
+    {
+     "loai": "vat_the",
+     "tai": [
+      142.0,
+      33.5
+     ],
+     "vat": "tau_chien",
+     "luc": 28.0,
+     "den": 37.5,
+     "nam_dat": true,
+     "co_km": 260,
+     "goc": 20
+    },
+    {
+     "loai": "vat_the",
+     "tai": [
+      144.5,
+      32.0
+     ],
+     "vat": "tau_chien",
+     "luc": 28.3,
+     "den": 37.5,
+     "nam_dat": true,
+     "co_km": 260,
+     "goc": 25
+    },
+    {
+     "loai": "phong",
+     "tu": [
+      142.0,
+      33.5
+     ],
+     "toi": [
+      139.0,
+      42.0
+     ],
+     "luc": 29.2,
+     "bay_trong": 1.6,
+     "vat": "ten_lua",
+     "mau": "#ffd400",
+     "cong": 0.05
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "t": 30.7,
+   "loi": "Cơ hội thực sự duy nhất để bắt kịp nó đến trong vài phút đầu tiên, chậm và chậm ngay sau khi phóng, và chỉ khi một tàu chiến tình cờ ở đúng vị trí.",
+   "camera": {
+    "toi": [
+     140.0,
+     40.0
+    ],
+    "rong_km": 2800,
+    "kieu": "bay",
+    "bay_trong": 2.0
+   },
+   "dong_tac": [
+    {
+     "loai": "phong",
+     "tu": [
+      144.5,
+      32.0
+     ],
+     "toi": [
+      141.0,
+      43.0
+     ],
+     "luc": 32.4,
+     "bay_trong": 1.8,
+     "cong": 0.05
+    },
+    {
+     "loai": "phong",
+     "tu": [
+      142.0,
+      33.5
+     ],
+     "toi": [
+      143.0,
+      44.0
+     ],
+     "luc": 34.6,
+     "bay_trong": 1.8,
+     "cong": 0.05
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "t": 37.54,
+   "loi": "Bỏ lỡ điều đó, tên lửa bay vào không gian và lướt qua Thái Bình Dương trong 20 phút,",
+   "camera": {
+    "toi": "Bắc Thái Bình Dương",
+    "rong_km": 7000,
+    "kieu": "bay",
+    "bay_trong": 2.2
+   },
+   "dong_tac": [
+    {
+     "loai": "to_nuoc",
+     "nuoc": "Alaska",
+     "co": true,
+     "luc": 38.5
+    },
+    {
+     "loai": "chu_neon",
+     "tai": "Bắc Thái Bình Dương",
+     "chu": "Pacific",
+     "luc": 40.0,
+     "den": 45.5,
+     "co_km": 900
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "t": 41.24,
+   "loi": "bay cao đến mức hầu như không có gì trên trái đất có thể với tới.",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": []
+  },
+  {
+   "id": "n15",
+   "t": 44.26,
+   "loi": "Chướng ngại vật cuối cùng của nó là một rào cản mỏng manh.",
+   "camera": {
+    "toi": "Alaska",
+    "rong_km": 4500,
+    "kieu": "bay",
+    "bay_trong": 1.6
+   },
+   "dong_tac": []
+  },
+  {
+   "id": "n16",
+   "t": 46.58,
+   "loi": "Chỉ có 44 thiết bị đánh chặn đặt tại Alaska và California phải tấn công một đầu đạn trong không gian,",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": [
+    {
+     "loai": "so",
+     "chu": "44",
+     "phu": "thiết bị đánh chặn",
+     "luc": 46.8,
+     "den": 50.5,
+     "vi_tri": [
+      0.5,
+      0.24
+     ]
+    },
+    {
+     "loai": "vat_the",
+     "tai": "Alaska",
+     "vat": "gian_phong",
+     "luc": 47.3,
+     "den": 61.0,
+     "co_dinh": true,
+     "co": 0.13,
+     "hieu_ung": "noi_len"
+    },
+    {
+     "loai": "to_nuoc",
+     "nuoc": "California",
+     "co": true,
+     "luc": 49.0
+    },
+    {
+     "loai": "vat_the",
+     "tai": "California",
+     "vat": "gian_phong",
+     "luc": 49.3,
+     "den": 61.0,
+     "co_dinh": true,
+     "co": 0.13,
+     "hieu_ung": "noi_len"
+    }
+   ]
+  },
+  {
+   "id": "n17",
+   "t": 51.3,
+   "loi": "điều mà chúng chỉ thực hiện được khoảng một nửa thời gian trong thực tế.",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": []
+  },
+  {
+   "id": "n18",
+   "t": 54.14,
+   "loi": "Và nếu tên lửa đó tách thành nhiều đầu đạn, những thiết bị đánh chặn ít ỏi đó sẽ bị kéo căng một cách nguy hiểm.",
+   "camera": {
+    "toi": "Alaska",
+    "rong_km": 3500,
+    "kieu": "bay",
+    "bay_trong": 1.5
+   },
+   "dong_tac": [
+    {
+     "loai": "tach",
+     "tai": [
+      -165.0,
+      52.0
+     ],
+     "toi": "Alaska",
+     "luc": 55.9,
+     "so_vet": 5,
+     "dai_km": 900
+    },
+    {
+     "loai": "phong",
+     "tu": "Alaska",
+     "toi": [
+      -160.0,
+      56.0
+     ],
+     "luc": 56.6,
+     "bay_trong": 1.2,
+     "cong": 0.1,
+     "mau": "#ffffff"
+    },
+    {
+     "loai": "no",
+     "tai": [
+      -160.0,
+      56.0
+     ],
+     "luc": 57.9,
+     "co_km": 500
+    }
+   ]
+  },
+  {
+   "id": "n19",
+   "t": 58.92,
+   "loi": "Nhưng đây là điều khiến Triều Tiên phải dừng lại và suy nghĩ.",
+   "camera": {
+    "toi": "Thái Bình Dương",
+    "rong_km": 12000,
+    "kieu": "vong",
+    "bay_trong": 2.0
+   },
+   "dong_tac": []
+  },
+  {
+   "id": "n20",
+   "t": 61.54,
+   "loi": "Ngay cả trong trường hợp xấu nhất, việc khai hoả nó sẽ mang lại một phản ứng áp đảo đến mức Triều Tiên",
+   "camera": {
+    "toi": "Triều Tiên",
+    "rong_km": 1500,
+    "kieu": "bay",
+    "bay_trong": 2.5
+   },
+   "dong_tac": []
+  },
+  {
+   "id": "n21",
+   "t": 65.84,
+   "loi": "Với tư cách là một quốc gia, có lẽ sẽ không còn tồn tại vào phút cuối.",
+   "camera": {
+    "kieu": "giu"
+   },
+   "dong_tac": [
+    {
+     "loai": "vo_vun",
+     "nuoc": "Triều Tiên",
+     "luc": 68.0
+    },
+    {
+     "loai": "no",
+     "tai": "Triều Tiên",
+     "luc": 68.0,
+     "co_km": 800
+    }
+   ]
+  }
+ ]
+}
