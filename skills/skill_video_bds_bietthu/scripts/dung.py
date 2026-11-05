@@ -8,6 +8,7 @@ from PIL import Image
 import chung as C
 import chu
 import hieu_ung as HU
+import nguoi as NG
 
 W, H, FPS = C.W, C.H, C.FPS
 
@@ -63,6 +64,7 @@ def doc_anh(path):
 class Dung:
     def __init__(self, plan, work):
         self.plan, self.work = plan, work
+        C.ap_dung_plan(plan)
         self.res = plan.get('resources') or ''
         self.dur = float(plan['dur'])
         self.canh = sorted(plan['canh'], key=lambda c: c['t0'])
@@ -316,6 +318,8 @@ class Dung:
         f, rung = self.hieu_ung(f, c, t)
         f = self.chuyen(f, t)
         co_chu = False
+        f_truoc = f.copy() if (c['loai'] == 'noi' and self.plan.get('chu_duoi_nguoi', True)) else None   # khung TRƯỚC khi vẽ chữ
+        hop_ve = []
         for kb in self.khoi:
             cum = kb['cum']
             t_dau = min(d['t'] for d in cum['dong']) if cum['dong'] else 1e9
@@ -329,7 +333,8 @@ class Dung:
                 x0, y0, x1, y1 = chu.hop(kb['lay'])
                 self.hop_chu.append({'canh': kb['canh']['id'], 't0': t_dau, 't1': cum.get('t1'), 'hop': [x0, y0, x1, y1],
                                      'text': ' / '.join(d['text'] for d in cum['dong'])})
-            if chu.ve_khoi(f, kb['lay'], cum, t, rung): co_chu = True
+            if chu.ve_khoi(f, kb['lay'], cum, t, rung):
+                co_chu = True; hop_ve.append(chu.hop(kb['lay']))
         sap_co = any(0 < min(d['t'] for d in kb['cum']['dong']) - t < 0.5 for kb in self.khoi if kb['cum']['dong'])
         if not co_chu and not sap_co and c['loai'] != 'ghep3':     # sub nhỏ không lặp chữ của khối sắp hiện
             for sb in self.sub:
@@ -342,49 +347,80 @@ class Dung:
                             x0, y0, x1, y1 = chu.hop(sb['lay'])
                             if y0 < m[3] + 30 and y1 > m[1] - 30:
                                 for o in sb['lay']: o[2] += (m[3] + 60 - y0)
-                    chu.ve_khoi(f, sb['lay'], cum, t)
+                    if chu.ve_khoi(f, sb['lay'], cum, t): hop_ve.append(chu.hop(sb['lay']))
                     break
+        if f_truoc is not None and hop_ve:
+            f = self._duoi_nguoi(f, f_truoc, hop_ve, t)
+        return f
+
+    def _duoi_nguoi(self, f, f_truoc, hop_ve, t):
+        """Chữ chạm người nói -> trả lại điểm ảnh của NGƯỜI lên trên chữ (chữ nằm dưới lớp người)."""
+        m = self.mat_tai(t)
+        if not m: return f
+        vx0, vy0, vx1, vy1 = NG.vung_nguoi(m)
+        hp = [b for b in hop_ve if b[0] < vx1 and b[2] > vx0 and b[1] < vy1 and b[3] > vy0]
+        if not hp: return f
+        self.dem_cham = getattr(self, 'dem_cham', 0) + 1
+        M = NG.mask(f_truoc, m) if NG.san_sang() else None
+        if M is None: return f
+        x0 = int(max(0, min(b[0] for b in hp) - 40)); x1 = int(min(C.W, max(b[2] for b in hp) + 40))
+        y0 = int(max(0, min(b[1] for b in hp) - 40)); y1 = int(min(C.H, max(b[3] for b in hp) + 40))
+        r = M[y0:y1, x0:x1, None]
+        f[y0:y1, x0:x1] = (f_truoc[y0:y1, x0:x1].astype(np.float32) * r + f[y0:y1, x0:x1].astype(np.float32) * (1 - r)).astype(np.uint8)
+        self.dem_duoi = getattr(self, 'dem_duoi', 0) + 1
         return f
 
     def sfx(self):
+        """Danh sách cue SFX: chuyển cảnh + hiệu ứng + CHỮ (theo vai/kiểu vào). File chọn theo nhóm, xoay vòng (chung.chon_sfx)."""
         cues = []
         for c in self.canh:
             for h in c.get('hieu_ung', []):
                 k = h['kieu']
                 if k == 'phong_nhanh' and self.plan.get('nhoe'): k = 'nhoe_zoom'
-                if C.SFX_MAP.get(k) and h.get('sfx', True):
+                if C.SFX_NHOM.get(k) and h.get('sfx', True):
                     canh_dinh = k in ('phong_nhanh', 'nhoe_zoom')
                     t = h['t'] + (C.HU['phong_nhanh']['khung'] / FPS if canh_dinh else 0)
-                    cues.append({'t': round(t, 3), 'file': h.get('file', C.SFX_MAP[k]), 'canh': 'dinh' if canh_dinh else 'dau', 'kieu': k})
+                    q = {'t': round(t, 3), 'canh': 'dinh' if canh_dinh else 'dau', 'kieu': k}
+                    if h.get('file'): q['file'] = h['file']
+                    cues.append(q)
             if c.get('the3d') and c['the3d'].get('sfx', True):
-                cues.append({'t': c['the3d']['t0'], 'file': C.SFX_MAP['the3d'], 'canh': 'dau', 'kieu': 'the3d'})
+                cues.append({'t': c['the3d']['t0'], 'canh': 'dau', 'kieu': 'the3d'})
             if self.truoc(c) is not None and c.get('sfx_zoom', True):   # 04/11: "zoom in/out không có SFX"
-                cues.append({'t': c['t0'], 'file': C.SFX_MAP['zoom_muot'], 'canh': 'dinh_giua', 'kieu': 'zoom_muot'})
+                cues.append({'t': c['t0'], 'canh': 'dinh_giua', 'kieu': 'zoom_muot'})
             if c['loai'] == 'ghep3' and c.get('sfx', True):
-                cues.append({'t': c['t0'], 'file': C.SFX_MAP['ghep3'], 'canh': 'dau', 'kieu': 'ghep3'})
-        xoay = {}
+                cues.append({'t': c['t0'], 'canh': 'dau', 'kieu': 'ghep3'})
+            # ---- SFX CHỮ (05/11): mỗi dòng KHOÁ / số / chữ to / câu hỏi / tên có 1 tiếng nhẹ, viết tay + dẫn im lặng ----
+            if self.plan.get('sfx_chu', True):
+                for b in c.get('chu', []):
+                    if b.get('sfx') is False: continue
+                    for d in b['dong']:
+                        if d.get('sfx') is False: continue
+                        vai, vao = d.get('vai'), d.get('vao', 'go')
+                        kieu = C.SFX_CHU_VAI.get(vai)
+                        if vai == 'so' and re.search(C.SFX_TIEN_RE, d['text'], re.I): kieu = 'tien'
+                        elif vai == 'khoa': kieu = 'nhay' if vao == 'nhay' else ('khoa_roi' if vao == 'roi' else 'khung_vao')
+                        elif kieu is None and (b.get('sfx') is True or d.get('sfx') is True): kieu = 'khung_vao'
+                        if kieu: cues.append({'t': round(d['t'], 3), 'canh': 'dau', 'kieu': kieu})
         for x in sorted(self.plan.get('chuyen', []), key=lambda q: q['t']):
             if not x.get('sfx', True): continue
-            ds = C.SFX_XOAY.get(x['kieu'])
-            if ds:                               # xoay vòng tiếng để các cú chuyển chương không lặp y hệt
-                f = ds[xoay.get(x['kieu'], 0) % len(ds)]; xoay[x['kieu']] = xoay.get(x['kieu'], 0) + 1
-            else:
-                f = C.SFX_MAP[x['kieu']]
-            cues.append({'t': x['t'], 'file': x.get('file', f), 'canh': 'dinh', 'kieu': x['kieu']})
+            q = {'t': x['t'], 'canh': 'dinh', 'kieu': x['kieu']}
+            if x.get('file'): q['file'] = x['file']
+            cues.append(q)
         for x in self.plan.get('sfx_them', []): cues.append(dict({'canh': 'dau', 'kieu': 'them'}, **x))
         # mỗi cửa sổ SFX_CUA_SO giây tối đa 1 tiếng: giữ cái ưu tiên cao
         uu = {k: i for i, k in enumerate(C.SFX_UU_TIEN)}
         giu = []
-        for q in sorted(cues, key=lambda q: uu.get(q['kieu'], 99)):
+        for q in sorted(cues, key=lambda q: (uu.get(q['kieu'], 99), q['t'])):
             if all(abs(q['t'] - g['t']) >= C.SFX_CUA_SO for g in giu): giu.append(q)
         giu = sorted(giu, key=lambda q: q['t'])
-        for i, q in enumerate(giu):              # không lặp y hệt 1 tiếng trong SFX_KHONG_LAP_S giây
-            gan = {g['file'] for g in giu[:i] if q['t'] - g['t'] < C.SFX_KHONG_LAP_S}
-            if q['file'] in gan:
-                ho = next((h for h in C.SFX_HO if q['file'] in h), [])
-                khac = [f for f in ho if f not in gan]
-                if khac: q['file'] = khac[0]
-        return giu
+        ls = []
+        for q in giu:                            # gán file theo nhóm: ít dùng nhất, không lặp trong SFX_KHONG_LAP_S giây
+            if q.get('file'):
+                ls.append((q['file'], q['t']))
+            else:
+                q['file'] = C.chon_sfx(q['kieu'], q['t'], ls)
+            if q['kieu'] in C.SFX_TREN and 'tren_giong_db' not in q: q['tren_giong_db'] = C.SFX_TREN[q['kieu']]
+        return [q for q in giu if q.get('file')]
 
     def dong(self):
         self.nguon.dong()
@@ -420,5 +456,6 @@ def dung_hinh(plan, work, out_mp4):
     enc.stdin.close(); enc.wait()
     d.dong()
     C.ghi_json(os.path.join(work, 'hop_chu.json'), d.hop_chu)
+    C.ghi_json(os.path.join(work, 'duoi_nguoi.json'), {'cham': getattr(d, 'dem_cham', 0), 'duoi_nguoi': getattr(d, 'dem_duoi', 0), 'model': NG.san_sang()})
     C.ghi_json(os.path.join(work, 'sfx.json'), d.sfx())
     print(f'Hình xong: {out_mp4}  ({time.time() - t0:.0f}s)')

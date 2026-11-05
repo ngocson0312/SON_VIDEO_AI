@@ -7,3 +7,6 @@
 
 Thư viện sưu tầm không khuyến khích dùng cho video thương mại. Làm video thương mại / đưa vào template phát hành:
 thay bằng SFX CC0 hoặc đã mua giấy phép, GIỮ NGUYÊN tên file (code gọi theo tên trong `scripts/chung.py` → `SFX_MAP`, `SFX_XOAY`, `SFX_HO`).
+
+(05/11/2026) Thêm từ kho `.claude/skills/minh-tam-edit/assets/sfx` của dự án (cùng tình trạng giấy phép không rõ): camera-shutter, chime, click-button, ding, ka-ching, new-item (wav→mp3), pop-2, sparkle, ting (wav→mp3).
+Phông thêm: Baloo2-ExtraBold, DancingScript, Montserrat-ExtraBold (từ skill-bando-tintuc-chinhtri), PlayfairDisplay-Italic (Google Fonts, OFL, cắt từ bản biến thiên wght=500) — xem assets/fonts/OFL-*.txt.

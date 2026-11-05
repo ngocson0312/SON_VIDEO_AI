@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Vẽ CỤM CHỮ kiểu mẫu: dẫn trắng nhỏ + KHOÁ to (số vàng / chữ hẹp đậm) + viết tay; gõ chữ, nhấp nháy,
 rơi, xoá ngược, trôi chậm. Mọi số đo trong chung.py (CHU, VAI, CHONG)."""
-import math, unicodedata
+import math, re, unicodedata
 import numpy as np
 import cv2
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
@@ -29,18 +29,22 @@ LE_MAC_DINH = {'dan': 'trai', 'so': 'trai', 'khoa': 'trai', 'nhan': 'trai', 'vie
 class Dong:
     """1 dòng chữ đã vẽ sẵn thành RGBA (float, premultiplied) + mốc x từng ký tự để gõ/xoá."""
 
-    def __init__(self, d, mau=None):
+    def __init__(self, d, mau=None, mau_cum=None):
         self.d = d
         self.text = unicodedata.normalize('NFC', d['text'])
         self.vai = d.get('vai', 'dan')
         cfg = C.VAI[self.vai]
         co = int(d.get('co', cfg['co']))
-        fnt = _f(cfg['font'], co)
+        fn = d.get('font') or cfg['font']
+        fnt = _f(fn, co)
         rmax = d.get('rong_max', cfg.get('rong_max'))
         while rmax and fnt.getlength(self.text) > rmax and co > 30:
-            co = int(co * 0.94); fnt = _f(cfg['font'], co)
+            co = int(co * 0.94); fnt = _f(fn, co)
         self.co = co
+        self.kieu = (d.get('kieu') or C.VIET_TAY['mac_dinh']) if self.vai == 'viet_tay' else None
         mau = mau or d.get('mau') or cfg['mau']
+        if self.vai == 'viet_tay' and not d.get('mau') and self.kieu in ('vet', 'mau'):
+            mau = mau_cum or C.VIET_TAY['vet']['mau_mac_dinh']      # viết tay ăn theo màu KHOÁ của cụm
         if mau == 'tu_dong': mau = cfg['mau']
         self.mau = C.BANG_MAU.get(mau, mau)
         P = max(40, int(co * 0.2))                 # đủ chỗ cho quầng
@@ -67,13 +71,15 @@ class Dong:
             over(base, np.clip(blur(a, co * cfg_a['quang_k']), 0, 1) * cfg_a['quang_a'])
             k = np.asarray(Image.fromarray((a * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(cfg_a['vien'])), np.float32) / 255
             over(base * cfg_a['vien_toi'], k)
+        elif self.vai == 'viet_tay' and self.kieu in ('vet', 'mau', 'vang'):
+            self._viet_tay(a, base, over, blur, co, oy, w, h)
         else:
             sh = np.roll(np.roll(blur(a, bl), dy, 0), dx, 1) * (ba / 255.0)
             if self.vai in ('dan', 'sub', 'chu_thich', 'viet_tay', 'nhan_the', 'cau_hoi', 'ten'):
                 qb, qa = C.CHU['quang_nho']
                 sh = np.maximum(sh, np.clip(blur(a, qb) * 2.2, 0, 1) * (qa / 255.0))
             over(np.zeros(3, np.float32), sh)
-        over(col, a * float(d.get('do_dac', 1.0)))
+        over(self.col_vt if getattr(self, 'col_vt', None) is not None else col, a * float(d.get('do_dac', 1.0)))
         self.rgba = np.dstack([rgb, A]).astype(np.float32)
         ys, xs = np.where(A > 0.02)
         self.y0, self.y1 = int(ys.min()), int(ys.max()) + 1
@@ -83,6 +89,64 @@ class Dong:
         self.ox = ox
         self.cut = [ox + fnt.getlength(self.text[:i]) for i in range(len(self.text) + 1)]
         self.n = len(self.text)
+
+    def _viet_tay(self, a, base, over, blur, co, oy, w, h):
+        """3 kiểu chữ viết tay CÓ HIGHLIGHT (chung.VIET_TAY). Gán self.col_vt = màu mặt chữ (None = dùng màu thường)."""
+        V = C.VIET_TAY
+        z3 = np.zeros(3, np.float32)
+        self.col_vt = None
+        shp = (a.shape[0], a.shape[1], 3)
+        if self.kieu == 'vet':
+            k = V['vet']
+            col = np.array(C.hex2rgb(self.mau), np.float32)
+            # vệt dạ quang phải đủ tối để chữ TRẮNG đọc được: hạ sáng tới khi độ sáng tương đối <= toi_den_L
+            for _ in range(12):
+                L = (0.2126 * col[0] + 0.7152 * col[1] + 0.0722 * col[2]) / 255.0
+                if L <= k['toi_den_L']:
+                    break
+                col = col * 0.92
+            ys, xs = np.where(a > 0.2)
+            x0, x1 = (int(xs.min()), int(xs.max())) if len(xs) else (0, w - 1)
+            le = k['le'] * co
+            y0, y1 = oy - k['cao'] * co, oy + k['duoi'] * co
+            M = np.zeros((h, w), np.uint8)
+            r = int((y1 - y0) / 2)
+            cv2.rectangle(M, (int(x0 - le + r), int(y0)), (int(x1 + le - r), int(y1)), 255, -1)
+            cv2.circle(M, (int(x0 - le + r), int((y0 + y1) / 2)), r, 255, -1)
+            cv2.circle(M, (int(x1 + le - r), int((y0 + y1) / 2)), r, 255, -1)
+            ctr = ((x0 + x1) / 2.0, (y0 + y1) / 2.0)
+            M = cv2.warpAffine(M, cv2.getRotationMatrix2D(ctr, k['goc'], 1.0), (w, h))
+            m = cv2.GaussianBlur(M.astype(np.float32) / 255.0, (0, 0), 1.2)
+            rng = np.random.default_rng(len(self.text) + 7)
+            nz = cv2.resize(rng.random((max(2, h // 6), max(2, w // 6))).astype(np.float32), (w, h))
+            m = np.clip(m * k['a'] * (1 - k['nhieu'] + k['nhieu'] * nz), 0, 1)
+            over(z3, np.roll(blur(m, 7), int(0.05 * co), 0) * k['bong_a'])          # bóng dưới vệt
+            over(col / 255.0, m)
+            over(z3, np.roll(blur(a, 4), 3, 0) * k['chu_bong_a'])                      # bóng dưới chữ
+            self.col_vt = np.ones(shp, np.float32)                                      # chữ trắng TRÊN vệt màu
+        elif self.kieu == 'mau':
+            k = V['mau']
+            over(z3, np.roll(blur(a, 8), 6, 0) * k['bong_a'])
+            over(base, np.clip(blur(a, co * k['quang_k']), 0, 1) * k['quang_a'])
+            kk = np.asarray(Image.fromarray((a * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(k['vien'] | 1)), np.float32) / 255
+            over(base * k['vien_toi'], kk)
+            sang = np.array(_sang_toi(tuple(base * 255.0), k['sang']), np.float32) / 255.0
+            self.col_vt = np.broadcast_to(sang, shp).copy()
+        else:  # vang
+            k = V['vang']
+            over(z3, np.roll(blur(a, 8), 6, 0) * k['bong_a'])
+            gl = np.array(C.hex2rgb(k['giua']), np.float32) / 255.0
+            over(gl, np.clip(blur(a, co * k['quang_k']), 0, 1) * k['quang_a'])
+            kk = np.asarray(Image.fromarray((a * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(k['vien_px'] | 1)), np.float32) / 255
+            over(np.array(C.hex2rgb(k['vien']), np.float32) / 255.0, kk)
+            ys = np.where(a.max(1) > 0.3)[0]
+            g0, g1 = (ys.min(), ys.max()) if len(ys) else (0, a.shape[0] - 1)
+            u = np.clip((np.arange(a.shape[0]) - g0) / max(1, g1 - g0), 0, 1)[:, None]
+            t, g, b = [np.array(C.hex2rgb(k[n]), np.float32) / 255.0 for n in ('tren', 'giua', 'duoi')]
+            col = np.empty(shp, np.float32)
+            for c in range(3):
+                col[..., c] = np.where(u < 0.5, t[c] + (g[c] - t[c]) * (u / 0.5), g[c] + (b[c] - g[c]) * ((u - 0.5) / 0.5))
+            self.col_vt = col
 
     def _to_mau(self, a, h, oy, fnt):
         base = C.hex2rgb(self.mau)
@@ -117,11 +181,21 @@ class Dong:
 
 def bo_cuc(cum):
     """xếp các dòng thành khối; trả về list (Dong, x_goc, y_goc) toạ độ khung 1080x1920."""
-    dongs = [Dong(d) for d in cum['dong']]
+    mau_cum = None
+    for d0 in cum['dong']:              # màu KHOÁ của cụm (dòng to đầu tiên) -> viết tay ăn theo
+        if d0.get('vai') in C.CHU_A and d0.get('mau') not in (None, 'tu_dong'):
+            mau_cum = d0['mau']; break
+        if d0.get('vai') in ('khoa', 'tu_lon') and mau_cum is None:
+            mau_cum = C.VAI[d0['vai']]['mau']
+    dongs = [Dong(d, mau_cum=mau_cum) for d in cum['dong']]
     if not dongs: return []
     bw = max(d.rong for d in dongs)
     xc = cum.get('x', C.W / 2)
     left = xc - bw / 2
+    can = cum.get('can', 'giua')
+    if can in ('trai', 'phai') and 'x' not in cum and bw <= C.DA_DANG['can_rong_toi_da']:
+        left = C.SAFE['x0'] + 24 if can == 'trai' else C.SAFE['x1'] - 24 - bw
+        xc = left + bw / 2
     y = cum.get('y', 300)
     out, prev_bot, prev_vai = [], None, None
     for d in dongs:
@@ -176,6 +250,8 @@ def ve_khoi(frame, lay, cum, t, rung=(0, 0)):
     if ra == 'tat' and t >= t_ra: return False
     k_ra = (t - t_ra) * fps if (ra == 'xoa' and t >= t_ra) else -1
     if k_ra >= C.CHU['xoa_khung']: return False
+    k_mo = (t - t_ra) * fps if (ra == 'mo' and t >= t_ra) else -1       # RA kiểu mờ dần + trôi lên
+    if k_mo >= C.CHU['xoa_khung']: return False
     t_dau = min(d.d['t'] for d, _, _ in lay)
     if t < t_dau: return False
     troi = C.CHU['troi_px_s'] * (t - t_dau) * cum.get('troi', 1)
@@ -188,16 +264,37 @@ def ve_khoi(frame, lay, cum, t, rung=(0, 0)):
         vao = d.d.get('vao', 'go' if d.vai not in ('so', 'khoa') else 'go')
         n = d.n
         dy, sy, ak = 0.0, 1.0, 1.0
+        dx2, sc, blur, quet = 0.0, 1.0, 0.0, None
         if vao == 'go':
-            n = min(d.n, int(k * C.CHU['ky_tu_moi_khung']) + 1)
+            n = min(d.n, int(k * (C.CHU['ky_tu_to'] if d.vai in C.CHU_TO else C.CHU['ky_tu_moi_khung'])) + 1)
         elif vao == 'nhay':
             if k < C.CHU['nhay_khung'] and k % 2 == 1: continue
         elif vao == 'roi':
             if k < C.CHU['roi_khung']:
                 u = (k + 1) / C.CHU['roi_khung']; e = 1 - (1 - u) ** 3
                 dy = -C.CHU['roi_px'] * (1 - e); sy = 1 + 0.45 * (1 - e); ak = 0.35 + 0.65 * e
+        elif vao == 'phong':                                   # nảy to dần, vọt nhẹ rồi về đúng cỡ
+            u = min(1.0, k / 7.0); c1 = 1.70158; e = 1 + (c1 + 1) * (u - 1) ** 3 + c1 * (u - 1) ** 2
+            sc = 0.55 + 0.45 * e; ak = min(1.0, k / 3.0)
+        elif vao == 'nhoe':                                    # từ nhoè + phóng nhẹ về nét
+            u = min(1.0, k / 8.0); blur = 14.0 * (1 - u) ** 2; sc = 1.0 + 0.12 * (1 - u); ak = 0.25 + 0.75 * u
+        elif vao == 'truot':                                   # trượt vào từ trái (huong=-1: từ phải)
+            u = min(1.0, k / 7.0); e = 1 - (1 - u) ** 3; dx2 = -90.0 * (1 - e) * d.d.get('huong', 1); ak = min(1.0, k / 4.0)
+        elif vao == 'tung_tu':                                 # hiện từng TỪ (mỗi 3 khung), khác nhịp gõ từng ký tự
+            ends = getattr(d, '_ends', None)
+            if ends is None:
+                ends = d._ends = [m.end() for m in re.finditer(r'\S+', d.text)] or [d.n]
+            n = ends[min(len(ends) - 1, k // 3)]
+        elif vao == 'quet':                                    # quét mặt nạ từ trái sang phải, mép mềm
+            u = min(1.0, k / 9.0); quet = 1 - (1 - u) ** 2
+        if vao == 'hien':          # chữ to 'hiện' KHÔNG còn bật tức thì: gõ nhanh 3 ký tự/khung + phóng 1,14 -> 1 + sáng dần
+            n = min(d.n, int(k * 1.6) + 1); u = min(1.0, k / 8.0); sc = 1.0 + 0.14 * (1 - u) ** 2; ak = min(1.0, (k + 1) / 2.0)
+        elif vao in ('go', 'nhay') and d.vai in ('so', 'khoa', 'tu_lon', 'nhan', 'cau_hoi', 'ten'):
+            u = min(1.0, k / (6.0 if vao == 'go' else 10.0)); sc = 1.0 + 0.10 * (1 - u) ** 2     # chữ to: nảy nhẹ khi vào
         if k_ra >= 0:
             n = int(math.ceil(n * (1 - (k_ra + 1) / C.CHU['xoa_khung'])))
+        if k_mo >= 0:
+            ak *= 1 - (k_mo + 1) / C.CHU['xoa_khung']; dy -= 16.0 * (k_mo + 1) / C.CHU['xoa_khung']
         if n <= 0: continue
         img = d.rgba
         if n < d.n:
@@ -207,7 +304,18 @@ def ve_khoi(frame, lay, cum, t, rung=(0, 0)):
             h2 = int(img.shape[0] * sy)
             img = cv2.resize(img, (img.shape[1], h2), interpolation=cv2.INTER_LINEAR)
             dy -= (h2 - d.rgba.shape[0]) * 0.5
-        dan(frame, img, x0 + troi + rung[0], y0 + dy + rung[1], ak)
+        if quet is not None:
+            xc = int(d.x0 + quet * (d.x1 - d.x0)) + 2
+            img = img[:, :max(1, xc)].copy()
+            fe = min(img.shape[1], 40)
+            img[:, -fe:] *= np.linspace(1.0, 0.0, fe, dtype=np.float32)[None, :, None] if quet < 1.0 else 1.0
+        if blur > 0.6:
+            img = cv2.GaussianBlur(img, (0, 0), blur)
+        if abs(sc - 1.0) > 0.004:
+            h0, w0 = img.shape[:2]
+            img = cv2.resize(img, (max(2, int(w0 * sc)), max(2, int(h0 * sc))), interpolation=cv2.INTER_LINEAR)
+            dx2 -= (img.shape[1] - w0) / 2.0; dy -= (img.shape[0] - h0) / 2.0
+        dan(frame, img, x0 + troi + rung[0] + dx2, y0 + dy + rung[1], ak)
         ve = True
     return ve
 

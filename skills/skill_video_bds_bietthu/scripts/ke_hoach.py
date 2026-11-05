@@ -20,7 +20,12 @@ SUA_TU = [('triết', 'chiết'), ('hecta', 'ha'), ('hectare', 'ha'), ('héc-ta'
 def nghe(wav, model='large-v3'):
     from faster_whisper import WhisperModel
     m = WhisperModel(model, device='cpu', compute_type='int8')
-    segs, _ = m.transcribe(wav, language='vi', word_timestamps=True, vad_filter=False, beam_size=5,
+    # faster-whisper + PyAV mới lỗi `metadata_errors` khi tự mở file → tự đọc wav 16 kHz mono bằng `wave` rồi đưa mảng numpy
+    import wave, numpy as np
+    with wave.open(wav, 'rb') as wf:
+        pcm = np.frombuffer(wf.readframes(wf.getnframes()), np.int16).astype(np.float32) / 32768.0
+        if wf.getnchannels() > 1: pcm = pcm.reshape(-1, wf.getnchannels()).mean(1)
+    segs, _ = m.transcribe(pcm, language='vi', word_timestamps=True, vad_filter=False, beam_size=5,
                            initial_prompt=PROMPT_BDS)
     words = []
     for s in segs:

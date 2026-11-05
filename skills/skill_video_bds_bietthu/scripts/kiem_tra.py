@@ -87,7 +87,16 @@ def kiem(plan, work, final):
             x0, y0, x1, y1 = h['hop']
             ix = max(0, min(x1, m[2]) - max(x0, m[0])); iy = max(0, min(y1, m[3]) - max(y0, m[1]))
             if ix * iy > 0.08 * (m[2] - m[0]) * (m[3] - m[1]): de.append(f"{h['text'][:24]}@{t:.1f}s"); break
-    ok('5. Chữ không đè mặt', not de, 'không khối nào đè mặt' if not de else 'đè: ' + '; '.join(de[:4]))
+    dn = C.doc_json(os.path.join(work, 'duoi_nguoi.json')) if os.path.exists(os.path.join(work, 'duoi_nguoi.json')) else {}
+    co_lop = bool(dn.get('model')) and plan.get('chu_duoi_nguoi', True)
+    ok('5. Chữ không đè mặt', not de or co_lop,
+       'không khối nào đè mặt' if not de else (f'{len(de)} khối chạm mặt, đã đặt DƯỚI lớp người' if co_lop else 'đè: ' + '; '.join(de[:4])))
+    # 13. chữ chạm người phải nằm dưới lớp người (05/11)
+    if dn.get('cham', 0):
+        ok('13. Chữ chạm người nằm dưới lớp người', dn.get('duoi_nguoi', 0) >= dn['cham'],
+           f"{dn.get('duoi_nguoi', 0)}/{dn['cham']} khung chữ chạm người đã đặt dưới lớp người" + ('' if dn.get('model') else ' · THIẾU model u2net_human_seg'))
+    else:
+        ok('13. Chữ chạm người nằm dưới lớp người', True, 'không khung nào chữ chạm người')
     # 6. độ nét quanh cú cắt
     if plan.get('nhoe'):
         ok('6. Độ nét quanh cú cắt', True, 'bỏ qua (plan bật nhoè đúng mẫu)')
@@ -150,6 +159,25 @@ def kiem(plan, work, final):
             can_tieng.append(('zoom_muot', c['t0']))
     thieu = [f'{k}@{t:.2f}' for k, t in can_tieng if not any(abs(t - q) <= 0.4 for q in cues)]
     ok('10. Cú zoom nào cũng có SFX', not thieu, f'{len(can_tieng)} cú zoom' + (' · thiếu tiếng: ' + ', '.join(thieu[:6]) if thieu else ''))
+    # 11. SFX đa dạng (05/11 user: "SFX bị hạn chế, cứ lặp đi lặp lại mấy cái")
+    fs = [q['file'] for q in st.get('sfx', [])]
+    if len(fs) >= 6:
+        from collections import Counter
+        cn = Counter(fs); top = cn.most_common(1)[0]
+        can = max(4, min(8, len(fs) // 4))
+        ok('11. SFX đa dạng', len(cn) >= can and top[1] / len(fs) <= 0.35,
+           f'{len(cn)} file khác nhau trong {len(fs)} tiếng (cần ≥ {can}); nhiều nhất {top[0]} {top[1] / len(fs) * 100:.0f} % (≤ 35 %)')
+    else:
+        ok('11. SFX đa dạng', True, f'chỉ {len(fs)} tiếng, bỏ qua')
+    # 12. chữ đa dạng: phông, kiểu vào, kiểu ra, canh lề
+    ds = [d for c in canh for b in c.get('chu', []) for d in b['dong'] if d.get('vai') != 'sub']
+    if len(ds) >= 12:
+        fo = {C.font_dong(d) for d in ds}; va = {d.get('vao', 'go') for d in ds}
+        ra = {b.get('ra', 'xoa') for c in canh for b in c.get('chu', [])}
+        ok('12. Chữ đa dạng', len(fo) >= 4 and len(va) >= 5 and len(ra) >= 2,
+           f'{len(fo)} phông (≥ 4), {len(va)} kiểu vào (≥ 5), {len(ra)} kiểu ra (≥ 2)')
+    else:
+        ok('12. Chữ đa dạng', True, f'chỉ {len(ds)} dòng, bỏ qua')
     print('\nTỰ KIỂM trên file cuối:')
     for ten, dat, ct in kq:
         print(f"  {'ĐẠT ' if dat else 'LỖI '} {ten}: {ct}")

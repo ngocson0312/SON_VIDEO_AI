@@ -28,6 +28,7 @@ Sau khi sửa plan.json: đặt "CAN_CLAUDE_SUA": false rồi chạy kiem-plan.
 def kiem_plan(work):
     from fontTools.ttLib import TTFont
     plan = C.doc_json(os.path.join(work, 'plan.json'))
+    C.ap_dung_plan(plan)
     loi, canh_bao = [], []
     if plan.get('CAN_CLAUDE_SUA', True): loi.append('plan còn CAN_CLAUDE_SUA=true — Claude chưa sửa chữ/tư liệu theo nghĩa + chưa qua cổng duyệt')
     cs = sorted(plan['canh'], key=lambda c: c['t0'])
@@ -46,19 +47,22 @@ def kiem_plan(work):
         for b in c.get('chu', []):
             for d in b['dong']:
                 if d.get('vai') not in C.VAI: loi.append(f"cảnh {c['id']}: vai chữ lạ {d.get('vai')}"); continue
-                fn = C.VAI[d['vai']]['font']
+                fn = C.font_dong(d)
                 if fn not in cmap: cmap[fn] = TTFont(C.font(fn)).getBestCmap()
                 import unicodedata
                 thieu = sorted({ch for ch in unicodedata.normalize('NFC', d['text']) if ch.strip() and ord(ch) not in cmap[fn]})
                 if thieu: loi.append(f"cảnh {c['id']}: font {fn} thiếu ký tự {''.join(thieu)} trong '{d['text']}'")
                 if not (b.get('t1', 1e9) > d['t']): loi.append(f"cảnh {c['id']}: dòng '{d['text']}' hiện sau khi khối đã tắt")
-            if b.get('ra', 'xoa') == 'xoa' and not b.get('vat_qua_cat') and b.get('t1', 0) + C.CHU['xoa_khung'] / C.FPS > c['t1'] + 0.02                     and c['t1'] < plan['dur'] - 0.05:
+            if b.get('ra', 'xoa') in ('xoa', 'mo') and not b.get('vat_qua_cat') and b.get('t1', 0) + C.CHU['xoa_khung'] / C.FPS > c['t1'] + 0.02                     and c['t1'] < plan['dur'] - 0.05:
                 canh_bao.append(f"cảnh {c['id']}: khối '{b['dong'][0]['text']}' xoá chưa xong lúc cắt (t1 nên ≤ {c['t1'] - C.CHU['tat_truoc_cat']:.2f}, hoặc đặt vat_qua_cat)")
             if b['dong'] and b.get('t1', 1e9) - min(d['t'] for d in b['dong']) < 0.5:
                 canh_bao.append(f"cảnh {c['id']}: khối '{b['dong'][0]['text']}' hiện < 0,5 s")
     import chu
     for c in cs:
         for b in c.get('chu', []):
+            for d in b['dong']:
+                if d.get('vai') == 'viet_tay' and (d.get('kieu') or C.VIET_TAY['mac_dinh']) == 'trang' and not plan.get('cho_phep_trang'):
+                    loi.append(f"cảnh {c['id']}: viết tay '{d['text']}' đang TRẮNG TRƠN (L9) — dùng kieu vet|mau|vang hoặc plan cho_phep_trang")
             lay = chu.bo_cuc(b)
             if lay:
                 x0, y0, x1, y1 = chu.hop(lay)
@@ -86,6 +90,7 @@ def main():
         print(DIALOG)
         sys.exit(2)
     plan = C.doc_json(os.path.join(work, 'plan.json'))
+    C.ap_dung_plan(plan)
     if a.lenh == 'kiem-plan':
         sys.exit(0 if kiem_plan(work) else 1)
     if a.lenh == 'xem':
