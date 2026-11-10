@@ -1,0 +1,5 @@
+# KEEP ASCII-ONLY
+numpy>=1.24
+opencv-python>=4.8,<5
+Pillow>=10.0
+onnxruntime

@@ -277,7 +277,7 @@ class Dung:
                 n = C.HU['nhan_ban']['khung']
                 if 0 <= k < n:
                     key = (c['id'], te)
-                    if key not in self.mask_nb: self.mask_nb[key] = HU.mat_na_nguoi(f)
+                    if key not in self.mask_nb: self.mask_nb[key] = HU.mat_na_nguoi(f, self.mat_tai(t))
                     f = HU.nhan_ban(f, self.mask_nb[key], k)
             elif kieu == 'loe_cam_troi':     # loé cam nhẹ trôi suốt một quãng (mẫu 22,7–25,6 s)
                 d = h.get('dai', 2.5)

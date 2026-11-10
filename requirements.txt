@@ -7,3 +7,5 @@ faster-whisper>=1.0
 onnxruntime
 rembg
 fonttools
+scipy>=1.10
+scikit-image>=0.21

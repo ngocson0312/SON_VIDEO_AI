@@ -257,11 +257,17 @@ def loe_trang(frame, env, sang=0.55):
 _REMBG = {}
 
 
-def mat_na_nguoi(frame_bgr):
+def mat_na_nguoi(frame_bgr, mat=None):
     try:
         from rembg import remove, new_session
     except Exception:
-        return None
+        # không có rembg -> dùng u2net_human_seg qua onnxruntime (nguoi.py), cần toạ độ mặt `mat`
+        try:
+            import nguoi as NG
+            m = NG.mask(frame_bgr, mat) if mat else None
+            return None if m is None else np.clip((m - 0.3) / 0.4, 0, 1)
+        except Exception:
+            return None
     if 's' not in _REMBG: _REMBG['s'] = new_session('u2net_human_seg')
     small = cv2.resize(frame_bgr, (540, 960))
     from PIL import Image

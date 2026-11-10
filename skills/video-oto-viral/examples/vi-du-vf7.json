@@ -1,0 +1,309 @@
+{
+ "CAN_CLAUDE_SUA": false,
+ "res": "F:\\VIDA_TEST\\Oto\\Resources",
+ "kho": "16:9",
+ "nhac": {
+  "file": "F:\\VIDA_TEST\\Oto\\Resources_oto_work\\nhac_mau.m4a",
+  "bat_dau": 0.0,
+  "bpm": 117.06,
+  "phach_s": 0.51256,
+  "nhip_s": 2.05026,
+  "F": 1.439,
+  "drop_video": 13.7406,
+  "ket_nhac": 25.3604
+ },
+ "chu": {
+  "tieu_de": "VINFAST",
+  "dong_xe": "VF7",
+  "go_tu": 22.147,
+  "dong_xe_tu": 24.155
+ },
+ "hud": {
+  "bat": true,
+  "tu": 9.64,
+  "seed": 7
+ },
+ "mau": {
+  "bat": true
+ },
+ "sfx": false,
+ "canh": [
+  {
+   "id": 1,
+   "vai": "mo_dau",
+   "mo_ta": "Mở đầu: người giới thiệu cạnh xe / xe toàn cảnh. Khung điện ảnh mở + đập zoom + nảy trước cú cắt",
+   "t0": 0.0,
+   "t1": 5.5395,
+   "nguon": "đầu tiên.mp4",
+   "tu_giay": 0.2,
+   "toc": 0.64,
+   "tam": [
+    0.5,
+    0.5
+   ],
+   "zoom": 1.0,
+   "dong": 0.0,
+   "hieu_ung": [
+    {
+     "kieu": "khung_dien_anh",
+     "nguoi": true
+    },
+    {
+     "kieu": "dap_zoom",
+     "t": 3.4893
+    },
+    {
+     "kieu": "manh_cho",
+     "t0": 3.75,
+     "t1": 4.45,
+     "x": 0.52,
+     "y": 0.77,
+     "rong": 0.12
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "vai": "toan_canh",
+   "mo_ta": "Xe 3/4 trước toàn thân",
+   "t0": 5.5395,
+   "t1": 7.5898,
+   "nguon": "quay_góc nghiên 2 phần 3 đầu xe.MOV",
+   "tu_giay": 1.0,
+   "toc": 0.6,
+   "tam": [
+    0.45,
+    0.55
+   ],
+   "zoom": 1.0,
+   "dong": 0.06,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "manh_vo",
+    "ket": "nay",
+    "nguoi_tren_manh": true
+   }
+  },
+  {
+   "id": 3,
+   "vai": "chi_tiet",
+   "mo_ta": "Cận chi tiết đẹp (đèn pha / mâm / gương)",
+   "t0": 7.5898,
+   "t1": 9.64,
+   "nguon": "quay cận đèn xi nhan.MOV",
+   "tu_giay": 2.0,
+   "toc": 0.6,
+   "tam": [
+    0.55,
+    0.55
+   ],
+   "zoom": 1.0,
+   "dong": 0.06,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "manh_vo"
+   }
+  },
+  {
+   "id": 4,
+   "vai": "logo",
+   "mo_ta": "Cận logo / chữ tên xe trên thân (HUD bắt đầu hiện)",
+   "t0": 9.64,
+   "t1": 11.6903,
+   "nguon": "quay trái đầu xe xoay 90 độ về bên trái.MOV",
+   "tu_giay": 3.5,
+   "toc": 0.6,
+   "tam": [
+    0.5,
+    0.45
+   ],
+   "zoom": 1.0,
+   "dong": 0.03,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "manh_vo"
+   },
+   "xoay": -90
+  },
+  {
+   "id": 5,
+   "vai": "goc_thap",
+   "mo_ta": "Đầu xe góc thấp / nắp capo (kéo ra)",
+   "t0": 11.6903,
+   "t1": 13.7406,
+   "nguon": "quay cận đầu xe rồi zoom out ra.MOV",
+   "tu_giay": 2.0,
+   "toc": 0.6,
+   "tam": [
+    0.5,
+    0.5
+   ],
+   "zoom": 1.0,
+   "dong": -0.08,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "luot_trang"
+   }
+  },
+  {
+   "id": 6,
+   "vai": "noi_that",
+   "mo_ta": "DROP: nội thất đắt nhất (vô lăng / màn hình)",
+   "t0": 13.7406,
+   "t1": 15.7908,
+   "nguon": "quay cận vị trí lái xe.MOV",
+   "tu_giay": 1.5,
+   "toc": 0.6,
+   "tam": [
+    0.45,
+    0.5
+   ],
+   "zoom": 1.15,
+   "dong": 0.06,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "gon_song"
+   }
+  },
+  {
+   "id": 7,
+   "vai": "chinh_dien",
+   "mo_ta": "Đầu xe chính diện",
+   "t0": 15.7908,
+   "t1": 17.8411,
+   "nguon": "quay_thẳng_đầu xe.MOV",
+   "tu_giay": 3.6,
+   "toc": 0.6,
+   "tam": [
+    0.5,
+    0.55
+   ],
+   "zoom": 1.0,
+   "dong": 0.09,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "khoi"
+   }
+  },
+  {
+   "id": 8,
+   "vai": "nhanh_1",
+   "mo_ta": "Dồn nhanh 2 phách: chi tiết ngoại thất",
+   "t0": 17.8411,
+   "t1": 18.8662,
+   "nguon": "quay cận cảnh đèn xi nhan gương.MOV",
+   "tu_giay": 0.2,
+   "toc": 0.6,
+   "tam": [
+    0.5,
+    0.5
+   ],
+   "zoom": 1.0,
+   "dong": 0.0,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "lia_nhoe"
+   }
+  },
+  {
+   "id": 9,
+   "vai": "nhanh_2",
+   "mo_ta": "Dồn nhanh: chi tiết nội thất (cần số / nút)",
+   "t0": 18.8662,
+   "t1": 19.8913,
+   "nguon": "quay màn hình điều khiển xe.MOV",
+   "tu_giay": 1.0,
+   "toc": 0.6,
+   "tam": [
+    0.5,
+    0.45
+   ],
+   "zoom": 1.0,
+   "dong": 0.12,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "lia_nhoe"
+   }
+  },
+  {
+   "id": 10,
+   "vai": "nhanh_3",
+   "mo_ta": "Dồn nhanh: chi tiết nội thất khác",
+   "t0": 19.8913,
+   "t1": 20.9165,
+   "nguon": "quay ghế phụ phía trên cạnh lái xe.MOV",
+   "tu_giay": 3.6,
+   "toc": 0.6,
+   "tam": [
+    0.5,
+    0.5
+   ],
+   "zoom": 1.0,
+   "dong": 0.09,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "lia_nhoe"
+   }
+  },
+  {
+   "id": 11,
+   "vai": "nhanh_4",
+   "mo_ta": "Dồn nhanh: đuôi xe / đèn hậu / logo sau",
+   "t0": 20.9165,
+   "t1": 21.9416,
+   "nguon": "quay góc nghiêng đít xe.MOV",
+   "tu_giay": 0.8,
+   "toc": 0.6,
+   "tam": [
+    0.5,
+    0.55
+   ],
+   "zoom": 1.0,
+   "dong": -0.09,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "lia_nhoe"
+   }
+  },
+  {
+   "id": 12,
+   "vai": "hero",
+   "mo_ta": "Xe 3/4 đẹp nhất + chữ hãng gõ từng ký tự theo nhịp",
+   "t0": 21.9416,
+   "t1": 23.9919,
+   "nguon": "quay đầu xe 45 độ về góc phải .MOV",
+   "tu_giay": 0.6,
+   "toc": 0.6,
+   "tam": [
+    0.5,
+    0.55
+   ],
+   "zoom": 1.0,
+   "dong": 0.0,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "lia_nhoe"
+   }
+  },
+  {
+   "id": 13,
+   "vai": "ket",
+   "mo_ta": "Thẻ kết: xe + tên hãng trắng + dòng xe đỏ",
+   "t0": 23.9919,
+   "t1": 25.3604,
+   "nguon": "quay tổng quan đít xe.MOV",
+   "tu_giay": 2.2,
+   "toc": 0.6,
+   "tam": [
+    0.5,
+    0.5
+   ],
+   "zoom": 1.0,
+   "dong": 0.0,
+   "hieu_ung": [],
+   "chuyen": {
+    "kieu": "glitch"
+   }
+  }
+ ]
+}
