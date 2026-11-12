@@ -41,4 +41,6 @@ Cap nhat: git pull trong SON_VIDEO_AI. Skill co repo rieng (ban-do-tien-ich-nha-
 - Do ban tay (icon moc tu tay): chay 1 lan / may (can mang, ~150 MB, venv RIENG ~\.bds_sale_viral\venv_tay,
   mediapipe can numpy<2 nen KHONG cai vao Python chinh):
     python -I -X utf8 .claude\skills\bds-sale-viral\scripts\run.py cai-tay
+  venv nay cung do MAT + DAU (mat_mp.py, MediaPipe FaceDetection + Pose) cho luat "chu khong de mat nguoi noi"
+  (chot 12/11/2026). May da cai-tay roi thi khong cai them; git pull xong la dung duoc.
 - SFX trong assets\sfx\ chua ro giay phep (xem CREDITS.md) - lam thuong mai thi thay file cung ten.

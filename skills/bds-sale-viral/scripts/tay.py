@@ -23,7 +23,7 @@ from PIL import Image, ImageDraw
 import chung as C
 import nguoi
 
-PHIEN = 3
+PHIEN = 4      # 4: mặt MediaPipe (do_mat) — tay rảnh tính theo mặt mới
 VENV = os.path.join(os.path.expanduser('~'), '.bds_sale_viral', 'venv_tay')
 
 
@@ -128,6 +128,75 @@ def _chay_mp(work, bao):
             print('  ⚠ MediaPipe lỗi → dùng mặt nạ người', (r.stderr or '')[-400:])
             return None
     return C.doc_json(out)
+
+
+def do_mat(work, bao=True):
+    """MẶT người nói bằng MediaPipe (FaceDetection tầm xa + Pose, venv riêng qua mat_mp.py) → ghi lại mat.json
+    (bản Haar cũ giữ ở mat_haar.json). Haar chỉ bắt mặt nhìn thẳng: người nói đi dọc tường / nghiêng / quay lưng thì
+    mất mặt hàng chục giây (ONE ERA 12/11: 63 % mẫu phải đoán) ⇒ chữ xếp theo chỗ mặt SAI, đè mặt. Pose luôn ra đầu.
+    Mỗi mẫu: hộp FaceDetection gần mũi Pose nhất → không có thì hộp đầu suy từ Pose (vuông, cạnh 0,89 × mũi–giữa vai,
+    tâm ở mũi — đo trên 983 mẫu có cả 2) → không có thì Haar thật → không có thì lấp mẫu gần nhất ('doan')."""
+    py = venv_py()
+    if not py: return False
+    src = os.path.join(work, 'nguon.mp4'); mp_p = os.path.join(work, 'mat_mp.json')
+    if not (os.path.exists(mp_p) and os.path.getmtime(mp_p) > os.path.getmtime(src)):
+        if bao: print('  dò mặt + đầu MediaPipe (venv riêng)…', flush=True)
+        env = dict(os.environ, PYTHONIOENCODING='utf-8', GLOG_minloglevel='2', TF_CPP_MIN_LOG_LEVEL='3')
+        r = subprocess.run([py, '-X', 'utf8', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mat_mp.py'), src, mp_p,
+                            str(C.MAT_MP['buoc'])], capture_output=True, text=True, encoding='utf-8', errors='replace', env=env)
+        if r.returncode != 0 or not os.path.exists(mp_p):
+            print('  ⚠ MediaPipe mặt lỗi → giữ mặt Haar', (r.stderr or '')[-400:])
+            return False
+    js = C.doc_json(mp_p)
+    hp = os.path.join(work, 'mat_haar.json'); mp_json = os.path.join(work, 'mat.json')
+    if not os.path.exists(hp) and os.path.exists(mp_json):
+        import shutil; shutil.copy(mp_json, hp)
+    haar = [d for d in (C.doc_json(hp) if os.path.exists(hp) else []) if d.get('mat') and not d.get('doan')]
+    hts = np.array([d['t'] for d in haar]) if haar else None
+    K = C.MAT_MP
+    ds, prev = [], None
+    for m in js['mau']:
+        pb, nose = None, None
+        P = m.get('pose')
+        if P:
+            P = np.array(P, np.float32)
+            vai = (P[11, :2] + P[12, :2]) / 2
+            if min(P[11, 2], P[12, 2]) >= K['vis_vai'] or P[0, 2] >= K['vis_mui']:
+                nose = P[0, :2]; s = float(np.hypot(*(nose - vai)))
+                if s > 8:
+                    c = K['dau_canh'] * s
+                    pb = [nose[0] - c / 2, nose[1] - c / 2 + K['dau_dy'] * c, nose[0] + c / 2, nose[1] + c / 2 + K['dau_dy'] * c]
+        fb = None
+        if m.get('fd'):
+            neo = ((pb[0] + pb[2]) / 2, (pb[1] + pb[3]) / 2, pb[3] - pb[1]) if pb else \
+                  (((prev[0] + prev[2]) / 2, (prev[1] + prev[3]) / 2, prev[3] - prev[1]) if prev else None)
+            if neo:
+                b = min(m['fd'], key=lambda b: np.hypot((b[0] + b[2]) / 2 - neo[0], (b[1] + b[3]) / 2 - neo[1]))
+                if np.hypot((b[0] + b[2]) / 2 - neo[0], (b[1] + b[3]) / 2 - neo[1]) <= K['fd_lech'] * max(neo[2], b[3] - b[1]): fb = b[:4]
+            else:
+                fb = max(m['fd'], key=lambda b: (b[2] - b[0]) * (b[3] - b[1]))[:4]
+        mat, nguon = (fb, 'fd') if fb else ((pb, 'pose') if pb else (None, None))
+        if mat is None and hts is not None and len(hts):
+            k = int(np.argmin(np.abs(hts - m['t'])))
+            if abs(hts[k] - m['t']) <= 0.15: mat, nguon = haar[k]['mat'], 'haar'
+        if mat is not None: prev = mat
+        ds.append({'t': round(float(m['t']), 3), 'mat': [round(float(v)) for v in mat] if mat else None, 'nguon': nguon})
+    ok = [i for i, d in enumerate(ds) if d['mat']]
+    if not ok: return False
+    arr = np.array([ds[i]['mat'] for i in ok], np.float32)
+    for j in range(len(ok)):     # trung vị 3 mẫu (0,2 s) — bỏ giật 1 mẫu, không trễ khi người đi
+        a, b = max(0, j - 1), min(len(ok), j + 2)
+        ds[ok[j]]['mat'] = [round(float(v)) for v in np.median(arr[a:b], 0)]
+    for i, d in enumerate(ds):
+        if not d['mat']:
+            k = min(ok, key=lambda q: abs(q - i)); d['mat'] = list(ds[k]['mat']); d['doan'] = True
+    C.ghi_json(mp_json, ds)
+    if bao:
+        from collections import Counter
+        ct = Counter(d['nguon'] or 'doan' for d in ds)
+        print(f"  mặt MediaPipe: {len(ds)} mẫu · mặt rõ {ct.get('fd', 0)} · đầu từ dáng {ct.get('pose', 0)} · Haar {ct.get('haar', 0)}"
+              f" · đoán {ct.get('doan', 0)} (Haar cũ ở mat_haar.json)")
+    return True
 
 
 def _doan(on, dt, T):

@@ -163,6 +163,30 @@ def kiem_ke_hoach(plan, work, in_ra=True):
 
 
 # ------------------------------------------------------------------ kiểm file cuối
+def de_mat(D, buoc=2):
+    """quét mọi khung (cách `buoc`): chữ / đồ hoạ LỚP TRƯỚC người chạm vùng mặt thật (C.MAT_CAM) → ['tên 12,3–13,1 s', …]."""
+    cham = {}
+    for i in range(0, D.n, buoc):
+        v = D.vung_mat(i)
+        if not v: continue
+        for ten, b in D.hop_truoc(i):
+            if dung_giao(b, v) > C.MAT_CAM['cham_px2']:
+                cham.setdefault(ten, []).append(i)
+    ra = []
+    for ten, ks in cham.items():
+        doan, a = [], ks[0]
+        for p, q in zip(ks, ks[1:] + [None]):
+            if q is None or q - p > 3 * buoc: doan.append((a, p)); a = q
+        for a, b in doan:
+            ra.append((a, f'{ten} {a / C.FPS:.1f}–{(b + buoc) / C.FPS:.1f} s'))
+    return [s for _, s in sorted(ra)]
+
+
+def dung_giao(a, b):
+    ox = min(a[2], b[2]) - max(a[0], b[0]); oy = min(a[3], b[3]) - max(a[1], b[1])
+    return ox * oy if ox > 0 and oy > 0 else 0.0
+
+
 def kiem_video(plan, work, video):
     import am_thanh, dung
     from PIL import Image, ImageDraw
@@ -199,16 +223,17 @@ def kiem_video(plan, work, video):
             ghi(None if te else True, '4. Tiêu đề nằm SAU người, đầu che ≤ 45 %', '; '.join(te))
     else:
         ghi(None, '4. Tiêu đề', 'kế hoạch không có tiêu đề nào')
-    # 5. sub không đè mặt + vùng an toàn
-    de, ra_ngoai = [], []
+    # 5. KHÔNG CHỮ NÀO ĐÈ MẶT (người dùng chốt 12/11/2026) — quét mọi khung + vùng an toàn của sub
+    de = de_mat(D)
+    ra_ngoai = []
     A = C.AN_TOAN
     for o in D.dongs:
-        i = (o['ii'] + o['io']) // 2; m = D.mat_ra(i)
+        i = (o['ii'] + o['io']) // 2
         x0, y0, x1, y1 = o['x'] - o['A'].w / 2, o['y'] - o['A'].h / 2, o['x'] + o['A'].w / 2, o['y'] + o['A'].h / 2
-        ix = max(0, min(x1, m[2]) - max(x0, m[0])) * max(0, min(y1, m[3]) - max(y0, m[1]))
-        if ix > 0.10 * (m[2] - m[0]) * (m[3] - m[1]): de.append(f'{i / C.FPS:.1f}s')
         if x0 < A['x0'] - 2 or x1 > A['x1'] + 2 or y1 > A['y1']: ra_ngoai.append(f'{i / C.FPS:.1f}s')
-    ghi(False if de else True, '5. Sub không đè mặt', ', '.join(de[:8]))
+    co_mat = sum(D.mat_that) / max(1, D.n)
+    ghi(False if de else True, '5. Không chữ / icon / thẻ nào đè mặt người nói (quét mọi khung)',
+        '; '.join(de[:8]) + (f' (+{len(de) - 8})' if len(de) > 8 else '') + f'{" · " if de else ""}mặt thật {co_mat:.0%} khung')
     for td in D.tds:
         K = td['K']; x0, x1 = td['kpos'][0] - K.w / 2, td['kpos'][0] + K.w / 2
         if x0 < A['x0'] - 2 or x1 > A['x1'] + 2 or td['kpos'][1] - K.h / 2 < A['y0'] - 40:

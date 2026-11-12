@@ -75,6 +75,17 @@ def mat_theo_khung(work, n):
     return out
 
 
+def mat_that_theo_khung(work, n):
+    """True ở khung có mặt THẬT (mẫu gần nhất ≤ 0,3 s không phải 'doan') — chỉ những khung này mới tính vùng mặt cấm chữ
+    (mặt đoán = chép từ mẫu khác, sai chỗ)."""
+    ds = C.doc_json(os.path.join(work, 'mat.json'))
+    ts = np.array([d['t'] for d in ds]); ok = np.array([bool(d.get('mat')) and not d.get('doan') for d in ds])
+    t = np.arange(n) / C.FPS
+    j = np.clip(np.searchsorted(ts, t), 1, len(ts) - 1)
+    j = np.where(np.abs(ts[j - 1] - t) <= np.abs(ts[j] - t), j - 1, j)
+    return list(ok[j] & (np.abs(ts[j] - t) <= 0.3))
+
+
 def tinh_het(work, bao=True):
     """tính mặt nạ cho cả video (mỗi `buoc` khung) → nguoi_mask.npy. Bỏ qua nếu đã có và khớp."""
     if not san_sang():
@@ -84,10 +95,16 @@ def tinh_het(work, bao=True):
     pr = C.probe(src); n = int(round(pr['dur'] * C.FPS))
     buoc = C.NGUOI['buoc']
     js_p, np_p = os.path.join(work, 'nguoi_mask.json'), os.path.join(work, 'nguoi_mask.npy')
+    # mặt nạ cắt ô vuông QUANH MẶT + giữ thành phần chứa mặt ⇒ mat.json đổi (Haar → MediaPipe) thì phải tính lại
+    import hashlib
+    ky = hashlib.md5(open(os.path.join(work, 'mat.json'), 'rb').read()).hexdigest()[:12]
     if os.path.exists(js_p) and os.path.exists(np_p):
         js = C.doc_json(js_p)
-        if js.get('n') == n and js.get('buoc') == buoc and js.get('xong'):
+        cu = js.get('mat_ky')
+        mat_doi = (cu is not None and cu != ky) or (cu is None and os.path.exists(os.path.join(work, 'mat_haar.json')))
+        if js.get('n') == n and js.get('buoc') == buoc and js.get('xong') and not mat_doi:
             return True
+        if mat_doi and bao: print('  mặt đã đổi (MediaPipe) → tách người lại theo mặt mới', flush=True)
     mats = mat_theo_khung(work, n)
     k = (n + buoc - 1) // buoc + 1
     arr = np.lib.format.open_memmap(np_p, mode='w+', dtype=np.uint8, shape=(k, M, M))
@@ -108,7 +125,7 @@ def tinh_het(work, bao=True):
     last = (i - 1) // buoc
     for j in range(last + 1, k): arr[j] = arr[last]; yas[j] = yas[last]
     arr.flush(); del arr
-    C.ghi_json(js_p, {'n': n, 'buoc': buoc, 'ya': yas, 'xong': True})
+    C.ghi_json(js_p, {'n': n, 'buoc': buoc, 'ya': yas, 'xong': True, 'mat_ky': ky})
     print(f'  tách người xong {i} khung trong {time.time() - t0:.0f} s')
     return True
 

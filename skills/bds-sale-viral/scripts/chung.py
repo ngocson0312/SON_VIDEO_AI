@@ -283,6 +283,15 @@ CAT_LANG = {'nguong_db': 8.0, 'khe_toi_da': 0.40, 'giu_lai': 0.24, 'giu_dau_cuoi
 NGUOI = {'model_tim': [os.path.join(ASSETS, 'models', 'u2net_human_seg.onnx'),
                        os.path.join(os.path.expanduser('~'), '.u2net', 'u2net_human_seg.onnx')],
          'nguong': (0.30, 0.70), 'mem': 1.6, 'no': 9, 'buoc': 2}   # tính mặt nạ mỗi 2 khung, nội suy giữa
+# MẶT bằng MediaPipe (tay.do_mat, venv riêng): mẫu mỗi 3 khung; hộp đầu từ Pose = vuông cạnh 0,89 × (mũi–giữa vai), tâm
+# ở mũi (đo ONE ERA 983 mẫu: FaceDetection vuông, cao 0,71–1,05 × mũi–vai, tâm lệch mũi ≤ 0,2 cạnh); FD cách hộp Pose
+# > 1 cạnh = mặt người khác phía sau → bỏ
+MAT_MP = {'buoc': 3, 'dau_canh': 0.89, 'dau_dy': -0.02, 'vis_vai': 0.3, 'vis_mui': 0.3, 'fd_lech': 1.0}
+# VÙNG MẶT CẤM CHỮ (người dùng chốt 12/11/2026: "text không được đè vào mặt diễn giả đang nói"): hộp mặt nới
+# ngang `ngang` × cạnh mỗi bên, lên `tren` (trán + tóc), xuống `duoi` (cằm). Mọi chữ / icon / thẻ ở LỚP TRƯỚC người
+# (dẫn, viết tay, khoá kiểu giữa, sub, icon, nhãn, thẻ ảnh, ô tìm kiếm, số tiền, liệt kê) không được chạm vùng này ở
+# BẤT KỲ khung nào (khoá sau đầu thì được — đầu nằm trước chữ). Tự kiểm mục 5 quét mọi khung, chạm ⇒ ⛔.
+MAT_CAM = {'ngang': 0.12, 'tren': 0.30, 'duoi': 0.15, 'cham_px2': 150}
 
 
 def tim_model_mat():

@@ -48,6 +48,16 @@ def _dau_tren(K, c0, c1):
     return None if len(rows) < 3 else float(rows.min() - K.oy)
 
 
+def _hop(A, x, y, dem=0):
+    """hộp (x0, y0, x1, y1) của ảnh chữ A đặt tâm ở (x, y), nới `dem` px."""
+    return (x - A.w / 2 - dem, y - A.h / 2 - dem, x + A.w / 2 + dem, y + A.h / 2 + dem)
+
+
+def _giao(a, b):
+    ox = min(a[2], b[2]) - max(a[0], b[0]); oy = min(a[3], b[3]) - max(a[1], b[1])
+    return ox * oy if ox > 0 and oy > 0 else 0.0
+
+
 def _ghep(F, P, x0, y0, al=1.0, mask=None):
     h, w = P.shape[:2]
     a0, b0, a1, b1 = max(0, x0), max(0, y0), min(W, x0 + w), min(H, y0 + h)
@@ -121,6 +131,7 @@ class Dung:
         self.src = os.path.join(work, 'nguon.mp4')
         self.n = int(round(float(plan.get('dur') or C.probe(self.src)['dur']) * FPS))
         self.mats = nguoi.mat_theo_khung(work, self.n)
+        self.mat_that = nguoi.mat_that_theo_khung(work, self.n)
         self.kho = nguoi.Kho(work) if dung_mask else None
         y = np.arange(H, dtype=np.float32)
         T = C.TOI
@@ -201,6 +212,41 @@ class Dung:
     def mat_tb(self, i0, i1):
         bs = [self.mat_ra(q) for q in range(max(0, i0), min(self.n, max(i0 + 1, i1)), 3)]
         return np.median(np.array(bs), 0) if bs else np.array(self.mat_ra(i0))
+
+    # ---------------- VÙNG MẶT CẤM CHỮ (người dùng chốt 12/11/2026: chữ không được đè mặt diễn giả)
+    def vung_mat(self, i):
+        """hộp cấm chữ quanh mặt (toạ độ RA) ở khung i; None nếu khung đó mặt là đoán."""
+        i = int(min(max(i, 0), self.n - 1))
+        if not self.mat_that[i]: return None
+        m = self.mat_ra(i); K = C.MAT_CAM
+        fw, fh = m[2] - m[0], m[3] - m[1]
+        return (m[0] - K['ngang'] * fw, m[1] - K['tren'] * fh, m[2] + K['ngang'] * fw, m[3] + K['duoi'] * fh)
+
+    def vung_mat_doan(self, i0, i1, buoc=2):
+        return [v for v in (self.vung_mat(q) for q in range(max(0, i0), min(self.n, i1 + 1), buoc)) if v]
+
+    @staticmethod
+    def cham_mat(box, vungs):
+        """(số mẫu chạm, tổng diện tích chạm) của hộp với các vùng mặt — chạm = giao > MAT_CAM['cham_px2'] px²."""
+        n, s = 0, 0.0
+        for v in vungs:
+            g = _giao(box, v)
+            if g > C.MAT_CAM['cham_px2']: n += 1; s += g
+        return n, s
+
+    def _chon_cho(self, A, cands, vm, tranh=(), y_min=None, dem=6):
+        """chọn chỗ đặt A trong các ứng viên [(x, y)] (thứ tự = ưu tiên): ít chạm mặt nhất, rồi ít đè chữ khác
+        (`tranh` = các hộp), rồi ứng viên đứng trước. → ((x, y), số mẫu còn chạm mặt)."""
+        a = C.AN_TOAN; best = None
+        for k, (x, y) in enumerate(cands):
+            x = C.clamp(x, a['x0'] + A.w / 2, a['x1'] - A.w / 2)
+            y = C.clamp(y, max(a['y0'], y_min or 0) + A.h / 2, a['y1'] - A.h / 2)
+            b = _hop(A, x, y, dem)
+            n, s = self.cham_mat(b, vm)
+            de = sum(_giao(b, t) for t in tranh)
+            sc = (n, s + 2 * de, k)
+            if best is None or sc < best[0]: best = (sc, (x, y), n)
+        return best[1], best[2]
 
     def _chuyen_tai(self, i):
         for ic, kieu in self.chuyen:
@@ -293,8 +339,16 @@ class Dung:
             if D:
                 dd = _dau_tren(K, 0.03 * K.w, 0.03 * K.w + D.w)
                 if dd is not None: de = min(de, dd - 4)
+            # VÙNG MẶT suốt tiêu đề (mọi khung có mặt thật) — chữ ở LỚP TRƯỚC người không được chạm
+            vm = self.vung_mat_doan(i0, i1)
             if giua:
                 ky = H * 0.50
+                if vm:   # khoá đứng TRƯỚC người ⇒ thử giữa khung → trọn trên vùng mặt → trọn dưới vùng mặt
+                    duoi_v = (1 - T['viet_tay_de']) * V.h if V else 0
+                    tren_d = (D.h - de) if D else 0
+                    vt_, vb_ = min(v[1] for v in vm), max(v[3] for v in vm)
+                    cands = [(kx, H * 0.50), (kx, vt_ - 14 - duoi_v - K.h / 2), (kx, vb_ + 14 + tren_d + K.h / 2)]
+                    (_, ky), _ = self._chon_cho(K, cands, vm, y_min=T['y_min'] + tren_d)
             else:
                 kb = kb_min
                 top_min = T['y_min'] + (D.h - de if D else 0)
@@ -311,6 +365,26 @@ class Dung:
                 vpos = (vr - V.w / 2, kbot - T['viet_tay_de'] * V.h + V.h / 2)
             if I:
                 ipos = (kr + 16 + I.w / 2, ky - 0.08 * K.h)
+            # dẫn + viết tay (+ khoá / icon nét khi tiêu đề giữa) ở LỚP TRƯỚC người ⇒ né vùng mặt: thử chỗ mặc định →
+            # dời ngang dưới khoá → lên trên khoá → dạt hẳn sang bên mặt; vẫn chạm thì BỎ dòng đó (không bao giờ đè mặt)
+            if vm:
+                zl, zr = min(v[0] for v in vm), max(v[2] for v in vm)
+                kh_box = _hop(K, kx, ky) if giua else None
+                if D:
+                    x, y = dpos
+                    xr = kr - 0.03 * K.w - D.w / 2; yt = kt - D.h / 2 - 4
+                    cands = [(x, y), (xr, y), (x, yt), (xr, yt), (zl - 16 - D.w / 2, y), (zr + 16 + D.w / 2, y)]
+                    dpos, n_ = self._chon_cho(D, cands, vm, tranh=[kh_box] if kh_box else (), y_min=T['y_min'])
+                    if n_: D = None; dpos = None
+                if V:
+                    x, y = vpos
+                    xl = kl + 0.03 * K.w + V.w / 2; ytr = kt - V.h / 2 + 0.25 * V.h
+                    tranh = [_hop(D, *dpos)] if D else []
+                    cands = [(x, y), (xl, y), (kx, y), (x, ytr), (xl, ytr), (zr + 16 + V.w / 2, y), (zl - 16 - V.w / 2, y)]
+                    vpos, n_ = self._chon_cho(V, cands, vm, tranh=tranh, y_min=T['y_min'])
+                    if n_: V = None; vpos = None
+                if I and giua and self.cham_mat(_hop(I, *ipos, 4), vm)[0]:
+                    I = None; ipos = None
             ra = td.get('ra', 'chui_dau')
             P = pm(K)
             chu = []
@@ -452,6 +526,25 @@ class Dung:
                         if o['io'] == truoc['i1'] and o['ra'] is None:
                             o['ra'] = 'day'; o['hr'] = -huong; o['io'] = e['i0']
                 truoc = e
+            # sub KHÔNG đè mặt: người bước lại gần / cúi xuống trong lúc 1 chuỗi sub đang hiện ⇒ cả chuỗi dời xuống
+            # dưới vùng mặt (giữ khoảng cách dòng), hết chỗ thì từng dòng dạt ngang sang bên trống
+            objs = list({id(d['_obj']): d['_obj'] for e in run for d in e['dong'] if '_obj' in d}.values())
+            vm = self.vung_mat_doan(run[0]['i0'], run[-1]['i1'])
+            if vm and objs:
+                can = 0.0
+                for o in objs:
+                    b = _hop(o['A'], o['x'], o['y'], 4)
+                    for v in vm:
+                        if _giao(b, v) > C.MAT_CAM['cham_px2']: can = max(can, v[3] + 10 - b[1])
+                if can > 0:
+                    can = min(can, C.AN_TOAN['y1'] - max(o['y'] + o['A'].h / 2 for o in objs))
+                    for o in objs: o['y'] += max(0.0, can)
+                zl, zr = min(v[0] for v in vm), max(v[2] for v in vm)
+                for o in objs:
+                    vo = self.vung_mat_doan(o['ii'], o['io']) or vm
+                    if self.cham_mat(_hop(o['A'], o['x'], o['y'], 4), vo)[0]:
+                        (o['x'], o['y']), _ = self._chon_cho(o['A'], [(o['x'], o['y']), (zr + 14 + o['A'].w / 2, o['y']),
+                                                                      (zl - 14 - o['A'].w / 2, o['y'])], vo, dem=4)
             for d in run[-1]['dong']:
                 if d['_obj']['ra'] is None: d['_obj']['ra'] = 'mo'
         for o in self.dongs:
@@ -525,9 +618,13 @@ class Dung:
         lách ra phía NGOÀI (xa người), lên trên hoặc ngang tay — giữ trong vùng an toàn. Tính 1 lần cho cả đoạn (không giật)."""
         a = C.AN_TOAN; I = C.ICON
         cam = []
-        for q in range(i0, i1 + 1, 4):
-            m = self.mat_ra(q); e = 0.22 * (m[3] - m[1])
-            cam.append((m[0] - e, m[1] - e, m[2] + e, m[3] + 0.6 * e, 6.0))
+        # VÙNG MẶT = cấm tuyệt đối (phạt rất nặng); khung không có mặt thật thì phạt nhẹ quanh mặt ước như cũ
+        vm = self.vung_mat_doan(i0, i1, 3)
+        for v in vm: cam.append((v[0], v[1], v[2], v[3], 400.0))
+        if not vm:
+            for q in range(i0, i1 + 1, 4):
+                m = self.mat_ra(q); e = 0.22 * (m[3] - m[1])
+                cam.append((m[0] - e, m[1] - e, m[2] + e, m[3] + 0.6 * e, 6.0))
         for o in self.dongs:
             if o['ii'] <= i1 and o['io'] >= i0:
                 cam.append((o['x'] - o['A'].w / 2 - 12, o['y'] - o['A'].h / 2 - 8, o['x'] + o['A'].w / 2 + 12,
@@ -556,8 +653,8 @@ class Dung:
 
         dy0 = -I['tay_tren'] - A.h / 2
         best = None
-        for dy in (dy0, dy0 - 80, dy0 + 0.45 * A.h, dy0 - 160):
-            for k in range(0, 10):
+        for dy in (dy0, dy0 - 80, dy0 + 0.45 * A.h, dy0 - 160, dy0 + A.h + 2 * I['tay_tren']):
+            for k in range(-3, 12):
                 dx = s * 60 * k
                 pnl = xau(dx, dy) + abs(dx) * 0.03 + abs(dy - dy0) * 0.05
                 if best is None or pnl < best[0]: best = (pnl, dx, dy)
@@ -614,6 +711,10 @@ class Dung:
                         X += (k - (len(srcs) - 1) / 2) * 40
                 tre = k * (3 if kieu == 'xep' else 4)
                 tren = dat_ == 'tay' and vet is not None
+                vm = [] if tren else self.vung_mat_doan(i0, i1)
+                if vm and self.cham_mat(_hop(A, X, Y, 8), vm)[0]:   # thẻ đè mặt ⇒ sang góc kia / trên / dưới vùng mặt
+                    yt_, yb_ = min(v[1] for v in vm) - 14 - A.h / 2, max(v[3] for v in vm) + 14 + A.h / 2
+                    (X, Y), _ = self._chon_cho(A, [(X, Y), (W - X, Y), (X, yt_), (W - X, yt_), (X, yb_), (W - X, yb_)], vm, dem=8)
                 self.thes.append(dict(A=A, i0=i0 + tre, i1=i1, X=X, Y=Y, tu=tu, vet=vet, tre=tre, tren_tay=tren,
                                       lech=self._lech_tay(vet, A, r['ben'], i0, i1) if tren else None))
         self.icons = []
@@ -636,6 +737,12 @@ class Dung:
                 bots = [td['bot'] for td in self.tds if td['i0'] <= i1 and td['i1'] >= i0]
                 if bots and Y - A.h / 2 < max(bots) + 12:
                     Y = max(bots) + 12 + A.h / 2
+            vm = self.vung_mat_doan(i0, i1)
+            if vm and self.cham_mat(_hop(A, X, Y, 8), vm)[0]:   # người đứng sát mép ⇒ icon mép đè mặt: đổi bên / xuống dưới mặt
+                Xk = W - X; Yd = max(v[3] for v in vm) + 14 + A.h / 2
+                tranh = [_hop(o['A'], o['x'], o['y']) for o in self.dongs if o['ii'] <= i1 and o['io'] >= i0]
+                (X, Y), _ = self._chon_cho(A, [(X, Y), (Xk, Y), (X, Yd), (Xk, Yd)], vm, tranh=tranh, dem=8)
+                ben = 'trai' if X < W / 2 else 'phai'
             self.icons.append(dict(A=A, i0=i0, i1=i1, X=X, Y=Y, ben=ben, vet=None))
         self.tims = []
         for tk in self.plan.get('tim_kiem', []):
@@ -669,9 +776,13 @@ class Dung:
                   for d in lk.get('dong', []) if d.get('text')]
             self.lks.append(dict(i0=i0, i1=i1, K=K, cy=cy, ds=ds))
 
-    def _y_sub(self, i0, i1):
+    def _y_sub(self, i0, i1, tren=70):
+        """tâm dải sub (ngực); khối chữ cao `tren` px phía trên tâm không được chạm vùng mặt ⇒ dời xuống."""
         m = self.mat_tb(i0, i1); fh = m[3] - m[1]
-        return C.clamp((m[1] + m[3]) / 2 + C.SUB['y_mat'] * fh, C.SUB['y_min'], C.SUB['y_max'])
+        y = C.clamp((m[1] + m[3]) / 2 + C.SUB['y_mat'] * fh, C.SUB['y_min'], C.SUB['y_max'])
+        vm = self.vung_mat_doan(i0, i1)
+        if vm: y = max(y, max(v[3] for v in vm) + 12 + tren)
+        return min(y, C.AN_TOAN['y1'] - 120)
 
     def ve_the(self, F, i):
         T = C.THE_ANH
@@ -839,6 +950,53 @@ class Dung:
                 L = np.broadcast_to(g, (H, W))[..., None] * np.array([0.95, 0.12, 0.08], np.float32)
             L = np.clip(L, 0, 1)
         return 1 - (1 - F) * (1 - L)
+
+    # ---------------- hộp mọi chữ / đồ hoạ LỚP TRƯỚC người ở khung i (vị trí đứng yên, bỏ khung vào / ra) — để tự kiểm
+    def hop_truoc(self, i):
+        ra = []
+        for td in self.tds:
+            if not (td['i0'] + 6 <= i <= td['i1'] - 7): continue
+            ten = td['K'].meta.get('text', '') if td['K'].meta else ''
+            if td['D']: ra.append((f'dẫn tiêu đề "{ten}"', _hop(td['D'], *td['dpos'])))
+            if td['V']: ra.append((f'viết tay tiêu đề "{ten}"', _hop(td['V'], *td['vpos'])))
+            if not td['sau'] and i >= td['i0'] + 12:
+                ra.append((f'khoá "{ten}" (giữa)', _hop(td['K'], *td['kpos'])))
+                if td['I']: ra.append((f'icon nét "{ten}"', _hop(td['I'], *td['ipos'])))
+        for o in self.dongs:
+            if o['ii'] + 4 <= i < o['io']:
+                ra.append(('sub', _hop(o['A'], o['x'], o['y'])))
+        I = C.ICON
+        for k, ic in enumerate(self.icons):
+            f, g = i - ic['i0'], ic['i1'] - i
+            if f < (I['tay_vao_khung'] if ic['vet'] is not None else I['vao_khung']) or g < 6: continue
+            if ic['vet'] is not None:
+                px, py = (float(v) for v in ic['vet'][min(f, len(ic['vet']) - 1)])
+                X, Y = self._tai_tay(px, py, ic['lech'], ic['A'])
+            else:
+                X, Y = ic['X'], ic['Y']
+            ra.append((f'icon #{k + 1}', _hop(ic['A'], X, Y)))
+        T = C.THE_ANH
+        for th in self.thes:
+            f, g = i - th['i0'], th['i1'] - i
+            if f < T['vao_khung'] or g < T['ra_khung']: continue
+            X, Y = th['X'], th['Y']
+            if th['tren_tay'] and th['vet'] is not None:
+                hx, hy = (float(v) for v in th['vet'][min(f + th['tre'], len(th['vet']) - 1)])
+                X, Y = self._tai_tay(hx, hy, th['lech'], th['A'])
+            ra.append(('thẻ ảnh', _hop(th['A'], X, Y)))
+        for tk in self.tims:
+            if tk['i0'] + C.TIM_KIEM['vao_khung'] <= i <= tk['i1'] - C.TIM_KIEM['ra_khung']:
+                ra.append(('ô tìm kiếm', (W / 2 - 450, tk['Y'] - 52, W / 2 + 450, tk['Y'] + 52)))
+        for st in self.tiens:
+            if st['i0'] + 5 <= i <= st['i1'] - 5:
+                for s in st['so']:
+                    ky = st['cy'] + ((st['tren'].h / 2 if st['tren'] else 0) + s['K'].h / 2) * 0.86
+                    if s['i'] + 5 <= i: ra.append(('số tiền', _hop(s['K'], W / 2, ky)))
+                if st['tren']: ra.append(('số tiền (dòng trên)', _hop(st['tren'], W / 2, st['cy'])))
+        for lk in self.lks:
+            if lk['i0'] + 8 <= i <= lk['i1'] - 5:
+                K = lk['K']; ra.append(('liệt kê', _hop(K, C.AN_TOAN['x0'] + 20 + K.w / 2, lk['cy'])))
+        return ra
 
     # ---------------- 1 khung
     def khung(self, i, src):

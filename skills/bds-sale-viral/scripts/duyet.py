@@ -73,6 +73,13 @@ def lam(plan, work):
     L += ['', f'## Sub ngực ({len(plan.get("sub", []))} cụm)', '']
     L.append(' · '.join(' / '.join(d['text'] for d in s['dong']) for s in plan.get('sub', [])))
     L += ['', '## SFX', '', ' · '.join(f'{_ms(q["t"])} {q["file"]}' for q in sfx)]
+    # chữ đè mặt (người dùng chốt 12/11/2026) — quét mọi khung trước khi tới cổng duyệt
+    import kiem
+    Dq = dung.Dung(plan, work)
+    de = kiem.de_mat(Dq)
+    L += ['', '## Chữ đè mặt người nói', '',
+          ('⛔ ' + '; '.join(de) + ' — sửa kế hoạch (dời giờ / đổi bên / bỏ chữ) rồi duyệt lại') if de else
+          f'✅ không chữ / icon / thẻ nào đè mặt (mặt thật {sum(Dq.mat_that) / max(1, Dq.n):.0%} khung)']
     L += ['', f'Zoom nhảy: {len(plan.get("zoom", [])) - 1} lần · ảnh dựng thử: `{out}`']
     md = os.path.join(work, 'bang_duyet.md')
     with open(md, 'w', encoding='utf-8') as f: f.write('\n'.join(L) + '\n')

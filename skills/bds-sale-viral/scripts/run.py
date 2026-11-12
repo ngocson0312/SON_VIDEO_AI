@@ -47,14 +47,15 @@ def main():
     w = _work(a)
     if not os.path.isdir(w): sys.exit('Không thấy thư mục work ' + w)
     if L == 'nguoi':
-        import nguoi
+        import nguoi, tay
+        tay.do_mat(w)          # mặt / đầu MediaPipe trước (tách người cắt ô quanh mặt, chữ né mặt theo mặt này)
         ok = nguoi.tinh_het(w)
-        import tay
         if ok or tay.venv_py():
             tay.tinh(w)
         sys.exit(0 if ok else 1)
     if L == 'tay':
         import tay
+        tay.do_mat(w)
         kq = tay.tinh(w)
         if kq is None: sys.exit('⛔ chưa dò được tay: chạy run.py cai-tay (MediaPipe) hoặc run.py nguoi (mặt nạ người)')
         print('  ảnh soát: ' + os.path.join(w, 'tay.jpg'))
@@ -80,6 +81,8 @@ def main():
         import kiem, am_thanh, dung, nguoi
         if plan.get('CAN_CLAUDE_SUA'): sys.exit('⛔ ke_hoach.json còn CAN_CLAUDE_SUA=true — Claude chưa sửa theo nghĩa')
         if kiem.kiem_ke_hoach(plan, w): sys.exit('⛔ sửa ke_hoach.json trước')
+        import tay
+        tay.do_mat(w, bao=False)
         if plan.get('tieu_de') or plan.get('logo') or plan.get('icon') or plan.get('the_anh'):
             nguoi.tinh_het(w)
         print('Trộn tiếng…', flush=True)
