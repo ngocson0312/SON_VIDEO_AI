@@ -209,6 +209,136 @@ CTA_TU = (r'(follow|subscribe|theo dõi|đăng ký|đăng kí|kênh|channel|like
           r'ติดตาม|abonne|folg|abonnier|sígu|suscrib|seguir|segui|iscriv|ikuti|langganan|подпис|inscreva|siga)')
 
 
+# ---- khung HÀNH TRÌNH nháp (BẢN ĐỒ THẬT) cho mọi câu nói di chuyển — khách chốt 13/11/2026 ----
+_HT_BO_TRUOC = {'sân', 'máy', 'chuyến', 'cuộc'}          # 'sân bay', 'máy bay', 'chuyến đi' là danh từ, không phải lúc rời bến
+_HT_CHUNG = {'san', 'bay', 'airport', 'ga', 'ben', 'xe', 'tau', 'anh', 'img', 'photo', 'image', 'pic', 'quoc', 'te', 'international'}
+_HT_DI = (r'(?:bay|di chuyển|đi|đến|tới|lái|chạy|khởi hành|xuất phát|cất cánh|tản bộ|fly|flight|drive|driving|walk|ride|take|travel|'
+          r'head|depart|移動|飛|乗|비행|이동|출발|飞|坐|开车|เดินทาง|บิน)\b')
+_HT_DEN = r'(?:hạ cánh|đến|tới|arriv\w*|reach\w*|land\w*|get to|着|到|도착|抵达|ถึง)\b'
+_HT_BAT_DAU = r'\b(?:từ|bắt đầu|xuất phát|khởi hành|from|start\w*|depart\w*)\b|から|에서|从|出发'
+_HT_KHOANG = r'(?:khoảng|chừng|tầm|gần|hơn|around|about|approximately|roughly|nearly|over|約|약|大约|大概|ประมาณ)'
+
+
+def _tg_vi(s):
+    """'4 tiếng rưỡi' → '4h30', '40 -50 phút' → '40–50 phút', '2 ,5 km' → '2,5 km' (tiếng Việt); tiếng khác giữ nguyên."""
+    s = re.sub(r'\s*([.,])\s*(?=\d)', r'\1', s.strip())
+    s = re.sub(r'\s*[-–—~]\s*(?=\d)', '–', s)
+    s = re.sub(r'^(\d+)\s*(?:tiếng|giờ)\s*rưỡi$', r'\1h30', s)
+    s = re.sub(r'^(\d+)\s*(?:tiếng|giờ)$', r'\1h', s)
+    return s.replace('.', ',') if re.search(r'\d\.\d', s) else s
+
+
+def nhap_hanh_trinh(tu, cau, nn, gy, tat):
+    """mỗi câu (chuỗi câu liền) nói DI CHUYỂN → 1 đồ hoạ hanh_trinh nen 'that' đã đặt sẵn giờ (tu / den / luc_di / luc_den /
+    luc_tg / luc_kc), phương tiện đoán, thời gian / km đúng lời, ảnh Resources khớp tên gắn điểm đi / đến.
+    CHỪA TRỐNG tên + toa_do điểm đi / đến → kiem-kh ⛔ tới khi Claude điền (run.py tim "<tên>"). Dò nhầm → Claude xoá + bo_di_chuyen."""
+    from chung import _HT_KC, _HT_SO, _HT_TG, cau_di_chuyen
+    dc = cau_di_chuyen(cau, nn)
+    nhom = []
+    for r in dc:                                    # câu km rồi câu thời gian nối liền → 1 hành trình
+        if nhom and r['s'] - nhom[-1][-1]['e'] <= .6:
+            nhom[-1].append(r)
+        else:
+            nhom.append([r])
+    ws = [w for w in tu]
+
+    def tim_tu(rx, t0, t1, bo=False):
+        for j, w in enumerate(ws):
+            if t0 - .01 <= w['s'] <= t1 + .01:
+                if bo and j and re.sub(r'\W', '', ws[j - 1]['w'].lower()) in _HT_BO_TRUOC:
+                    continue
+                ghep = (w['w'] + ' ' + (ws[j + 1]['w'] if j + 1 < len(ws) else '')).lower()
+                if re.match(rx, ghep):
+                    return w['s']
+        return None
+
+    def tim_so(chu, t0, t1):                          # giây của chữ số đầu cụm ('27 km' → giây chữ '27')
+        m = re.search(r'\d+', chu)
+        for w in ws:
+            if t0 - .01 <= w['s'] <= t1 + .01 and (m and re.sub(r'\D', '', w['w']).startswith(m.group(0))):
+                return w['s']
+        return tim_tu(so, t0, t1)
+
+    khong_dau = [re.sub(r'[^a-z0-9]', '', bo_dau(w['w']).lower()) for w in ws]
+
+    def nhac_ten(k, t0, t1):                          # tên riêng trong tên file ảnh ('sân bay nội bài' → 'noi bai') đọc lúc nào
+        ten = [re.sub(r'[^a-z0-9]', '', bo_dau(x).lower()) for x in re.split(r'[\s_\-.,]+', Path(str(tat[k].get('file', ''))).stem)]
+        ten = [x for x in ten if x]
+        rieng = [x for x in ten if x not in _HT_CHUNG and not x.isdigit()]
+        if not rieng:
+            return None
+        for j, w in enumerate(ws):
+            if t0 - .01 <= w['s'] <= t1 + .01 and khong_dau[j:j + len(rieng)] == rieng:
+                return w['s']
+        return None
+
+    so = r'(?:\d|(?:một|hai|ba|bốn|năm|sáu|bảy|tám|chín|mười|vài|nửa|one|two|three|four|five|six|seven|eight|nine|ten|half)\b)'
+    da_gan = set()
+
+    ra = []
+    for i, g in enumerate(nhom):
+        s_ht, e0 = g[0]['s'], g[-1]['e']
+        tu0 = s_ht
+        truoc = [c for c in cau if c['e'] <= s_ht + .05 and s_ht - c['e'] <= .6]
+        if truoc and re.search(_HT_BAT_DAU, truoc[-1]['text'].lower()) and not cau_di_chuyen([truoc[-1]], nn):
+            tu0 = truoc[-1]['s']                     # câu trước nói điểm xuất phát ("bắt đầu từ sân bay Incheon")
+        sau = [c['s'] for c in cau if c['s'] >= e0 - .01]
+        den = round(min(e0 + .8, (sau[0] + .15) if sau else e0 + .8), 2)
+        t_so = tim_tu(so, s_ht, e0)
+        t_di = tim_tu(_HT_DI, s_ht, e0, bo=True)
+        luc_di = min(x for x in (t_di, t_so, e0 - 2) if x is not None) - .1
+        luc_di = max(tu0 + .3, luc_di)
+        t_den = tim_tu(_HT_DEN, luc_di + 1.0, e0)
+        luc_den = (t_den + .6) if t_den is not None else e0 - 1.0
+        luc_den = round(min(max(luc_den, luc_di + 1.6), den - 1.6), 2)
+        luc_di = round(min(luc_di, luc_den - 1.2), 2)
+        # thời gian / km: cụm đúng lời (giờ đọc = giây chữ số đầu cụm)
+        tg = kc = ''
+        luc_tg = luc_kc = None
+        for c in g:
+            t = c['text']
+            for m in re.finditer(rf'({_HT_KHOANG}\s+)?({_HT_SO}\s*{_HT_TG}(?:\s*rưỡi)?)', t, re.I):
+                if not tg:
+                    tg = ('~' if m.group(1) and nn == 'vi' else '') + (_tg_vi(m.group(2)) if nn == 'vi' else m.group(2).strip())
+                    luc_tg = tim_so(m.group(2), c['s'], c['e'])
+            for m in re.finditer(rf'({_HT_KHOANG}\s+)?({_HT_SO}\s*{_HT_KC})', t, re.I):
+                if not kc:
+                    kc = ('~' if m.group(1) else '') + (_tg_vi(m.group(2)) if nn == 'vi' else m.group(2).strip())
+                    luc_kc = tim_so(m.group(2), c['s'], c['e'])
+        if luc_kc is not None:
+            luc_kc = min(max(luc_kc, tu0), den - .8)
+        luc_tg = round(min(max(luc_tg if luc_tg is not None else (luc_kc or luc_di + .4), tu0), den - .8), 2)
+        pt = next((r['pt'] for r in g if r['pt']), None) or 'khong'
+        d = {'id': f'h{i + 1}', 'loai': 'hanh_trinh', 'tu': round(tu0, 2), 'den': den, 'phuong_tien': pt, 'nen': 'that',
+             'xuat_phat': {'ten': '', 'phu': '', 'toa_do': None}, 'diem_den': {'ten': '', 'phu': '', 'toa_do': None},
+             'luc_di': luc_di, 'luc_den': luc_den, 'luc_tg': luc_tg,
+             '_loi': ' '.join(c['text'] for c in cau if tu0 - .01 <= c['s'] < e0 - .05),
+             '_can_dien': 'tên NGẮN điểm đi / đến (phần phụ vào phu) + toa_do [lat, lon] bằng run.py tim "<tên>" (sân bay = '
+                          'aerodrome, di tích = cổng); luc_ten_di / luc_ten_den = giây đọc tên; diem_phu tên nước / thành phố '
+                          'khi bay xa; số thời gian / km soát lại đúng lời. Dò nhầm (không phải đi lại) → xoá mục này + ghi '
+                          'giây câu vào bo_di_chuyen'}
+        if tg:
+            d['thoi_gian'] = tg
+        if kc:
+            d['khoang_cach'] = kc
+            if luc_kc is not None:
+                d['luc_kc'] = luc_kc
+        for k in tat:                                 # ảnh Resources có tên riêng đọc trong câu → gắn ghim điểm đi / đến (mỗi ảnh 1 lần)
+            if (tat.get(k) or {}).get('loai') != 'anh' or k in da_gan or not str(k).startswith('res_'):
+                continue
+            t = nhac_ten(k, tu0, e0)
+            if t is None:
+                v = (gy or {}).get(k) or {}
+                t = next((x for x in v.get('luc') or [] if tu0 - .05 <= x <= e0 + .05), None) if v.get('khop') and not v.get('chung') else None
+            if t is not None:
+                o = d['xuat_phat'] if t < luc_di else d['diem_den']
+                if 'anh' not in o:
+                    o['anh'] = k
+                    da_gan.add(k)
+        ra.append(d)
+    return ra
+
+
 def nhap_ke_hoach(tu, cau, nn, tn, bai, audio_dai, nhac, work, gy=None):
     """kế hoạch NHÁP: mỗi câu 1 cảnh — tài nguyên có tên / chú thích KHỚP RIÊNG lời của câu thì đặt đúng câu đó (goi_y),
     còn lại xoay vòng (clip khớp chung trước → clip → ảnh → ảnh bài báo, chưa dùng trước). Claude PHẢI sửa theo nghĩa."""
@@ -323,7 +453,7 @@ def nhap_ke_hoach(tu, cau, nn, tn, bai, audio_dai, nhac, work, gy=None):
         'sua_loi': sua_loi,
         'sub': {'bat': True},
         'canh': canh,
-        'do_hoa': [],
+        'do_hoa': nhap_hanh_trinh(tu, cau, nn, gy, tat),
         'cta': {'tu': round(cta_tu, 2), 'them_giay': 1.6, 'tieu_de': '', 'viet_tay': '',
                 'nut': L['nut'], 'nut_da': L['nut_da'], 'icon': ['thich', 'binh_luan', 'chia_se', 'luu'],
                 'nhan_icon': {k: L[k] for k in ('thich', 'binh_luan', 'chia_se', 'luu')}},
@@ -410,6 +540,9 @@ def quet(audio, link=None, res=None, nhac=None, ngon_ngu=None, work=None):
     if bai:
         loi(f'  • đọc {work / "bai_bao" / "bai_bao.txt"} (số liệu / tên riêng lấy từ đây, chỉ dùng điều KHỚP lời)')
     loi(f'  • MỞ {work / "tai_nguyen.jpg"} + MỌI {work / "khung"}\\clip_XX.jpg (nhãn = giây trong clip)')
+    if ndc:
+        loi(f'  • kế hoạch nháp ĐÃ CÓ khung hanh_trinh (BẢN ĐỒ THẬT, giờ đặt sẵn) cho câu di chuyển: điền tên ngắn + toa_do '
+            f'(run.py tim "<tên>") điểm đi / đến, soát số thời gian / km; mẫu references/vi-du-hanh-trinh-ban-do-that.json')
     loi(f'  • viết {kh} theo nghĩa lời (kiểu câu → đồ hoạ: mục "Khuôn kể chuyện du lịch" trong SKILL.md; trường: '
         f'references/ke_hoach_schema.md) → run.py kiem-kh --work "{work}"')
     return work

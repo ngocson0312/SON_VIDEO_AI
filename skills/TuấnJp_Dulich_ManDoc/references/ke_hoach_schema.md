@@ -45,7 +45,7 @@ Clip dùng lại đoạn đã dùng → ⚠ (khán giả thấy lặp). Ảnh tr
 
 ## do_hoa — đồ hoạ chữ
 
-Chung: `id` (`d01`…), `loai`, `tu`, `den` (≥ 1,2 s ⛔; đồ hoạ lớn nên ≥ 2 s; mỗi mục đứng ≥ 1,6 s, ảnh ≥ 2 s — KỊP NHÌN, hiện sớm hơn lời 0,3–0,8 s được), `y` (tâm hoặc mép trên tuỳ loại). Hai đồ hoạ LỚN không chồng thời gian (⛔);
+Chung: `id` (`d01`…), `loai`, `tu`, `den` (≥ 1,2 s ⛔; đồ hoạ lớn nên ≥ 2 s; mỗi mục đứng ≥ 1,6 s, ảnh ≥ 2 s — KỊP NHÌN, hiện sớm hơn lời 0,3–0,8 s được; `kiem-kh` / `dung` tự kéo `den` vào chỗ trống + cho mục / ảnh hiện sớm — dòng 🔧), `y` (tâm hoặc mép trên tuỳ loại). Hai đồ hoạ LỚN không chồng thời gian (⛔);
 `ghim`, `chip` là đồ hoạ NHỎ, được chồng với 1 đồ hoạ lớn. Không đồ hoạ nào chồng CTA. Mục có `luc` (giây đọc chữ đó) phải nằm trong
 `tu … den − 0,5` (⛔). Mọi chữ kiểm ngôn ngữ. Chọn loại theo KIỂU CÂU: bảng "Khuôn kể chuyện du lịch" trong `SKILL.md`.
 Tiếng ja / zh / ko / th: `viet_tay` (và `kieu: "tay"`, `nhan` số lớn) hiện thành chữ Gothic đậm nhỏ nằm dưới tít — viết ngắn.

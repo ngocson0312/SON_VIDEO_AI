@@ -468,7 +468,48 @@ CANH_XA = ('doi', 'thanh_pho', 'nui')    # cảnh xa sau đường (nen duong): 
 XE_CUA_NEN = {'troi': {'may_bay'}, 'bien': {'tau_thuy'}, 'duong': {'o_to', 'xe_may', 'xe_buyt', 'xe_dap', 'tau_hoa'}}
 
 
-def _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj):
+def _kip_nhin(dh, cta, dur, TS):
+    """KỊP NHÌN tự động (khách chốt 13/11/2026: "chưa kịp nhìn đã tắt — hiện trước 1 chút cũng được"): trả bản sao đồ hoạ,
+    đồ hoạ quá ngắn / mục cuối sát lúc tắt → KÉO den tới chỗ trống (không chạm đồ hoạ cùng lớp kế tiếp, không chạm CTA);
+    hanh_trinh được ghi '_tran_den' (giới hạn kéo) cho _hanh_trinh tự xử. Mục còn thiếu thì phần sau cho hiện SỚM hơn lời."""
+    ra = [dict(x) for x in dh or []]
+    han_cta = (float(cta['tu']) - .05) if cta and cta.get('tu') is not None else dur
+    for d in ra:
+        try:
+            tu, den = float(d['tu']), float(d['den'])
+        except Exception:
+            continue
+        nho = d.get('loai') in NHO
+        sau = []
+        for x in ra:
+            try:
+                if x is not d and (x.get('loai') in NHO) == nho and float(x['tu']) > tu + .01:
+                    sau.append(float(x['tu']) - .15)
+            except Exception:
+                pass
+        tran = max(den, min(sau + [han_cta, dur]))       # chỗ trống tới đồ hoạ cùng lớp kế tiếp (đã sát / chồng → không kéo)
+        if d.get('loai') == 'hanh_trinh':
+            d['_tran_den'] = round(max(den, tran), 3)
+            continue
+        can = 0.0
+        if not nho and den - tu < 2.0:
+            can = 2.0 - (den - tu)
+        lucs = []
+        for m in d.get('muc') or []:
+            try:
+                lucs.append(float(m['luc']))
+            except Exception:
+                pass
+        if lucs and d.get('loai') in ('chip', 'liet_ke', 'tu_khoa'):
+            can = max(can, max(lucs) + HIEN_MIN - den)
+        them = min(can, 1.2, tran - den)
+        if them > .05:
+            d['den'] = round(den + them, 2)
+            TS(f"{d.get('id', '?')}: tự kéo den {den:.2f} → {d['den']:.2f}s cho kịp nhìn")
+    return ra
+
+
+def _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj, TS=lambda m: None):
     """kiểm + điền mặc định cho đồ hoạ hành trình (điểm đi → điểm đến, phương tiện, thời gian / khoảng cách).
     → False nếu hỏng tới mức không dựng được."""
     pt = d.setdefault('phuong_tien', 'khong')
@@ -549,7 +590,7 @@ def _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj):
     # giờ
     try:
         d['luc_di'] = float(d.get('luc_di', d['tu'] + .8))
-        d['luc_den'] = float(d.get('luc_den', max(d['luc_di'] + 1.5, d['den'] - 1.0)))
+        d['luc_den'] = float(d.get('luc_den', max(d['luc_di'] + 1.2, d['den'] - 1.6)))
         d['luc_tg'] = float(d.get('luc_tg', d['luc_di'] + .4))
         for f in ('luc_ten_di', 'luc_ten_den'):
             if d.get(f) is not None:
@@ -563,6 +604,15 @@ def _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj):
         E(f"{did}: cần tu ≤ luc_di < luc_den ≤ den − 0,4 (đang {d['tu']} / {d['luc_di']} / {d['luc_den']} / {d['den']})")
     elif d['luc_den'] - d['luc_di'] < 1.2:
         Wn(f"{did}: phương tiện chạy {d['luc_den'] - d['luc_di']:.1f}s — quá nhanh, nên ≥ 1,2s")
+    if d['den'] - d['luc_den'] < 1.5 and d['luc_di'] < d['luc_den']:      # KỊP NHÌN: kéo den vào chỗ trống, rồi cho tới nơi sớm hơn
+        them = min(1.5 - (d['den'] - d['luc_den']), .8, max(0.0, float(d.get('_tran_den', d['den'])) - d['den']))
+        if them > .05:
+            TS(f"{did}: tự kéo den {d['den']:.2f} → {d['den'] + them:.2f}s (ghim / tên điểm đến kịp nhìn)")
+            d['den'] = round(d['den'] + them, 2)
+        moi = max(d['luc_di'] + 1.2, d['den'] - 1.5)
+        if moi < d['luc_den'] - .02:
+            TS(f"{did}: tự cho tới nơi sớm hơn {d['luc_den']:.2f} → {moi:.2f}s (ghim điểm đến đứng ≥ 1,5 s)")
+            d['luc_den'] = round(moi, 2)
     if d['den'] - d['luc_den'] < 1.5:
         Wn(f"{did}: tới nơi lúc {d['luc_den']:.2f}s mà {d['den']:.2f}s đã tắt — ghim / tên điểm đến chỉ đứng "
            f"{d['den'] - d['luc_den']:.1f}s (≥ 1,5 s): cho luc_den sớm hơn (lúc đọc «hạ cánh / đến…») hoặc kéo den")
@@ -586,6 +636,7 @@ def giai(work, bao=loi):
     L = []
     def E(m): L.append(('⛔', m))
     def Wn(m): L.append(('⚠', m))
+    def TS(m): L.append(('🔧', m))                 # tự sửa cho kịp nhìn — chỉ báo, không phải lỗi
     if kh.get('CAN_CLAUDE_SUA', True):
         E('CAN_CLAUDE_SUA vẫn = true — Claude chưa sửa kế hoạch theo nghĩa lời')
     nn = kh.get('ngon_ngu') or lj.get('ngon_ngu') or 'vi'
@@ -641,6 +692,19 @@ def giai(work, bao=loi):
     KC, CB, nguon_anh = [], [], []
     phu_kin = [(float(d.get('tu', 0)), float(d.get('den', 0))) for d in kh.get('do_hoa', [])
                if d.get('loai') == 'hanh_trinh' and d.get('nen') != 'canh']      # nền hành trình che hết footage
+    for i in range(1, len(canh)):                     # KỊP NHÌN: ảnh < 2 s → cho vào SỚM hơn lời (cảnh trước còn dư ≥ 1,8 s)
+        a = NG.get(canh[i].get('nguon')) or {}
+        if a.get('loai') != 'anh':
+            continue
+        t0 = float(canh[i]['tu'])
+        t1 = float(canh[i + 1]['tu']) if i + 1 < len(canh) else dur
+        if t1 - t0 >= HIEN_ANH - .05 or any(p0 <= t0 + .05 and t1 <= p1 + .05 for p0, p1 in phu_kin):
+            continue
+        truoc_anh = (NG.get(canh[i - 1].get('nguon')) or {}).get('loai') == 'anh'
+        lay = min(HIEN_ANH - (t1 - t0), .8, t0 - float(canh[i - 1]['tu']) - (HIEN_ANH if truoc_anh else 1.8))
+        if lay > .05:
+            canh[i] = dict(canh[i], tu=round(t0 - lay, 2))
+            TS(f"{canh[i].get('id') or f'c{i + 1:02d}'}: ảnh tự vào sớm {t0:.2f} → {canh[i]['tu']:.2f}s (đứng ≥ {HIEN_ANH:.0f} s)")
     for i, c in enumerate(canh):
         cid = c.get('id') or f'c{i + 1:02d}'
         tu0 = float(c['tu'])
@@ -730,7 +794,7 @@ def giai(work, bao=loi):
         if i > 0 and CHUYEN[c['vao']['kieu']][1]:
             S(CHUYEN[c['vao']['kieu']][1], c['tu'])
     lon = []
-    for k, d in enumerate(kh.get('do_hoa', [])):
+    for k, d in enumerate(_kip_nhin(kh.get('do_hoa', []), cta, dur, TS)):
         d = dict(d)
         loai = d.get('loai')
         did = d['id'] = d.get('id') or f'd{k + 1:02d}'
@@ -754,7 +818,7 @@ def giai(work, bao=loi):
         if cta and d['den'] > float(cta['tu']) + .05:
             E(f"{did}: đè lên CTA (CTA bắt đầu {cta['tu']}) — kết thúc trước CTA")
         if loai == 'hanh_trinh':
-            if not _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj):
+            if not _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj, TS):
                 continue
             if d['nen'] == 'that':
                 CB.append({'id': did, 'loai': 'ban_do_that'})
@@ -776,6 +840,13 @@ def giai(work, bao=loi):
                         tden = d.get('luc_ten_den') if d.get('luc_ten_den') is not None else d['luc_den']
                         a0 = d[k]['luc_anh'] = round(max(d['luc_di'] + .5, min(tden, d['luc_den']) - .1), 3)
                         a1 = d['den'] - .3
+                        if a1 - a0 < HIEN_ANH - .05:         # KỊP NHÌN: cho ảnh + tên điểm đến hiện SỚM hơn lời (được phép)
+                            moi = round(max(d['luc_di'] + .3, a1 - HIEN_ANH), 3)
+                            if moi < a0 - .02:
+                                TS(f"{did}: tự cho ảnh điểm đến hiện sớm {a0:.2f} → {moi:.2f}s (đứng ≥ {HIEN_ANH:.0f} s)")
+                                a0 = d[k]['luc_anh'] = moi
+                                d['luc_ten_den'] = round(min(d.get('luc_ten_den') if d.get('luc_ten_den') is not None
+                                                             else d['luc_den'], moi + .1), 3)
                     if a1 - a0 < HIEN_ANH - .05:
                         Wn(f"{did}: ảnh {k} chỉ đứng {a1 - a0:.1f}s ({a0:.1f}–{a1:.1f}s) — chưa kịp nhìn đã tắt (≥ {HIEN_ANH:.0f} s): "
                            + ("cho luc_di muộn hơn" if k == 'xuat_phat' else "cho luc_ten_den / luc_den sớm hơn hoặc kéo den"))

@@ -1,6 +1,6 @@
 ---
 name: TuấnJp_Dulich_ManDoc
-description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (1080×1920, 30 fps) từ 3 đầu vào — LINK 1 BÀI BÁO du lịch (tự lấy chữ + ảnh, hỗ trợ vietnamtourism.gov.vn qua API công khai, trang thường, trang JS), 1 FILE AUDIO giọng đọc kịch bản, 1 THƯ MỤC RESOURCES clip / ảnh — theo phong cách du lịch cao cấp tự thiết kế (video mẫu Tuấn_jp chỉ là THAM KHẢO, không phải quy chuẩn): footage chỉnh màu ấm điện ảnh + hạt phim + loé nắng, Ken Burns mỗi cảnh, 8 kiểu chuyển (hoà tan, nhoè, lia nhoè, lia dọc, zoom xuyên, loé sáng, trượt, cắt), ảnh bài báo nhỏ thành THẺ BO GÓC trên nền nhoè của chính nó + ghi nguồn; ĐỒ HOẠ HÀNH TRÌNH khi lời nói di chuyển A → B (điểm đi / điểm đến, phương tiện, thời gian / km đúng lời; nền tự vẽ: máy bay to bay giữa biển mây, ô tô / xe máy / xe khách / tàu hoả chạy trên đường phố hoặc núi, du thuyền giữa núi đá, bản đồ phố vẽ đường đi; Resources có clip phương tiện thì đè thẻ lên clip), 10 kiểu ĐỒ HOẠ CHỮ (mở đầu chữ serif lớn + viết tay vàng, từ khoá bật theo lời, CHƯƠNG 'Điểm đến 01' số viền vàng tô dần + tên in hoa, tiêu đề đoạn gradient vàng tự ngắt 2 dòng cân, ghim địa điểm rơi, chip icon, SỐ LỚN đếm lên, thẻ polaroid, bảng liệt kê kính mờ tick vàng, trích dẫn), lớp tối mềm sau chữ lớn để luôn đọc được trên nền sáng, SUB KARAOKE gom theo nghĩa (không tách từ ghép / tên riêng, ngắt ở dấu câu – chỗ ngừng), chữ đang đọc vàng; CTA cuối: avatar vòng xoay, tên kênh tích xanh, tiêu đề + viết tay, NÚT THEO DÕI gradient bóng quét + BÀN TAY bấm → 'Đã theo dõi' + chuông lắc, hàng icon Thích / Bình luận / Chia sẻ / Lưu bật lần lượt, tay bấm TIM nổ tim bay; SFX theo sự kiện, NHẠC NỀN mặc định (file nhạc trong Resources tự nhận, chỉ file người dùng đưa) −14 dB né lời, dâng ở chỗ lặng, lùi nhạc cho nốt kết trùng CTA, −14 LUFS. LUẬT CỨNG: audio tiếng gì thì MỌI CHỮ TRÊN HÌNH (sub, tiêu đề, CTA, nhãn icon, nguồn ảnh) phải đúng tiếng đó — tự nhận ngôn ngữ, tự kiểm chặn; chữ Nhật / Trung / Hàn / Thái dùng font đúng tiếng. Chạy được với MỌI chủ đề / kịch bản / Resources: tự khớp tên file Resources + chú thích ảnh bài báo với lời (cả tên viết liền, sai dấu, Whisper nghe nhầm) → nháp đặt đúng giây, khuôn kể chuyện theo kiểu câu. Whisper nhận lời → Claude viết ke_hoach.json theo NGHĨA → DỪNG 1 lần ở cổng duyệt → dựng bằng Chrome headless (khung HTML tất định, mã hoá 1 lần) → tự kiểm trên file cuối. Trigger '/TuấnJp_Dulich_ManDoc', 'làm video du lịch từ link bài báo + audio + resources', 'video quảng bá du lịch Việt', 'video giới thiệu điểm đến', 'dựng video du lịch dọc có sub, tiêu đề, CTA theo dõi', 'video travel từ bài báo'.
+description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (1080×1920, 30 fps) từ 3 đầu vào — LINK 1 BÀI BÁO du lịch (tự lấy chữ + ảnh, hỗ trợ vietnamtourism.gov.vn qua API công khai, trang thường, trang JS), 1 FILE AUDIO giọng đọc kịch bản, 1 THƯ MỤC RESOURCES clip / ảnh — theo phong cách du lịch cao cấp tự thiết kế (video mẫu Tuấn_jp chỉ là THAM KHẢO, không phải quy chuẩn): footage chỉnh màu ấm điện ảnh + hạt phim + loé nắng, Ken Burns mỗi cảnh, 8 kiểu chuyển (hoà tan, nhoè, lia nhoè, lia dọc, zoom xuyên, loé sáng, trượt, cắt), ảnh bài báo nhỏ thành THẺ BO GÓC trên nền nhoè của chính nó + ghi nguồn; ĐỒ HOẠ HÀNH TRÌNH khi lời nói di chuyển A → B (điểm đi / điểm đến, phương tiện, thời gian / km đúng lời; MẶC ĐỊNH trên BẢN ĐỒ THẬT: ảnh vệ tinh Esri + đường đi thật OSRM / cung bay, camera cận điểm đi → toàn tuyến → sà điểm đến, máy bay / xe chạy theo tuyến, ảnh Resources gắn ghim; kế hoạch nháp TỰ dựng khung hành trình đặt sẵn giờ cho mọi câu di chuyển; nền tự vẽ hoặc đè thẻ lên clip phương tiện chỉ khi người dùng muốn), KỊP NHÌN (mỗi chữ đứng ≥ 1,6 s, ảnh ≥ 2 s, hiện sớm hơn lời một chút — tự sửa khi kiểm / dựng), 10 kiểu ĐỒ HOẠ CHỮ (mở đầu chữ serif lớn + viết tay vàng, từ khoá bật theo lời, CHƯƠNG 'Điểm đến 01' số viền vàng tô dần + tên in hoa, tiêu đề đoạn gradient vàng tự ngắt 2 dòng cân, ghim địa điểm rơi, chip icon, SỐ LỚN đếm lên, thẻ polaroid, bảng liệt kê kính mờ tick vàng, trích dẫn), lớp tối mềm sau chữ lớn để luôn đọc được trên nền sáng, SUB KARAOKE gom theo nghĩa (không tách từ ghép / tên riêng, ngắt ở dấu câu – chỗ ngừng), chữ đang đọc vàng; CTA cuối: avatar vòng xoay, tên kênh tích xanh, tiêu đề + viết tay, NÚT THEO DÕI gradient bóng quét + BÀN TAY bấm → 'Đã theo dõi' + chuông lắc, hàng icon Thích / Bình luận / Chia sẻ / Lưu bật lần lượt, tay bấm TIM nổ tim bay; SFX theo sự kiện, NHẠC NỀN mặc định (file nhạc trong Resources tự nhận, chỉ file người dùng đưa) −14 dB né lời, dâng ở chỗ lặng, lùi nhạc cho nốt kết trùng CTA, −14 LUFS. LUẬT CỨNG: audio tiếng gì thì MỌI CHỮ TRÊN HÌNH (sub, tiêu đề, CTA, nhãn icon, nguồn ảnh) phải đúng tiếng đó — tự nhận ngôn ngữ, tự kiểm chặn; chữ Nhật / Trung / Hàn / Thái dùng font đúng tiếng. Chạy được với MỌI chủ đề / kịch bản / Resources: tự khớp tên file Resources + chú thích ảnh bài báo với lời (cả tên viết liền, sai dấu, Whisper nghe nhầm) → nháp đặt đúng giây, khuôn kể chuyện theo kiểu câu. Whisper nhận lời → Claude viết ke_hoach.json theo NGHĨA → DỪNG 1 lần ở cổng duyệt → dựng bằng Chrome headless (khung HTML tất định, mã hoá 1 lần) → tự kiểm trên file cuối. Trigger '/TuấnJp_Dulich_ManDoc', 'làm video du lịch từ link bài báo + audio + resources', 'video quảng bá du lịch Việt', 'video giới thiệu điểm đến', 'dựng video du lịch dọc có sub, tiêu đề, CTA theo dõi', 'video travel từ bài báo'.
 ---
 
 # TuấnJp_Dulich_ManDoc — video quảng bá / giới thiệu du lịch dọc 9:16
@@ -12,8 +12,10 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
 - Bản điền chuẩn (lần chạy thật đầu, Hà Nội 118 s): **`references/vi-du-ha-noi.json`** — đọc trước khi viết kế hoạch mới.
 - Bản điền chuẩn có HÀNH TRÌNH (Incheon ✈ Nội Bài 🚗 trung tâm, Hồ Gươm → Văn Miếu; 104 s): **`references/vi-du-hanh-trinh.json`** —
   đọc khi lời có câu di chuyển A → B (mục "CÂU DI CHUYỂN" trong `goi_y.txt`).
-- Bản điền chuẩn hành trình trên **BẢN ĐỒ THẬT** (mặc định từ 13/11/2026 — vệ tinh + đường đi thật):
-  **`references/vi-du-hanh-trinh-ban-do-that.json`**.
+- **BẢN CHUẨN MỚI NHẤT — KHÁCH ĐÃ DUYỆT (13/11/2026, `KịchBảnVoice_1_DLV_ban3.mp4`): `references/vi-du-hanh-trinh-ban-do-that.json`**
+  — ĐỌC ĐẦU TIÊN trước khi viết kế hoạch mới; mọi video sau phải đạt mức này (mục "CHUẨN XỊN" dưới đây): hook + mở đầu tên điểm
+  đến, 3 hành trình trên BẢN ĐỒ THẬT (bay / ô tô / đi bộ, ảnh sân bay gắn ghim), chương 01-02-03, bảng liệt kê, chip, montage ảnh món,
+  tiêu đề đoạn đêm / mùa thu / kết, CTA; giờ đã chỉnh KỊP NHÌN.
 - Bản điền chuẩn hành trình ĐÈ LÊN CLIP THẬT (`nen: "canh"`: ảnh sân bay đi → clip máy bay → thẻ ảnh sân bay đến; clip quay từ
   trong ô tô): **`references/vi-du-hanh-trinh-canh.json`** — dùng khi Resources có ảnh / clip phương tiện.
 - Số phong cách: `scripts/chung.py` (khổ, vùng an toàn, sub, bảng chuyển cảnh, bảng SFX, mức nhạc, chữ CTA mặc định theo ngôn ngữ) +
@@ -34,6 +36,7 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
 | 13/11/2026 | KịchBảnVoice_1 (giọng Việt) — người dùng: "làm 1 video sub thì là tiếng Hàn, giọng đọc vẫn là Việt Nam" → duyệt, dựng | Chế độ **SUB DỊCH** (ĐÃ CHỐT 1 ngoại lệ): `chu_ngon_ngu` tách tiếng CHỮ khỏi tiếng GIỌNG (`ngon_ngu`); lệnh `run.py sub-dich` tạo khung `sub_dich` theo cụm lời gốc; `kiem-kh` soát chữ Hàn / độ dài dòng (em) / cụm < 0,6 s / chồng cụm / lời chưa có sub; karaoke ước lượng theo nhịp lời gốc (`sub.karaoke_dich: false` tắt); hành trình, CTA (팔로우 / 팔로잉 / 좋아요…), nguồn ảnh theo tiếng chữ; tự dò câu di chuyển vẫn theo tiếng giọng. 48 cụm sub Việt gộp theo nghĩa còn 32 cụm Hàn 1–2 dòng. Mẫu `references/vi-du-sub-dich-ko.json` |
 | 13/11/2026 | KịchBảnVoice_1 bản tiếng Hàn — khách góp ý: "di chuyển máy bay hay ô tô thì kiểu dạng bản đồ map thực" → cập nhật skill, làm lại | Nền **`that` = BẢN ĐỒ THẬT** thành MẶC ĐỊNH cho mọi hành trình (`ban_do_that.py`): ảnh vệ tinh Esri + đường đi thật OSRM (Nội Bài → Hoàn Kiếm 26,7 km khớp lời 27 km; Hồ Gươm → Văn Miếu đi bộ 2,6 km) + cung bay Incheon → Nội Bài 2 684 km; camera từng khung tính sẵn (cận điểm đi z≈12 → lùi toàn tuyến → sà điểm đến), ô ảnh nạp theo khung (trang dựng chờ decode rồi vẽ canvas, nhả ô cũ). Ảnh Resources sân bay gắn ghim điểm đi / đến; tên nước (`diem_phu`) hiện lúc nhìn toàn tuyến; km trên tuyến. Sửa sau khi soi: máy bay ra khỏi khung lúc camera còn lùi → lùi TRƯỚC lúc rời bến 0,7 s; ảnh điểm đến đặt dưới ghim đè sub → đặt CẠNH ghim; nhãn km trôi lên mép thẻ lúc sà vào → ẩn khi tới / khi điểm neo ra khỏi vùng; ảnh Hà Nội mờ tối → sáng .96. Lệnh mới `run.py tim "<tên>"`. Ảnh vệ tinh Esri có chỗ ghép ảnh khác màu trên biển (dữ liệu thật, không phải lỗi dựng) |
 | 13/11/2026 | KịchBảnVoice_1 bản tiếng Việt bản đồ thật (ban2) — khách: "hình chưa hiển thị lên là bị tắt rồi, hiện trước 1 chút cũng được, ví dụ ảnh sân bay Nội Bài và vài cảnh khác — chưa kịp nhìn đã mất" → làm lại (ban3) | Luật **KỊP NHÌN** (ĐÃ CHỐT 6): mục chữ ≥ 1,6 s, ảnh ≥ 2 s, hiện SỚM hơn lời được. Rà cả video: ảnh Nội Bài gắn ghim chỉ 1,0 s (hiện lúc tới nơi 11,2 s, bản đồ tắt 12,2 s) → ảnh + tên điểm đến hiện từ `luc_ten_den` (chữ "hạ cánh tại…" 10,6 s) tới `den` − 0,3 = 2,15 s; ghim Văn Miếu đứng 0,6 s → 1,85 s; dòng "Đền Ngọc Sơn", chip "Cửa hàng truyền thống" / "Văn hóa lâu đời" / "Không khí nhộn nhịp" / "Se lạnh" đứng 0,5–1,0 s → ≥ 1,6 s (hiện sớm 0,3–0,7 s + kéo `den`); "Nhịp sống đặc trưng" 1,4 s → 2,1 s; ảnh phở 1,8 s → 2,4 s (vào sớm 0,6 s). `kiem-kh` tự đẩy mục cuối của chip / liệt kê / từ khoá sớm lên cho đủ 1,6 s + ⚠ mọi chỗ còn ngắn |
+| 13/11/2026 | Khách duyệt ban3: "OK, được rồi — update vào hết skill, sau này Resources và kịch bản nào cũng ra XỊN như này" | `vi-du-hanh-trinh-ban-do-that.json` = BẢN CHUẨN khách duyệt (đọc đầu tiên) + mục **CHUẨN XỊN** (8 điểm soát). **Kế hoạch nháp tự dựng khung `hanh_trinh` bản đồ thật** cho mọi câu di chuyển (thử lại `quet` từ đầu với KịchBảnVoice_1: ra đúng 3 chuyến, giờ `luc_di` / `luc_den` / `luc_tg` / `luc_kc` lệch bản chỉnh tay ≤ 0,7 s, "~4h30" / "~27 km" / "~40–50 phút" / "~2,5 km", ảnh Incheon + Nội Bài tự gắn ghim h1). Sửa khi thử: "ba" khớp nhầm đầu chữ "bay" (thêm ranh từ), "bay" trong "sân bay" / "máy bay" không phải lúc rời bến. **KỊP NHÌN tự sửa** (🔧) ở `kiem-kh` / `dung`: kéo `den` vào chỗ trống, tới nơi sớm, ảnh vào sớm — kế hoạch tiếng Hàn cũ (chưa chỉnh tay) tự hết 6 ⚠; bản Việt đã chỉnh giữ nguyên |
 
 ## ĐÃ CHỐT (không tự đổi trừ khi người dùng yêu cầu)
 
@@ -63,9 +66,11 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
    **KỊP NHÌN (người dùng chốt 13/11/2026: "hình chưa hiển thị lên đã bị tắt, chưa kịp nhìn — hiện trước 1 chút cũng được"):**
    mỗi mục chữ / chip / dòng liệt kê / tên điểm đến đứng **≥ 1,6 s** trước khi tắt (`HIEN_MIN`), ảnh (cảnh ảnh, ảnh gắn ghim hành
    trình) **≥ 2 s** (`HIEN_ANH`), đồ hoạ lớn nên ≥ 2 s. Cách sửa theo thứ tự: cho hiện SỚM hơn lời 0,3–0,8 s (được phép) → kéo `den`
-   tới sát đồ hoạ / cảnh sau → bớt mục. `kiem-kh` TỰ cho mục cuối của chip / liệt kê / từ khoá hiện sớm cho đủ 1,6 s (giữ thứ tự),
-   ⚠ mọi chỗ còn ngắn (mục < 1,2 s, ảnh < 2 s, đồ hoạ lớn < 2 s, tới nơi < 1,5 s trước khi bản đồ tắt); cảnh nằm dưới nền hành trình
-   che kín thì không tính.
+   tới sát đồ hoạ / cảnh sau → bớt mục. **`kiem-kh` / `dung` TỰ SỬA (dòng 🔧, không ghi đè `ke_hoach.json`):** kéo `den` đồ hoạ vào
+   chỗ trống (không chạm đồ hoạ cùng lớp kế tiếp / CTA, tối đa +1,2 s); mục cuối chip / liệt kê / từ khoá hiện sớm cho đủ 1,6 s (giữ
+   thứ tự); hành trình: kéo `den` (≤ +0,8 s) rồi cho tới nơi sớm hơn để ghim điểm đến đứng ≥ 1,5 s, ảnh + tên điểm đến hiện sớm cho đủ
+   2 s; cảnh ảnh < 2 s vào SỚM hơn (lấy bớt cảnh trước còn dư, ≤ 0,8 s). Còn ngắn sau khi tự sửa → ⚠ (mục < 1,2 s, ảnh < 2 s, đồ
+   hoạ lớn < 2 s, tới nơi < 1,5 s) — Claude sửa tay. Cảnh nằm dưới nền hành trình che kín thì không tính.
 7. Sub karaoke: Be Vietnam Pro 700 60 px trắng viền tối, tâm y 1405, ≤ 2 dòng × 30 ký tự, chữ đang đọc vàng `#FFC845` phồng nhẹ
    (mỗi bên nở ≤ ~5 px — từ dài không lấn sang từ bên cạnh). Gom cụm bằng quy hoạch động: ngắt ở dấu câu / chỗ ngừng ≥ 0,38 s,
    ưu tiên ngắt TRƯỚC liên từ / giới từ (`TU_TRUOC`: và, với, nhưng, khi… / and, with, of, where…), KHÔNG tách từ ghép
@@ -114,8 +119,14 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
     hiện (mặc định `luc_den`; đặt sớm ở chữ "hạ cánh tại…" để ảnh đứng ≥ 2 s), ảnh điểm đi đứng từ `tu` + 0,45 tới `luc_di`.
     Thẻ ở y 180 (trên), phương tiện to giữa khung, sub vẫn đọc được (dải tối dưới). Nền tự vẽ che hết footage → cảnh dưới chỉ để nối chuyển.
     **Tự dò:** `quet` liệt kê mọi câu có số + km / phút / tiếng / giờ (mọi ngôn ngữ) + từ di chuyển ở mục "CÂU DI CHUYỂN" cuối
-    `goi_y.txt` (kèm phương tiện đoán + câu trước để tìm điểm đi); `kiem-kh` báo ⚠ câu di chuyển chưa có `hanh_trinh` phủ. Câu dò nhầm
-    (không phải đi lại, vd "nấu 8 tiếng") → ghi giây câu vào `bo_di_chuyen: [12.3]` cho hết ⚠. Mẫu đủ 3 kiểu (trời / đường / bản đồ):
+    `goi_y.txt` (kèm phương tiện đoán + câu trước để tìm điểm đi); `kiem-kh` báo ⚠ câu di chuyển chưa có `hanh_trinh` phủ.
+    **Kế hoạch NHÁP tự dựng khung `hanh_trinh` (`quet.nhap_hanh_trinh`) cho mỗi chuyến:** `nen: "that"`, gộp câu km + câu thời gian
+    liền nhau, lấy cả câu trước nói điểm xuất phát ("bắt đầu từ…"), đặt sẵn `tu` / `den` / `luc_di` (chữ di chuyển / số đầu câu) /
+    `luc_den` (chữ "hạ cánh / đến…" + 0,6 s) / `luc_tg` / `luc_kc` (giây chữ số), phương tiện đoán, `thoi_gian` / `khoang_cach` đúng lời
+    ("4 tiếng rưỡi" → "~4h30", "~" khi lời nói "khoảng"), ảnh Resources có TÊN RIÊNG đọc trong câu ("sân bay nội bài.jpg" ↔ "…quốc tế
+    Nội Bài") gắn điểm đi / đến. CHỪA TRỐNG tên + `toa_do` → `kiem-kh` ⛔ tới khi Claude điền (tên ngắn, `run.py tim "<tên>"`,
+    `diem_phu` khi bay xa). Câu dò nhầm
+    (không phải đi lại, vd "nấu 8 tiếng") → xoá khung nháp đó + ghi giây câu vào `bo_di_chuyen: [12.3]` cho hết ⚠. Mẫu đủ 3 kiểu (trời / đường / bản đồ):
     **`references/vi-du-hanh-trinh.json`** (nền tự vẽ); BẢN ĐỒ THẬT (mặc định): **`references/vi-du-hanh-trinh-ban-do-that.json`** (h1 bay, h2 ô tô, h3 đi bộ — toạ độ, ảnh gắn ghim, `diem_phu`).
     **Nền `canh` (có tư liệu thật):** cảnh dưới thẻ nối theo lời — ảnh / clip ĐIỂM ĐI (tràn) → clip PHƯƠNG TIỆN (máy bay trên trời, xe
     chạy…) → ảnh ĐIỂM ĐẾN dạng thẻ `the_y` ≈ 1010 (thẻ tuyến cao tới y ≈ 740, thẻ ảnh nằm ngay dưới, đáy ≤ 1295). Clip quay từ TRONG
@@ -148,6 +159,24 @@ Tên file tiếng khác audio (file "Phở bò.jpg", audio tiếng Anh "beef pho
 Tên riêng trên hình theo tiếng của audio: tiếng Anh dùng tên quốc tế không dấu ("Hoan Kiem Lake"), tiếng Nhật katakana / kanji quen
 ("ホアンキエム湖"); tên riêng tiếng Việt có dấu trong video tiếng khác → `kiem-kh` ⚠ (tên riêng thì được), cả cụm tiếng Việt → ⛔.
 
+## CHUẨN XỊN — mức bản khách duyệt, MỌI kịch bản / Resources phải đạt
+
+Soát kế hoạch theo danh sách này trước cổng duyệt (mẫu: `references/vi-du-hanh-trinh-ban-do-that.json`, video
+`D:\____TTT_____\KH_Test\Tuấn_jp\KịchBảnVoice_1_DLV_ban3.mp4`):
+
+1. **Không khoảng trống chữ > 8–10 s**: mỗi câu có 1 đồ hoạ khớp nghĩa (hook → `mo_dau` tên điểm đến → `chuong` 01/02/03 cho mỗi
+   địa điểm → `liet_ke` / `chip` cho thứ được kể → `tieu_de` cho ý chuyển đoạn (đêm, mùa, ẩm thực) → `tieu_de` kết → CTA).
+2. **Mọi câu di chuyển = hành trình BẢN ĐỒ THẬT** (khung nháp đã có — điền tên ngắn + toạ độ; ảnh Resources của điểm đi / đến gắn ghim;
+   bay xa thêm `diem_phu` tên nước); thời gian / km đúng lời.
+3. **Footage khớp nghĩa từng cụm lời**: tên riêng → tài nguyên khớp tên đúng giây; liệt kê có ảnh từng mục → MONTAGE đổi đúng giây
+   đọc tên; lời về đêm → cảnh đêm; không lặp đoạn clip.
+4. **KỊP NHÌN**: chữ ≥ 1,6 s, ảnh ≥ 2 s, đồ hoạ lớn ≥ 2 s; hiện sớm hơn lời 0,3–0,8 s được (tự sửa 🔧 — còn ⚠ thì sửa tay).
+5. Chuyển cảnh đổi kiểu liên tục (`loe` mở đầu, `nhoe` ngày → đêm, `lia` / `truot` cùng mạch, `zoom` vào địa điểm mới).
+6. Sub karaoke không tách từ ghép / tên riêng (`sua_loi` mọi tên Whisper nghe sai); MỌI chữ đúng tiếng của audio (hoặc tiếng người
+   dùng yêu cầu — sub dịch).
+7. Nhạc nền trong Resources tự ghép (−14 dB dưới giọng, lùi nhạc cho nốt kết trùng CTA); SFX theo sự kiện; −14 LUFS.
+8. Trước khi giao: `run.py khung --times …` soi gần các chỗ hành trình / liệt kê / montage, tự kiểm ĐẠT hết, mở `soat.jpg`.
+
 ## Quy trình
 
 Mọi lệnh: `python -I -X utf8 .claude\skills\TuấnJp_Dulich_ManDoc\scripts\run.py <lệnh> …` (chạy từ `D:\____TTT_____\SON_AI_VIDEO`;
@@ -160,12 +189,14 @@ Mọi lệnh: `python -I -X utf8 .claude\skills\TuấnJp_Dulich_ManDoc\scripts\r
    → thư mục `<audio>_dlv_work\`: `loi.json` + `loi_doc.txt` (lời + giây từng từ, có cache), `bai_bao\` (`bai_bao.txt`, `anh\bai_NN.jpg`),
    `khung\clip_NN.jpg` (tờ khung có nhãn giây từng clip), `tai_nguyen.jpg`, `goi_y.txt` (tài nguyên ↔ lời), `ke_hoach.json` NHÁP
    (`CAN_CLAUDE_SUA: true`). Nháp đã: đặt tài nguyên KHỚP TÊN đúng giây lời nhắc (câu nhắc nhiều thứ → tách cảnh từng thứ), lấp cảnh còn
-   lại theo bậc (clip chưa dùng → ảnh chưa dùng → đoạn clip mới…), ảnh cần phóng > 2× thành thẻ, `sua_loi` gợi ý, CTA ở câu kêu gọi cuối.
+   lại theo bậc (clip chưa dùng → ảnh chưa dùng → đoạn clip mới…), ảnh cần phóng > 2× thành thẻ, `sua_loi` gợi ý, CTA ở câu kêu gọi cuối,
+   **khung `hanh_trinh` BẢN ĐỒ THẬT cho mọi câu di chuyển** (giờ + số + ảnh gắn ghim đặt sẵn, chừa tên + toạ độ — mục 13).
    Không truyền `--ngon-ngu` → tự nhận; nhận sai thì chạy lại với `--ngon-ngu`.
 2. **Claude đọc & viết kế hoạch:** đọc `goi_y.txt` trước (KHỚP RIÊNG = giữ đúng giây; GỢI Ý SỬA LỜI = kiểm rồi đưa vào `sua_loi`;
    KHÔNG KHỚP = tự ghép theo nghĩa; CÂU DI CHUYỂN = mỗi chuyến 1 `hanh_trinh`, mục 13), rồi `loi_doc.txt` + `bai_bao\bai_bao.txt`; MỞ `tai_nguyen.jpg`, MỌI `khung\clip_NN.jpg`, MỌI ảnh
    `bai_bao\anh\*.jpg` (chú thích ảnh do script đoán từ đoạn văn kế bên — chỉ là gợi ý, phải nhìn ảnh). Viết `ke_hoach.json` theo NGHĨA
-   (mẫu `references/vi-du-ha-noi.json`, khuôn `references/ke_hoach_schema.md`, cách gán đồ hoạ theo kiểu câu: mục "Khuôn kể chuyện" ở trên):
+   (mẫu CHUẨN `references/vi-du-hanh-trinh-ban-do-that.json` — bản khách duyệt; thêm `references/vi-du-ha-noi.json`; khuôn
+   `references/ke_hoach_schema.md`; cách gán đồ hoạ theo kiểu câu: mục "Khuôn kể chuyện" ở trên; soát lại theo mục "CHUẨN XỊN"):
    - `canh`: mỗi cụm lời 1 cảnh khớp nghĩa (2,5–6 s, ≥ 1,2 s), đổi cảnh ở đầu cụm lời; đoạn clip nét, không lặp đoạn đã dùng, tránh khung
      xấu (che mặt, rung, lia nhanh); ảnh bài báo nhỏ (< 1080 ngang) dùng `khung: "the"`.
    - `do_hoa`: chữ tóm tắt, xuất hiện đúng giây lời nhắc (mục liệt kê / chip / từ khoá đặt `luc` = giây đọc chữ đó).
