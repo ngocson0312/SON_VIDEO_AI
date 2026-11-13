@@ -609,7 +609,7 @@ LAM.trich = d => {
 
 /* ================= HÀNH TRÌNH: điểm đi → điểm đến · phương tiện · thời gian / khoảng cách =================
    nen: troi (máy bay trên biển mây) · duong (xe chạy, núi + cây lùi) · bien (du thuyền giữa núi đá) ·
-        ban_do (bản đồ phố, đường đi vẽ dần) · canh (chỉ thẻ tuyến, đè lên footage có sẵn — vd clip máy bay của người dùng) */
+        ban_do (bản đồ phố, đường đi vẽ dần) · that (BẢN ĐỒ THẬT: vệ tinh + đường đi thật, mặc định) · canh (chỉ thẻ tuyến, đè lên footage có sẵn — vd clip máy bay của người dùng) */
 const md = (a, n) => ((a % n) + n) % n;
 const IC_PT = { may_bay: 'may_bay', o_to: 'o_to', xe_may: 'xe_may', xe_buyt: 'xe_buyt', xe_dap: 'xe_dap', tau_hoa: 'tau_hoa', tau_thuy: 'tau', di_bo: 'di_bo', khong: 'ghim' };
 let HT_U = 0;
@@ -974,6 +974,154 @@ function nenBanDo(host, u, d, pt) {
   };
 }
 
+/* ---- nền BẢN ĐỒ THẬT (nen "that"): ảnh vệ tinh Esri + đường đi thật + camera bay (camera từng khung tính sẵn ở ban_do_that.py).
+   Ô ảnh nạp theo nhu cầu: __seek chờ ô của khung đó decode xong (CHO) rồi mới vẽ canvas (VE_SAU); ô lâu không dùng thì nhả. ---- */
+const CHO = [], VE_SAU = [];
+const ANH_O = new Map();
+let KHUNG_SO = 0;
+function oAnh(base, z, x, y) {
+  const k = `${z}_${x}_${y}`;
+  let o = ANH_O.get(k);
+  if (!o) { const im = new Image(); im.src = base + k + '.jpg'; o = { im, p: im.decode().catch(() => null) }; ANH_O.set(k, o); }
+  o.dung = KHUNG_SO;
+  if (!o.im.complete) CHO.push(o.p);
+  return o.im;
+}
+function donAnhO() {
+  if (ANH_O.size < 700) return;
+  for (const [k, o] of ANH_O) if (KHUNG_SO - o.dung > 40) { o.im.src = ''; ANH_O.delete(k); }
+}
+const MAY_BAY_TREN = `<svg viewBox="0 0 100 100"><defs><linearGradient id="mbg" x1="0" x2="1"><stop offset="0" stop-color="#E9EDF2"/><stop offset=".5" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D5DBE3"/></linearGradient></defs>
+  <path d="M50 2C55 2 57 9 57 17L57 36L95 57L95 66L57 55L56 79L69 89L69 95L50 90L31 95L31 89L44 79L43 55L5 66L5 57L43 36L43 17C43 9 45 2 50 2Z" fill="url(#mbg)" stroke="rgba(30,40,55,.45)" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M50 8V86" stroke="rgba(30,40,55,.18)" stroke-width="2"/><circle cx="50" cy="12" r="3.2" fill="#22324a"/></svg>`;
+function nenThat(host, u, d, pt) {
+  const n = mk('div', 'htn that', host);
+  const bd = d.bd;
+  if (!bd || !bd.cam || !bd.cam.length) { console.error('hành trình ' + d.id + ': thiếu bản đồ thật (bd)'); return null; }
+  const cv = mk('canvas', 'bd_cv', n); cv.width = 1080; cv.height = 1920;
+  const g = cv.getContext('2d'); g.imageSmoothingQuality = 'high';
+  mk('div', 'toi_vien', n);
+  const R = bd.duong, FY = bd.foc_y || 945;
+  const cum = [0];
+  for (let i = 1; i < R.length; i++) cum.push(cum[i - 1] + Math.hypot(R[i][0] - R[i - 1][0], R[i][1] - R[i - 1][1]));
+  const LT = cum[cum.length - 1] || 1e-9;
+  const may = pt === 'may_bay';
+  n.insertAdjacentHTML('beforeend', `<svg class="tuyen_bd" width="1080" height="1920"><defs>
+      <linearGradient id="rgt${u}" x1="0" x2="1"><stop offset="0" stop-color="#FFE3A3"/><stop offset="1" stop-color="#E9AE4B"/></linearGradient></defs>
+    <path class="vien" fill="none" stroke="rgba(6,8,12,.5)" stroke-width="${may ? 0 : 20}" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="mo" fill="none" stroke="${may ? 'rgba(255,255,255,.75)' : 'rgba(255,240,215,.55)'}" stroke-width="${may ? 5 : 8}" stroke-linecap="round" stroke-linejoin="round" ${may ? 'stroke-dasharray="2 16"' : ''}/>
+    <path class="sang" fill="none" stroke="url(#rgt${u})" stroke-width="${may ? 9 : 11}" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 10px rgba(244,198,106,.85))"/></svg>`);
+  const pVien = n.querySelector('.vien'), pMo = n.querySelector('.mo'), pSang = n.querySelector('.sang');
+  // nhãn phụ (quốc gia / thành phố quanh tuyến) — chỉ rõ lúc nhìn toàn tuyến
+  const phu = (bd.phu || []).map(([x, y, ten]) => ({ x, y, el: mk('div', 'phu_bd', n, esc(ten)) }));
+  const anhDi = d.xuat_phat.anh_url ? mk('div', 'anh_ghim', n, `<img src="${esc(d.xuat_phat.anh_url)}">`) : null;
+  const anhDen = d.diem_den.anh_url ? mk('div', 'anh_ghim', n, `<img src="${esc(d.diem_den.anh_url)}">`) : null;
+  const songA = mk('div', 'vong_lan', n), cham = mk('div', 'cham', n);
+  const dich = mk('div', 'dich', n), vongB = mk('div', 'vong_lan', n);
+  const ghim = mk('div', 'ghim_lon', n, icon('ghim'));
+  const tagA = mk('div', 'tag', n, esc(d.xuat_phat.ten)), tagB = mk('div', 'tag vang', n, esc(d.diem_den.ten));
+  const kcEl = d.thoi_gian && d.khoang_cach ? mk('div', 'kc_bd', n, `${icon('ban_do')}<span>${esc(d.khoang_cach)}</span>`) : null;
+  const xe = may ? mk('div', 'mb', n, MAY_BAY_TREN)
+    : pt === 'khong' ? mk('div', 'dau_sang', n) : mk('div', 'xe_nho', n, `<div class="ic">${icon(IC_PT[pt] || 'ghim')}</div>`);
+  mk('div', 'toi_duoi', n);
+  const camTai = t => {
+    const f = clamp((t - d.tu) * 30, 0, bd.cam.length - 1), i = Math.floor(f), j = Math.min(bd.cam.length - 1, i + 1), k = f - i;
+    const a = bd.cam[i], b = bd.cam[j];
+    return [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
+  };
+  const diemTai = kp => {                         // vị trí + hướng trên tuyến (chuẩn hoá Mercator)
+    const L = kp * LT;
+    let i = 1; while (i < cum.length - 1 && cum[i] < L) i++;
+    const a = R[i - 1], b = R[i], s = cum[i] - cum[i - 1], k = s > 0 ? (L - cum[i - 1]) / s : 0;
+    let j = i; while (j < R.length - 1 && Math.hypot(R[j][0] - a[0], R[j][1] - a[1]) < LT * .004) j++;
+    const q = R[j];
+    return { i, x: lerp(a[0], b[0], k), y: lerp(a[1], b[1], k), goc: Math.atan2(q[1] - a[1], q[0] - a[0]) };
+  };
+  const dat = (el, x, y) => css(el, { left: f1(x) + 'px', top: f1(y) + 'px' });
+  const tDen = d.luc_ten_den != null ? d.luc_ten_den : d.luc_den - .35;
+  const tDi = d.luc_ten_di != null ? d.luc_ten_di : d.tu + .35;
+  let wA = 0, hA = 0, wB = 0, hB = 0, wK = 0;
+  return {
+    el: n,
+    sau() { wA = tagA.offsetWidth; hA = tagA.offsetHeight; wB = tagB.offsetWidth; hB = tagB.offsetHeight; if (kcEl) wK = kcEl.offsetWidth; },
+    ve(t, TG, kp) {
+      const [fx, fy, z] = camTai(t), sc = 256 * Math.pow(2, z);
+      const P2 = (x, y) => [(x - fx) * sc + 540, (y - fy) * sc + FY];
+      // ô ảnh: mức lót (−2) rồi mức chính
+      const L = Math.max(1, Math.min(18, Math.floor(z + .5))), ve = [];
+      for (const lv of [Math.max(1, L - 2), L]) {
+        const nn = Math.pow(2, lv), s = 256 * Math.pow(2, z - lv);
+        const x0 = Math.floor((fx - 540 / sc) * nn), x1 = Math.floor((fx + 540 / sc) * nn);
+        const y0 = Math.max(0, Math.floor((fy - FY / sc) * nn)), y1 = Math.min(nn - 1, Math.floor((fy + (1920 - FY) / sc) * nn));
+        for (let tx = x0; tx <= x1; tx++) for (let ty = y0; ty <= y1; ty++) {
+          const im = oAnh(bd.tile, lv, md(tx, nn), ty);
+          ve.push([im, (tx / nn - fx) * sc + 540, (ty / nn - fy) * sc + FY, s]);
+        }
+      }
+      VE_SAU.push(() => {
+        g.fillStyle = '#0d1624'; g.fillRect(0, 0, 1080, 1920);
+        for (const [im, x, y, s] of ve) if (im.complete && im.naturalWidth) g.drawImage(im, x - .4, y - .4, s + .8, s + .8);
+      });
+      // tuyến
+      const S = R.map(p => P2(p[0], p[1]));
+      const dd = a => a.map((p, i) => (i ? 'L' : 'M') + f1(p[0]) + ' ' + f1(p[1])).join('');
+      const full = dd(S);
+      const hien = P(t, d.luc_di - .5, .5);
+      pVien.setAttribute('d', full); pMo.setAttribute('d', full);
+      css(pVien, { opacity: (hien * .9).toFixed(3) }); css(pMo, { opacity: (hien * (may ? .8 : .85)).toFixed(3) });
+      const v = diemTai(kp), pv = P2(v.x, v.y);
+      pSang.setAttribute('d', kp > 0 ? dd(S.slice(0, v.i).concat([pv])) : '');
+      // xe / máy bay
+      const kx = P(t, d.luc_di - .3, .35, E.outB), kr = P(t, d.luc_den - .05, .3);
+      dat(xe, pv[0], pv[1]);
+      css(xe, { opacity: (clamp(kx * 2) * (1 - kr)).toFixed(3) });
+      const gd = v.goc * 57.2958;
+      if (may) css(xe.firstElementChild, { transform: `rotate(${f1(gd + 90)}deg) scale(${(.5 + .5 * kx).toFixed(3)})` });
+      else if (xe.firstElementChild) css(xe.firstElementChild, { transform: `scale(${(.5 + .5 * kx).toFixed(3)})${Math.cos(v.goc) < -.2 && pt !== 'di_bo' ? ' scaleX(-1)' : ''}` });
+      // điểm đi
+      const pa = S[0], pb = S[S.length - 1];
+      dat(cham, pa[0], pa[1]); css(cham, { opacity: P(t, d.tu + .15, .35).toFixed(3) });
+      { const pr = md(TG, 1.6) / 1.1; dat(songA, pa[0], pa[1]); css(songA, { opacity: pr <= 1 ? (.9 * (1 - pr)).toFixed(3) : '0', transform: `scale(${(1 + 1.6 * E.outC(Math.min(1, pr))).toFixed(3)})` }); }
+      { const k = P(t, tDi, .45), duoi = pa[1] + 34 + hA < 1290;
+        dat(tagA, clamp(pa[0] - wA / 2, 40, 1040 - wA), duoi ? pa[1] + 34 : pa[1] - 34 - hA);
+        css(tagA, { opacity: (k * (1 - P(t, d.luc_den + .2, .4) * .35)).toFixed(3), transform: `translateY(${f1(14 * (1 - k))}px)` }); }
+      // điểm đến: vòng đích (lúc đọc tên) → ghim rơi + vòng lan (lúc tới)
+      dat(dich, pb[0], pb[1]); css(dich, { opacity: (P(t, tDen, .4) * (1 - P(t, d.luc_den, .3))).toFixed(3) });
+      const kg = P(t, d.luc_den - .05, .55, E.drop);
+      css(ghim, { left: f1(pb[0] - 48) + 'px', top: f1(pb[1] - 92) + 'px', opacity: clamp(kg * 3).toFixed(3), transform: `translateY(${f1(-110 * (1 - kg))}px)` });
+      { const ub = (t - d.luc_den - .3) / .8; dat(vongB, pb[0], pb[1]);
+        css(vongB, ub >= 0 && ub <= 1 ? { opacity: (.9 * (1 - ub)).toFixed(3), transform: `scale(${(1 + 2.4 * E.outC(ub)).toFixed(3)})` } : { opacity: '0' }); }
+      { const k = P(t, Math.min(tDen, d.luc_den) + .1, .45), tren = pb[1] - 104 - hB > 600;
+        dat(tagB, clamp(pb[0] - wB / 2, 40, 1040 - wB), tren ? pb[1] - 104 - hB : pb[1] + 30);
+        css(tagB, { opacity: k.toFixed(3), transform: `translateY(${f1(14 * (1 - k))}px)` }); }
+      // ảnh gắn ghim (Resources / bài báo)
+      const datAnh = (el, p, k, tren) => {
+        if (!el) return;
+        const w = 340, h = 236;
+        let x = clamp(p[0] - w / 2, 50, 1030 - w), y = p[1] - 76 - h;
+        if (tren && y < 590) y = p[1] + 34 + hA + 30;
+        if (!tren) { x = p[0] <= 540 ? p[0] + 110 : p[0] - 110 - w; x = clamp(x, 40, 1040 - w); y = clamp(p[1] - 200, 600, 1290 - h); }
+        css(el, { left: f1(x) + 'px', top: f1(y) + 'px', opacity: clamp(k * 1.6).toFixed(3), transform: `translateY(${f1(26 * (1 - k))}px) rotate(${tren ? -2.5 : 2.5}deg) scale(${(.85 + .15 * k).toFixed(3)})` });
+      };
+      datAnh(anhDi, pa, P(t, d.tu + .45, .5, E.outB) * (1 - P(t, d.luc_di + .15, .45)), true);
+      datAnh(anhDen, pb, P(t, d.luc_den + .35, .55, E.outB), false);
+      // khoảng cách nằm trên đường (lúc đọc số km)
+      if (kcEl) {
+        const m = diemTai(.5), pm = P2(m.x, m.y), k = P(t, d.luc_kc != null ? d.luc_kc : d.luc_di + .3, .45, E.outB);
+        const trong = pm[0] > 60 && pm[0] < 1020 && pm[1] - 112 > 590 && pm[1] < 1260;
+        const kh = clamp(k * 2) * (1 - P(t, d.luc_den, .4)) * (trong ? 1 : 0);
+        css(kcEl, { left: f1(clamp(pm[0] - wK / 2, 40, 1040 - wK)) + 'px', top: f1(pm[1] - 112) + 'px', opacity: kh.toFixed(3), transform: `translateY(${f1(14 * (1 - k))}px) scale(${(.6 + .4 * k).toFixed(3)})` });
+      }
+      for (const o of phu) {
+        const p = P2(o.x, o.y), w = o.w || (o.w = o.el.offsetWidth || 200);
+        // chỉ rõ lúc nhìn toàn tuyến; không ra mép phải, không xuống vùng sub
+        const k = clamp(1 - Math.abs(z - (bd.zO || z)) / 1.1) * P(t, d.luc_di + .3, .5) * clamp((1290 - p[1]) / 40) * clamp((p[1] - 600) / 40);
+        css(o.el, { left: f1(clamp(p[0] - 11, 30, 1050 - w)) + 'px', top: f1(p[1] - 22) + 'px', opacity: k.toFixed(3) });
+      }
+    },
+  };
+}
+
 /* ---- thẻ tuyến: dòng dẫn · điểm đi ⟶ điểm đến (cung vẽ dần + phương tiện chạy) · thời gian / khoảng cách ---- */
 function duongCung(nen) {
   if (nen === 'troi') return 'M70 170 Q470 -46 870 170';
@@ -990,7 +1138,8 @@ LAM.hanh_trinh = d => {
   else if (nen === 'duong') N = nenDuong(el, u, d, pt);
   else if (nen === 'bien') N = nenBien(el, u, d);
   else if (nen === 'ban_do') N = nenBanDo(el, u, d, pt);
-  const gon = nen === 'ban_do';
+  else if (nen === 'that') N = nenThat(el, u, d, pt);
+  const gon = nen === 'ban_do' || nen === 'that';
   const the = mk('div', 'ht_the' + (gon ? ' gon' : ''), el);
   const dan = mk('div', 'dan', the);
   const g1 = mk('span', 'gach', dan), dt = mk('span', '', dan, esc(d.dan || '')), g2 = mk('span', 'gach p', dan);
@@ -1015,7 +1164,7 @@ LAM.hanh_trinh = d => {
   const kcTren = !gon && !!d.thoi_gian && !!d.khoang_cach;
   const kcEl = kcTren ? mk('div', 'kc', tuyen, `${icon('ban_do')}<span>${esc(d.khoang_cach)}</span>`) : null;
   const chinh = d.thoi_gian || d.khoang_cach || '';
-  const phu = [d.nhan_tg, d.thoi_gian && d.khoang_cach && !kcTren ? d.khoang_cach : null].filter(Boolean).join(' · ');
+  const phu = [d.nhan_tg, d.thoi_gian && d.khoang_cach && !kcTren && nen !== 'that' ? d.khoang_cach : null].filter(Boolean).join(' · ');
   const tg = mk('div', 'tg', the);
   const tgIc = mk('div', 'ic', tg, icon(d.thoi_gian ? 'dong_ho' : 'ban_do'));
   const so = mk('div', 'so vang_grad', tg, esc(chinh));
@@ -1044,7 +1193,7 @@ LAM.hanh_trinh = d => {
       const TG = t - d.tu;
       css(el, { opacity: (v * (1 - r)).toFixed(3) });
       const kp = E.inOutS(clamp((t - d.luc_di) / Math.max(.3, d.luc_den - d.luc_di))), kden = clamp((t - d.luc_den) / .5);
-      if (N) { if (nen !== 'ban_do') css(N.el, { transform: `scale(${(1.06 - .06 * E.outC(clamp(TG / 1.2))).toFixed(4)})` }); N.ve(t, TG, kp, kden); }
+      if (N) { if (nen !== 'ban_do' && nen !== 'that') css(N.el, { transform: `scale(${(1.06 - .06 * E.outC(clamp(TG / 1.2))).toFixed(4)})` }); N.ve(t, TG, kp, kden); }
       const kc = P(t, d.tu + .15, .65, E.outB);
       css(the, { transform: `translateY(${f1(-70 * (1 - kc) - 24 * r)}px)`, opacity: clamp(kc * 1.6).toFixed(3) });
       { const k = P(t, d.tu + .2, .8); css(dt, { opacity: k.toFixed(3), letterSpacing: lerp(.8, .42, k).toFixed(3) + 'em' }); css(g1, { width: f1(90 * k) + 'px' }); css(g2, { width: f1(90 * k) + 'px' }); }
@@ -1246,6 +1395,7 @@ window.__ready = (async () => {
 })();
 
 window.__seek = async (t) => {
+  KHUNG_SO++;
   const ds = [];
   veFootage(t, ds);
   veMau(t);
@@ -1254,6 +1404,9 @@ window.__seek = async (t) => {
   veSub(t);
   if (CT) CT.ve(t);
   await Promise.all(ds.map(im => im.decode().catch(() => null)));
+  if (CHO.length) await Promise.all(CHO.splice(0));          // ô ảnh vệ tinh của khung này (nen that)
+  for (const f of VE_SAU.splice(0)) f();
+  donAnhO();
   return t;
 };
 

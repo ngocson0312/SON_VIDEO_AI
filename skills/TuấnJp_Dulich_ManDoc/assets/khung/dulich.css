@@ -151,6 +151,30 @@ html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; 
 .htn.bien { background: linear-gradient(180deg, #1A2F55 0%, #4A6E9E 26%, #D99A74 46%, #F3C28C 52%); }
 .htn.bien .bot { position: absolute; width: 90px; height: 22px; margin: -11px 0 0 -45px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,255,255,.85), rgba(255,255,255,0)); }
 .htn.ban_do { background: #0F131A; }
+/* bản đồ thật: ảnh vệ tinh (canvas) + tối viền + tuyến vàng + ghim / nhãn / ảnh gắn ghim */
+.htn.that { background: #0d1624; }
+.htn.that .bd_cv { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; filter: saturate(1.16) contrast(1.1) brightness(.96); }
+.htn.that .toi_vien { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 80% 62% at 50% 50%, rgba(0,0,0,0) 52%, rgba(3,6,12,.55) 100%), linear-gradient(180deg, rgba(4,7,12,.5) 0%, rgba(4,7,12,0) 32%); }
+.htn.that svg.tuyen_bd { position: absolute; left: 0; top: 0; overflow: visible; }
+.htn.that .cham { position: absolute; width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%; background: #fff; border: 8px solid var(--vang); box-shadow: 0 0 0 10px rgba(244,198,106,.22), 0 6px 18px rgba(0,0,0,.5); }
+.htn.that .vong_lan { position: absolute; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%; border: 4px solid var(--vang); opacity: 0; }
+.htn.that .dich { position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; border: 5px solid var(--vang); background: rgba(244,198,106,.2); box-shadow: 0 0 22px rgba(244,198,106,.55); }
+.htn.that .ghim_lon { position: absolute; width: 96px; height: 96px; color: var(--vang); filter: drop-shadow(0 10px 16px rgba(0,0,0,.6)); }
+.htn.that .ghim_lon svg { width: 96px; height: 96px; fill: rgba(244,198,106,.25); }
+.htn.that .tag { position: absolute; white-space: nowrap; padding: 14px 26px; border-radius: 999px; background: rgba(10,14,22,.84); border: 1.5px solid rgba(255,230,180,.45); font: 800 36px var(--f-sans); color: #fff; box-shadow: 0 12px 26px rgba(0,0,0,.45); }
+.htn.that .tag.vang { background: var(--grad-vang); color: #2A1C08; border: none; }
+.htn.that .dau_sang { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; background: #FFF6DA;
+  box-shadow: 0 0 0 8px rgba(244,198,106,.45), 0 0 34px 14px rgba(244,198,106,.7); }
+.htn.that .mb { position: absolute; width: 0; height: 0; }
+.htn.that .mb svg { position: absolute; left: -58px; top: -58px; width: 116px; height: 116px; overflow: visible; filter: drop-shadow(10px 18px 8px rgba(0,0,0,.5)); }
+.htn.that .anh_ghim { position: absolute; width: 340px; height: 236px; border-radius: 24px; overflow: hidden; border: 6px solid #fff; background: #1b2230; box-shadow: 0 20px 44px rgba(0,0,0,.55); }
+.htn.that .anh_ghim img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.htn.that .kc_bd { position: absolute; display: inline-flex; align-items: center; gap: 10px; padding: 10px 24px 10px 16px; border-radius: 999px; white-space: nowrap;
+  background: rgba(10,14,22,.86); border: 2px solid var(--vang); font: 800 36px var(--f-sans); color: #fff; box-shadow: 0 10px 22px rgba(0,0,0,.45); transform-origin: 50% 100%; }
+.htn.that .kc_bd svg { width: 34px; height: 34px; color: var(--vang); }
+.htn.that .phu_bd { position: absolute; font: 800 30px var(--f-sans); color: #fff; letter-spacing: .08em; white-space: nowrap; text-shadow: 0 2px 8px rgba(0,0,0,.95), 0 0 3px #000; }
+.htn.that .phu_bd::before { content: ''; display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #fff; margin-right: 10px; vertical-align: middle; box-shadow: 0 0 0 3px rgba(0,0,0,.4); }
 .htn.ban_do .cham { position: absolute; width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%; background: #fff; border: 8px solid var(--vang); box-shadow: 0 0 0 10px rgba(244,198,106,.22), 0 6px 18px rgba(0,0,0,.5); }
 .htn.ban_do .ghim_lon { position: absolute; width: 96px; height: 96px; color: var(--vang); filter: drop-shadow(0 10px 16px rgba(0,0,0,.6)); }
 .htn.ban_do .ghim_lon svg { width: 96px; height: 96px; fill: rgba(244,198,106,.25); }

@@ -3,6 +3,7 @@
 
   python -I -X utf8 run.py quet   --audio <giọng> [--link <url bài báo>] [--res <thư mục clip/ảnh>] [--nhac <file>] [--ngon-ngu vi] [--work <dir>]
   python -I -X utf8 run.py kiem-kh --work <dir>
+  python -I -X utf8 run.py tim "<tên địa điểm>"   (toạ độ cho hành trình bản đồ thật — cần mạng)
   python -I -X utf8 run.py sub-dich --work <dir> --ngon-ngu ko   (giọng 1 tiếng, CHỮ trên hình tiếng khác: thêm khung sub dịch)
   python -I -X utf8 run.py duyet  --work <dir>            (dựng ảnh duyệt duyet.jpg + bang_duyet.txt)
   python -I -X utf8 run.py dung   --work <dir> [--luong 4] [--out <ra.mp4>] [--xem-truoc]
@@ -21,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('lenh')
+    ap.add_argument('ten', nargs='?')
     ap.add_argument('--audio')
     ap.add_argument('--link')
     ap.add_argument('--res')
@@ -39,6 +41,12 @@ def main():
             raise SystemExit('⛔ thiếu --audio')
         from quet import quet
         quet(a.audio, a.link, a.res, a.nhac, a.ngon_ngu, a.work)
+        return
+    if L == 'tim':
+        if not a.ten:
+            raise SystemExit('⛔ run.py tim "<tên địa điểm>"')
+        from ban_do_that import tim
+        tim(a.ten)
         return
     if not a.work:
         raise SystemExit('⛔ thiếu --work')

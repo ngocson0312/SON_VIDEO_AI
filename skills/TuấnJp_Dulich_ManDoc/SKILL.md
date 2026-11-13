@@ -12,6 +12,8 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
 - Bản điền chuẩn (lần chạy thật đầu, Hà Nội 118 s): **`references/vi-du-ha-noi.json`** — đọc trước khi viết kế hoạch mới.
 - Bản điền chuẩn có HÀNH TRÌNH (Incheon ✈ Nội Bài 🚗 trung tâm, Hồ Gươm → Văn Miếu; 104 s): **`references/vi-du-hanh-trinh.json`** —
   đọc khi lời có câu di chuyển A → B (mục "CÂU DI CHUYỂN" trong `goi_y.txt`).
+- Bản điền chuẩn hành trình trên **BẢN ĐỒ THẬT** (mặc định từ 13/11/2026 — vệ tinh + đường đi thật):
+  **`references/vi-du-hanh-trinh-ban-do-that.json`**.
 - Bản điền chuẩn hành trình ĐÈ LÊN CLIP THẬT (`nen: "canh"`: ảnh sân bay đi → clip máy bay → thẻ ảnh sân bay đến; clip quay từ
   trong ô tô): **`references/vi-du-hanh-trinh-canh.json`** — dùng khi Resources có ảnh / clip phương tiện.
 - Số phong cách: `scripts/chung.py` (khổ, vùng an toàn, sub, bảng chuyển cảnh, bảng SFX, mức nhạc, chữ CTA mặc định theo ngôn ngữ) +
@@ -30,6 +32,7 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
 | 13/11/2026 | Hà Nội kịch bản 2 (KịchBảnVoice_1.mp3: Incheon → Nội Bài ~4 tiếng rưỡi bay, Nội Bài → trung tâm 27 km ô tô 40–50 phút, Hồ Gươm → Văn Miếu 2,5 km) — người dùng: "kịch bản nói di chuyển từ A về B mất bao lâu thì vẽ icon xịn sò bay, có điểm xuất phát, điểm đến, thời gian di chuyển, bg môi trường di chuyển (trên không / đi đường); Resources có cảnh máy bay thì lấy vào ghép text, không có thì tự vẽ; sau này xe máy / ô tô, Hà Nội → Hạ Long, Hoàn Kiếm → nhà thờ… đều được" | Đồ hoạ mới **`hanh_trinh`** (mục 13): thẻ tuyến kính tối (điểm đi ●—cung vàng vẽ dần—📍 điểm đến, huy hiệu phương tiện chạy theo cung, máy bay xoay theo hướng bay, nhãn km nằm trên đường, số thời gian lớn vàng + nhãn phương tiện) trên **nền môi trường TỰ VẼ** đầy khung: `troi` máy bay chở khách to bay giữa biển mây hoàng hôn 4 lớp trôi + vệt khói; `duong` xe (ô tô / xe máy có người lái / xe khách / tàu hoả / xe đạp) chạy trên đường, bánh xoay, vạch kẻ + cọc tiêu lướt, cảnh xa `doi` / `thanh_pho` / `nui`; `bien` du thuyền buồm nâu bập bềnh giữa núi đá, sóng lớp, bọt; `ban_do` bản đồ phố tối, đường đi vàng vẽ dần, hồ vẽ đúng tại điểm là hồ; `canh` chỉ thẻ đè lên clip phương tiện có sẵn trong Resources. SFX tự tổng hợp (`tao_sfx_ht.py`: phản lực lướt qua, xe chạy, sóng nước). Kiểm: số giờ / km phải có trong lời ("rưỡi" = 30), giờ xe chạy / tới / hiện số đúng thứ tự. Kèm: SFX CTA trước chỉ kêu khi có nhạc nền (thụt lề sai) → sửa; `ke_hoach.json` lưu có BOM (Notepad / PowerShell 5.1) không còn lỗi đọc; Whisper tách "2 ,5" → ghép lại khi soát số; `goi_y` ghép nhầm ảnh "Hoàng thành Thăng Long… của Thủ đô" vào «của thủ đô» → bỏ khớp chú thích mà mọi từ thực chỉ thuộc cụm nhắc ≥ 4 lần ("thủ đô", "Hà Nội"). Người dùng: "ô tô bị ngược à" → vẽ lại xe đầu hướng PHẢI (nắp capô dài phía trước), nhãn km cách cung ≥ 50 px → bản 2. "Cập nhật hết vào skill để test" → **tự dò câu di chuyển** (`chung.cau_di_chuyen`: số + km / phút / tiếng / 時間 / 시간 / 小时… + từ đi lại, bỏ giờ mở cửa "từ 8 giờ", "dài 5 km"; đoán phương tiện, "sân bay" không tính là bay, "Bay" tiếng Anh = vịnh) → mục CÂU DI CHUYỂN trong `goi_y.txt` + ⚠ ở `kiem-kh`, `bo_di_chuyen` để bỏ câu dò nhầm; mẫu `references/vi-du-hanh-trinh.json` |
 | 13/11/2026 | TEST skill: KịchBảnVoice_1 + Resources thêm `Video_máybay.mp4`, ảnh `sân bay incheon.jpg` / `sân bay nội bài.jpg`, KHÔNG link bài báo — người dùng "duyệt, dựng luôn" | Tự dò bắt đúng 4 câu di chuyển; `goi_y` đặt ảnh sân bay + clip máy bay đúng câu. Lần đầu dựng `nen: "canh"`: chặng bay = ảnh sân bay Incheon → clip máy bay trên trời → thẻ ảnh Nội Bài (`the_y` 1010 ngay dưới thẻ tuyến); chặng ô tô = clip quay từ trong xe chạy trên phố. Tự kiểm 12/12. Mẫu `references/vi-du-hanh-trinh-canh.json`. Thấy: tên file "sân bay incheon" khớp vào cụm chung «sân bay» (Whisper chèn "quốc tế" ở giữa) — đặt cảnh theo câu có TÊN RIÊNG |
 | 13/11/2026 | KịchBảnVoice_1 (giọng Việt) — người dùng: "làm 1 video sub thì là tiếng Hàn, giọng đọc vẫn là Việt Nam" → duyệt, dựng | Chế độ **SUB DỊCH** (ĐÃ CHỐT 1 ngoại lệ): `chu_ngon_ngu` tách tiếng CHỮ khỏi tiếng GIỌNG (`ngon_ngu`); lệnh `run.py sub-dich` tạo khung `sub_dich` theo cụm lời gốc; `kiem-kh` soát chữ Hàn / độ dài dòng (em) / cụm < 0,6 s / chồng cụm / lời chưa có sub; karaoke ước lượng theo nhịp lời gốc (`sub.karaoke_dich: false` tắt); hành trình, CTA (팔로우 / 팔로잉 / 좋아요…), nguồn ảnh theo tiếng chữ; tự dò câu di chuyển vẫn theo tiếng giọng. 48 cụm sub Việt gộp theo nghĩa còn 32 cụm Hàn 1–2 dòng. Mẫu `references/vi-du-sub-dich-ko.json` |
+| 13/11/2026 | KịchBảnVoice_1 bản tiếng Hàn — khách góp ý: "di chuyển máy bay hay ô tô thì kiểu dạng bản đồ map thực" → cập nhật skill, làm lại | Nền **`that` = BẢN ĐỒ THẬT** thành MẶC ĐỊNH cho mọi hành trình (`ban_do_that.py`): ảnh vệ tinh Esri + đường đi thật OSRM (Nội Bài → Hoàn Kiếm 26,7 km khớp lời 27 km; Hồ Gươm → Văn Miếu đi bộ 2,6 km) + cung bay Incheon → Nội Bài 2 684 km; camera từng khung tính sẵn (cận điểm đi z≈12 → lùi toàn tuyến → sà điểm đến), ô ảnh nạp theo khung (trang dựng chờ decode rồi vẽ canvas, nhả ô cũ). Ảnh Resources sân bay gắn ghim điểm đi / đến; tên nước (`diem_phu`) hiện lúc nhìn toàn tuyến; km trên tuyến. Sửa sau khi soi: máy bay ra khỏi khung lúc camera còn lùi → lùi TRƯỚC lúc rời bến 0,7 s; ảnh điểm đến đặt dưới ghim đè sub → đặt CẠNH ghim; nhãn km trôi lên mép thẻ lúc sà vào → ẩn khi tới / khi điểm neo ra khỏi vùng; ảnh Hà Nội mờ tối → sáng .96. Lệnh mới `run.py tim "<tên>"`. Ảnh vệ tinh Esri có chỗ ghép ảnh khác màu trên biển (dữ liệu thật, không phải lỗi dựng) |
 
 ## ĐÃ CHỐT (không tự đổi trừ khi người dùng yêu cầu)
 
@@ -84,8 +87,19 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
     4 tiếng rưỡi từ Incheon tới Nội Bài", "đi ô tô 27 km, 40–50 phút", "từ Hà Nội về Hạ Long", "từ Hoàn Kiếm ra Nhà thờ Lớn mất 5 phút đi bộ")
     → BẮT BUỘC 1 đồ hoạ `hanh_trinh` phủ trọn câu đó (lời không nói di chuyển thì KHÔNG tạo). Có: điểm đi + điểm đến (tên ngắn ≤ 26 ký tự,
     phần phụ vào `phu`), phương tiện, thời gian và / hoặc khoảng cách ĐÚNG như lời (không bịa; "~" khi lời nói "khoảng").
-    Nền: Resources có clip đúng phương tiện (máy bay, xe, tàu…) → cảnh clip đó + `nen: "canh"` (thẻ tuyến đè lên clip);
-    không có → TỰ VẼ: máy bay → `troi`, ô tô / xe máy / xe khách / tàu hoả / xe đạp → `duong` (`canh_xa`: `thanh_pho` khi đi vào / ra
+    **Nền MẶC ĐỊNH = BẢN ĐỒ THẬT `nen: "that"` (khách chốt 13/11/2026: "di chuyển máy bay hay ô tô thì kiểu bản đồ map thực"):**
+    ảnh vệ tinh Esri thật (cache chung `_cache_tiles\esri`) + ĐƯỜNG ĐI THẬT (ô tô / xe máy / xe buýt → OSRM, đi bộ → OSRM foot,
+    xe đạp → OSRM bike, máy bay → cung bay đường tròn lớn phồng nhẹ, tàu → cung thấp) + camera bay: cận điểm đi (ảnh `anh` gắn
+    trên ghim) → lùi ra toàn tuyến TRƯỚC lúc rời bến 0,7 s (phương tiện luôn trong khung) → máy bay bay / xe chạy, vạch vàng vẽ dần
+    → sà vào điểm đến, ghim rơi + vòng toả + ảnh điểm đến đặt CẠNH ghim (dưới ghim sẽ đè sub). Thẻ tuyến gọn ở trên (tên đi → tên
+    đến, số thời gian), km nằm trên tuyến lúc đọc số km. BẮT BUỘC `toa_do: [lat, lon]` cho `xuat_phat` + `diem_den`
+    (`run.py tim "<tên>"` — Nominatim, cần mạng; lấy điểm cụ thể: sân bay = aerodrome, đền / di tích = cổng / vé; "trung tâm
+    thành phố" = quận trung tâm, điểm dừng ngay sau). Tuỳ chọn: `anh` (res_XX / bai_XX gắn ghim), `diem_phu` [{ten, toa_do}] (tên
+    nước / thành phố hiện lúc nhìn toàn tuyến, viết đúng tiếng chữ — đặt xa nhãn ghim), `duong` (`o_to` / `di_bo` / `xe_dap` /
+    `cung` / `cung_thap` / `thang`), `zoom_gan`. `duyet` / `dung` tự tải ô ảnh + đường (cần mạng; in "đường thật ≈ X km" — lệch
+    xa số trong lời thì kiểm lại toạ độ). Không có toạ độ → ⚠ và lùi về nền tự vẽ dưới đây.
+    Nền KHÁC chỉ khi người dùng yêu cầu: Resources có clip đúng phương tiện → `nen: "canh"` (thẻ tuyến đè lên clip);
+    TỰ VẼ: máy bay → `troi`, ô tô / xe máy / xe khách / tàu hoả / xe đạp → `duong` (`canh_xa`: `thanh_pho` khi đi vào / ra
     thành phố, `nui` cho Hạ Long / Ninh Bình / Hà Giang, `doi` mặc định), thuyền → `bien`, đi bộ / quãng ngắn trong phố / không rõ
     phương tiện → `ban_do`. Giờ: tên điểm đi hiện lúc đọc tên đó, phương tiện CHẠY từ lúc đọc "di chuyển / bay…" (`luc_di`) tới lúc đọc
     tên điểm đến (`luc_den` ≈ giây chữ đến tên), số thời gian bật đúng giây đọc số (`luc_tg`), km nằm trên đường lúc đọc số km (`luc_kc`).
@@ -93,7 +107,7 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
     **Tự dò:** `quet` liệt kê mọi câu có số + km / phút / tiếng / giờ (mọi ngôn ngữ) + từ di chuyển ở mục "CÂU DI CHUYỂN" cuối
     `goi_y.txt` (kèm phương tiện đoán + câu trước để tìm điểm đi); `kiem-kh` báo ⚠ câu di chuyển chưa có `hanh_trinh` phủ. Câu dò nhầm
     (không phải đi lại, vd "nấu 8 tiếng") → ghi giây câu vào `bo_di_chuyen: [12.3]` cho hết ⚠. Mẫu đủ 3 kiểu (trời / đường / bản đồ):
-    **`references/vi-du-hanh-trinh.json`**.
+    **`references/vi-du-hanh-trinh.json`** (nền tự vẽ); BẢN ĐỒ THẬT (mặc định): **`references/vi-du-hanh-trinh-ban-do-that.json`** (h1 bay, h2 ô tô, h3 đi bộ — toạ độ, ảnh gắn ghim, `diem_phu`).
     **Nền `canh` (có tư liệu thật):** cảnh dưới thẻ nối theo lời — ảnh / clip ĐIỂM ĐI (tràn) → clip PHƯƠNG TIỆN (máy bay trên trời, xe
     chạy…) → ảnh ĐIỂM ĐẾN dạng thẻ `the_y` ≈ 1010 (thẻ tuyến cao tới y ≈ 740, thẻ ảnh nằm ngay dưới, đáy ≤ 1295). Clip quay từ TRONG
     xe / dashcam / cửa sổ máy bay cũng là clip phương tiện. Chọn đoạn clip có phương tiện nằm DƯỚI y 760 (thẻ tuyến che phần trên).
@@ -109,7 +123,7 @@ Kịch bản du lịch nào cũng gồm các KIỂU CÂU dưới đây (thành p
 | Hook mở (câu hỏi, "nếu bạn đang tìm…") 0–5 s | `tu_khoa` 2–4 từ bật đúng giây đọc (từ đầu kiểu `tay`) | cảnh đẹp nhất (flycam, toàn cảnh), `loe`; câu dài thì 2 cảnh | chưa nói tên điểm đến thì chưa hiện tên |
 | Lần đầu gọi tên điểm đến | `mo_dau`: `tren` "Khám phá" / "Welcome to" / "ようこそ", `chinh` = TÊN, `viet_tay` = câu định danh trong lời, `duoi` = nước / tỉnh | toàn cảnh, `zoom` | 1 lần / video |
 | Con số (năm, km, mét, số đảo…) | `so_lon` (`dem_tu` = giây đọc số) | cảnh liên quan, giữ nguyên | số phải có trong lời / bài báo |
-| Di chuyển A → B (bay / đi xe / đi thuyền / đi bộ, mất bao lâu, bao xa) | **`hanh_trinh`** phủ trọn câu (mục 13) | clip phương tiện trong Resources → `nen: "canh"`; không có → nền tự vẽ (`troi` / `duong` / `bien` / `ban_do`) | 2 câu liền (km rồi thời gian) gộp 1 hành trình; km câu sau "cách X khoảng 2,5 km" cũng là hành trình |
+| Di chuyển A → B (bay / đi xe / đi thuyền / đi bộ, mất bao lâu, bao xa) | **`hanh_trinh`** phủ trọn câu (mục 13) | **BẢN ĐỒ THẬT** `nen: "that"` (vệ tinh + đường đi thật, `toa_do` 2 điểm, ảnh Resources của điểm đi / đến gắn ghim); nền tự vẽ / `canh` chỉ khi người dùng muốn | 2 câu liền (km rồi thời gian) gộp 1 hành trình; km câu sau "cách X khoảng 2,5 km" cũng là hành trình |
 | 2–3 đặc điểm ngắn nói liền | `chip` (đáy y 1292) hoặc `tu_khoa` | cảnh minh hoạ chung | icon theo nghĩa (`ICON_HOP_LE`) |
 | Mở 1 địa điểm / mục lớn | `chuong` đánh số 01, 02… (`ten` = tên, `phu` = mô tả ngắn từ lời) | tài nguyên KHỚP TÊN (`goi_y.txt`) hoặc ảnh bài báo dạng thẻ (`chuong` y ≈ 190) | + `ghim` khi lời nói vị trí ("nằm giữa…") |
 | 2–6 thứ quanh 1 điểm (cầu, đền, bãi…) | `liet_ke` bảng kính, `luc` = giây đọc từng mục | 1 cảnh nền | có ảnh từng mục → montage (dòng dưới) |

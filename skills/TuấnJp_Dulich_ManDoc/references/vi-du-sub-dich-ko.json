@@ -1,8 +1,8 @@
 {
- "_ghi_chu": "MẪU CHUẨN SUB DỊCH (13/11/2026): giọng tiếng Việt (KịchBảnVoice_1), MỌI chữ trên hình tiếng Hàn theo yêu cầu người dùng. ngon_ngu = vi (giọng), chu_ngon_ngu = ko (chữ). sub_dich: 48 cụm gốc (run.py sub-dich) gộp theo nghĩa còn 32 cụm, mỗi cụm 1–2 dòng ngắt \" / \". Đồ hoạ / hành trình / CTA cùng giây bản tiếng Việt (vi-du-hanh-trinh-canh.json), chữ dịch sang Hàn; CTA bỏ nut / nut_da / nhan_icon để lấy mặc định 팔로우 / 팔로잉 / 좋아요. Đừng chép giây — chép CÁCH DỊCH.",
+ "_ghi_chu": "MẪU CHUẨN SUB DỊCH (13/11/2026): giọng tiếng Việt, MỌI chữ trên hình tiếng Hàn theo yêu cầu người dùng. ngon_ngu = vi (giọng), chu_ngon_ngu = ko (chữ). sub_dich: 48 cụm gốc (run.py sub-dich) gộp theo nghĩa còn 32 cụm, 1–2 dòng ngắt \" / \". Hành trình h1–h3 trên bản đồ thật, nhãn / diem_phu tiếng Hàn. CTA bỏ nut / nut_da / nhan_icon để lấy mặc định 팔로우 / 팔로잉 / 좋아요. Chép CÁCH DỊCH.",
  "CAN_CLAUDE_SUA": false,
  "ngon_ngu": "vi",
- "tieu_de": "Hà Nội — giọng Việt, chữ / sub tiếng Hàn (khách Hàn Quốc)",
+ "tieu_de": "Hà Nội — giọng Việt, chữ / sub tiếng Hàn, hành trình trên BẢN ĐỒ THẬT (khách góp ý)",
  "kenh": {
   "ten": "",
   "handle": "",
@@ -294,14 +294,24 @@
    "tu": 5.14,
    "den": 12.55,
    "phuong_tien": "may_bay",
-   "nen": "canh",
+   "nen": "that",
    "xuat_phat": {
     "ten": "인천",
-    "phu": "한국"
+    "phu": "한국",
+    "toa_do": [
+     37.46346,
+     126.44171
+    ],
+    "anh": "res_06"
    },
    "diem_den": {
     "ten": "노이바이",
-    "phu": "하노이"
+    "phu": "하노이",
+    "toa_do": [
+     21.21889,
+     105.80446
+    ],
+    "anh": "res_07"
    },
    "thoi_gian": "~4시간 30분",
    "nhan_tg": "비행 시간",
@@ -309,7 +319,30 @@
    "luc_di": 8.2,
    "luc_tg": 8.75,
    "luc_ten_den": 11.3,
-   "luc_den": 11.6
+   "luc_den": 11.6,
+   "diem_phu": [
+    {
+     "ten": "한국",
+     "toa_do": [
+      35.4,
+      128.4
+     ]
+    },
+    {
+     "ten": "중국",
+     "toa_do": [
+      30.8,
+      113.6
+     ]
+    },
+    {
+     "ten": "베트남",
+     "toa_do": [
+      20.6,
+      104.2
+     ]
+    }
+   ]
   },
   {
    "id": "d02",
@@ -328,14 +361,22 @@
    "tu": 15.6,
    "den": 26.3,
    "phuong_tien": "o_to",
-   "nen": "canh",
+   "nen": "that",
    "xuat_phat": {
     "ten": "노이바이",
-    "phu": "국제공항"
+    "phu": "국제공항",
+    "toa_do": [
+     21.21889,
+     105.80446
+    ]
    },
    "diem_den": {
     "ten": "시내 중심",
-    "phu": "하노이"
+    "phu": "하노이",
+    "toa_do": [
+     21.02883,
+     105.85254
+    ]
    },
    "thoi_gian": "40–50분",
    "nhan_tg": "교통 상황에 따라",
@@ -452,13 +493,21 @@
    "tu": 51.74,
    "den": 56.6,
    "phuong_tien": "khong",
-   "nen": "ban_do",
+   "nen": "that",
    "xuat_phat": {
-    "ten": "호안끼엠 호수"
+    "ten": "호안끼엠 호수",
+    "toa_do": [
+     21.02883,
+     105.85254
+    ]
    },
    "diem_den": {
     "ten": "문묘",
-    "phu": "국자감"
+    "phu": "국자감",
+    "toa_do": [
+     21.02764,
+     105.8352
+    ]
    },
    "khoang_cach": "~2.5km",
    "luc_ten_di": 52.2,

@@ -475,7 +475,13 @@ def _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj):
     if pt not in PHUONG_TIEN:
         E(f"{did}: phuong_tien lạ «{pt}» (có: {', '.join(PHUONG_TIEN)})")
         d['phuong_tien'] = pt = 'khong'
-    nen = d.setdefault('nen', NEN_PT[pt])
+    co_td = all(isinstance(d.get(k), dict) and d[k].get('toa_do') for k in ('xuat_phat', 'diem_den'))
+    if 'nen' not in d:                 # khách chốt 13/11/2026: hành trình = BẢN ĐỒ THẬT (vệ tinh + đường đi thật)
+        d['nen'] = 'that' if co_td else NEN_PT[pt]
+        if not co_td:
+            Wn(f"{did}: chưa có toa_do điểm đi / điểm đến → đang vẽ nền tự vẽ «{d['nen']}»; mặc định là BẢN ĐỒ THẬT — "
+               f"thêm \"toa_do\": [lat, lon] cho xuat_phat + diem_den (run.py tim \"<tên>\")")
+    nen = d['nen']
     if nen not in NEN_HT:
         E(f"{did}: nen lạ «{nen}» (có: {', '.join(NEN_HT)})")
         d['nen'] = nen = NEN_PT[pt]
@@ -495,6 +501,28 @@ def _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj):
         kiem_chu(o.get('phu'), f'{did}.{k}.phu')
         if len(o['ten']) > 26:
             Wn(f"{did}: {k}.ten «{o['ten']}» dài — rút gọn tên (≤ 26 ký tự), phần phụ đưa vào «phu»")
+    if nen == 'that':
+        from ban_do_that import DUONG_HL, km_giua
+        for k in ('xuat_phat', 'diem_den'):
+            td = d[k].get('toa_do')
+            try:
+                la, lo = float(td[0]), float(td[1])
+                assert -85 <= la <= 85 and -180 <= lo <= 180
+                d[k]['toa_do'] = [la, lo]
+            except Exception:
+                E(f"{did}: nen «that» (bản đồ thật) cần {k}.toa_do = [lat, lon] (run.py tim \"<tên>\" hoặc lấy từ Google Maps)")
+                return False
+        if d.get('duong') and d['duong'] not in DUONG_HL:
+            E(f"{did}: duong lạ «{d['duong']}» (có: {', '.join(DUONG_HL)})")
+            d.pop('duong')
+        kc = km_giua(d['xuat_phat']['toa_do'], d['diem_den']['toa_do'])
+        if kc < .15:
+            E(f"{did}: điểm đi và điểm đến cách nhau {kc * 1000:.0f} m — kiểm lại toa_do")
+        for o in d.get('diem_phu') or []:
+            if not isinstance(o, dict) or not o.get('ten') or not isinstance(o.get('toa_do'), (list, tuple)) or len(o['toa_do']) != 2:
+                E(f'{did}: diem_phu phải là [{{"ten": …, "toa_do": [lat, lon]}}]')
+                continue
+            kiem_chu(o['ten'], f'{did}.diem_phu')
     if nen == 'duong':
         xa = d.setdefault('canh_xa', 'doi')
         if xa not in CANH_XA:
@@ -717,6 +745,23 @@ def giai(work, bao=loi):
         if loai == 'hanh_trinh':
             if not _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj):
                 continue
+            if d['nen'] == 'that':
+                CB.append({'id': did, 'loai': 'ban_do_that'})
+            for k in ('xuat_phat', 'diem_den'):          # ảnh Resources / bài báo gắn cạnh ghim điểm đi / đến (nen that)
+                an = d[k].get('anh')
+                if not an:
+                    continue
+                a = NG.get(an)
+                if d['nen'] != 'that':
+                    Wn(f'{did}: {k}.anh chỉ dùng với nen «that» — bỏ qua')
+                elif not a or a['loai'] != 'anh':
+                    E(f"{did}: {k}.anh «{an}» không có (res_XX / bai_XX)")
+                else:
+                    d[k]['aw'], d[k]['ah'] = a['w'], a['h']
+                    CB.append({'id': f'{did}_{k}', 'loai': 'anh_ht', 'did': did, 'k': k, 'file': a['file']})
+                    if a.get('bai'):
+                        nguon_anh.append({'tu': d['tu'] + .3, 'den': d['den'],
+                                          'chu': f"{LN['anh']}: {tn.get('nguon_bai') or 'bài báo'}"})
         for f in TRUONG_CHU.get(loai, ()):
             kiem_chu(d.get(f), f'{did}.{f}')
         buoc ={'tu_khoa': (0, .6), 'chip': (0, .2), 'liet_ke': (.5, .4)}.get(loai, (0, .3))

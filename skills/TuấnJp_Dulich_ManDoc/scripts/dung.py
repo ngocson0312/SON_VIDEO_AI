@@ -40,6 +40,10 @@ def chuan_bi(work, CB, KH, bao=loi):
     hdr_vf = None
     t0 = time.time()
     for c in CB:
+        if c['loai'] == 'ban_do_that':
+            from ban_do_that import chuan_bi as bd_chuan_bi
+            dh[c['id']]['bd'] = bd_chuan_bi(work, dh[c['id']], bao)
+            continue
         if c['loai'] == 'clip':
             khoa = bam(c['file'], c['vao'], c['toc'], c['n'], c['cat_x'], c['cat_y'], MAU_CLIP, 2)
             d = fd / f"{c['id']}_{khoa}"
@@ -91,6 +95,8 @@ def chuan_bi(work, CB, KH, bao=loi):
                     m[c['id']]['nen'] = url(fn)
             elif c['loai'] == 'anh_the':
                 dh[c['id']]['anh_url'] = url(fa)
+            elif c['loai'] == 'anh_ht':
+                dh[c['did']][c['k']]['anh_url'] = url(fa)
             elif c['loai'] == 'avatar':
                 KH['cta']['avatar_url'] = url(fa)
     bao(f'  footage sẵn sàng ({time.time() - t0:.0f}s)')

@@ -80,7 +80,7 @@ SFX = {
 }
 # ---- hành trình: phương tiện → nền tự vẽ mặc định; nhãn theo ngôn ngữ (dòng dẫn, tên phương tiện, khoảng cách) ----
 PHUONG_TIEN = ('may_bay', 'o_to', 'xe_may', 'xe_buyt', 'xe_dap', 'tau_hoa', 'tau_thuy', 'di_bo', 'khong')
-NEN_HT = ('troi', 'duong', 'bien', 'ban_do', 'canh')
+NEN_HT = ('that', 'troi', 'duong', 'bien', 'ban_do', 'canh')   # that = BẢN ĐỒ THẬT (mặc định khi có toa_do 2 điểm)
 NEN_PT = {'may_bay': 'troi', 'o_to': 'duong', 'xe_may': 'duong', 'xe_buyt': 'duong', 'xe_dap': 'duong', 'tau_hoa': 'duong',
           'tau_thuy': 'bien', 'di_bo': 'ban_do', 'khong': 'ban_do'}
 _PT8 = ('may_bay', 'o_to', 'xe_may', 'xe_buyt', 'xe_dap', 'tau_hoa', 'tau_thuy', 'di_bo')
