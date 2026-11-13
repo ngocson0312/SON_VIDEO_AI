@@ -1104,7 +1104,7 @@ function nenThat(host, u, d, pt) {
         css(el, { left: f1(x) + 'px', top: f1(y) + 'px', opacity: clamp(k * 1.6).toFixed(3), transform: `translateY(${f1(26 * (1 - k))}px) rotate(${tren ? -2.5 : 2.5}deg) scale(${(.85 + .15 * k).toFixed(3)})` });
       };
       datAnh(anhDi, pa, P(t, d.tu + .45, .5, E.outB) * (1 - P(t, d.luc_di + .15, .45)), true);
-      datAnh(anhDen, pb, P(t, d.luc_den + .35, .55, E.outB), false);
+      datAnh(anhDen, pb, P(t, d.diem_den.luc_anh != null ? d.diem_den.luc_anh : d.luc_den + .35, .55, E.outB), false);
       // khoảng cách nằm trên đường (lúc đọc số km)
       if (kcEl) {
         const m = diemTai(.5), pm = P2(m.x, m.y), k = P(t, d.luc_kc != null ? d.luc_kc : d.luc_di + .3, .45, E.outB);

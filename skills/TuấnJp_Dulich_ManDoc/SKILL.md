@@ -33,6 +33,7 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
 | 13/11/2026 | TEST skill: KịchBảnVoice_1 + Resources thêm `Video_máybay.mp4`, ảnh `sân bay incheon.jpg` / `sân bay nội bài.jpg`, KHÔNG link bài báo — người dùng "duyệt, dựng luôn" | Tự dò bắt đúng 4 câu di chuyển; `goi_y` đặt ảnh sân bay + clip máy bay đúng câu. Lần đầu dựng `nen: "canh"`: chặng bay = ảnh sân bay Incheon → clip máy bay trên trời → thẻ ảnh Nội Bài (`the_y` 1010 ngay dưới thẻ tuyến); chặng ô tô = clip quay từ trong xe chạy trên phố. Tự kiểm 12/12. Mẫu `references/vi-du-hanh-trinh-canh.json`. Thấy: tên file "sân bay incheon" khớp vào cụm chung «sân bay» (Whisper chèn "quốc tế" ở giữa) — đặt cảnh theo câu có TÊN RIÊNG |
 | 13/11/2026 | KịchBảnVoice_1 (giọng Việt) — người dùng: "làm 1 video sub thì là tiếng Hàn, giọng đọc vẫn là Việt Nam" → duyệt, dựng | Chế độ **SUB DỊCH** (ĐÃ CHỐT 1 ngoại lệ): `chu_ngon_ngu` tách tiếng CHỮ khỏi tiếng GIỌNG (`ngon_ngu`); lệnh `run.py sub-dich` tạo khung `sub_dich` theo cụm lời gốc; `kiem-kh` soát chữ Hàn / độ dài dòng (em) / cụm < 0,6 s / chồng cụm / lời chưa có sub; karaoke ước lượng theo nhịp lời gốc (`sub.karaoke_dich: false` tắt); hành trình, CTA (팔로우 / 팔로잉 / 좋아요…), nguồn ảnh theo tiếng chữ; tự dò câu di chuyển vẫn theo tiếng giọng. 48 cụm sub Việt gộp theo nghĩa còn 32 cụm Hàn 1–2 dòng. Mẫu `references/vi-du-sub-dich-ko.json` |
 | 13/11/2026 | KịchBảnVoice_1 bản tiếng Hàn — khách góp ý: "di chuyển máy bay hay ô tô thì kiểu dạng bản đồ map thực" → cập nhật skill, làm lại | Nền **`that` = BẢN ĐỒ THẬT** thành MẶC ĐỊNH cho mọi hành trình (`ban_do_that.py`): ảnh vệ tinh Esri + đường đi thật OSRM (Nội Bài → Hoàn Kiếm 26,7 km khớp lời 27 km; Hồ Gươm → Văn Miếu đi bộ 2,6 km) + cung bay Incheon → Nội Bài 2 684 km; camera từng khung tính sẵn (cận điểm đi z≈12 → lùi toàn tuyến → sà điểm đến), ô ảnh nạp theo khung (trang dựng chờ decode rồi vẽ canvas, nhả ô cũ). Ảnh Resources sân bay gắn ghim điểm đi / đến; tên nước (`diem_phu`) hiện lúc nhìn toàn tuyến; km trên tuyến. Sửa sau khi soi: máy bay ra khỏi khung lúc camera còn lùi → lùi TRƯỚC lúc rời bến 0,7 s; ảnh điểm đến đặt dưới ghim đè sub → đặt CẠNH ghim; nhãn km trôi lên mép thẻ lúc sà vào → ẩn khi tới / khi điểm neo ra khỏi vùng; ảnh Hà Nội mờ tối → sáng .96. Lệnh mới `run.py tim "<tên>"`. Ảnh vệ tinh Esri có chỗ ghép ảnh khác màu trên biển (dữ liệu thật, không phải lỗi dựng) |
+| 13/11/2026 | KịchBảnVoice_1 bản tiếng Việt bản đồ thật (ban2) — khách: "hình chưa hiển thị lên là bị tắt rồi, hiện trước 1 chút cũng được, ví dụ ảnh sân bay Nội Bài và vài cảnh khác — chưa kịp nhìn đã mất" → làm lại (ban3) | Luật **KỊP NHÌN** (ĐÃ CHỐT 6): mục chữ ≥ 1,6 s, ảnh ≥ 2 s, hiện SỚM hơn lời được. Rà cả video: ảnh Nội Bài gắn ghim chỉ 1,0 s (hiện lúc tới nơi 11,2 s, bản đồ tắt 12,2 s) → ảnh + tên điểm đến hiện từ `luc_ten_den` (chữ "hạ cánh tại…" 10,6 s) tới `den` − 0,3 = 2,15 s; ghim Văn Miếu đứng 0,6 s → 1,85 s; dòng "Đền Ngọc Sơn", chip "Cửa hàng truyền thống" / "Văn hóa lâu đời" / "Không khí nhộn nhịp" / "Se lạnh" đứng 0,5–1,0 s → ≥ 1,6 s (hiện sớm 0,3–0,7 s + kéo `den`); "Nhịp sống đặc trưng" 1,4 s → 2,1 s; ảnh phở 1,8 s → 2,4 s (vào sớm 0,6 s). `kiem-kh` tự đẩy mục cuối của chip / liệt kê / từ khoá sớm lên cho đủ 1,6 s + ⚠ mọi chỗ còn ngắn |
 
 ## ĐÃ CHỐT (không tự đổi trừ khi người dùng yêu cầu)
 
@@ -59,6 +60,12 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
    th Leelawadee UI); với ja / zh / ko / th không có font viết tay → dòng "viết tay" thành Gothic đậm ×0,58, nằm DƯỚI tít, nghiêng −2° (lớp `phi_latin`).
 6. Đồ hoạ: mỗi cụm ý tối đa 1 đồ hoạ LỚN; `ghim` / `chip` (nhỏ) được chồng thời gian với 1 đồ hoạ lớn. Mỗi đồ hoạ ≥ 1,2 s. Chữ đồ hoạ
    TÓM TẮT 1–6 chữ, chữ khoá là chữ đắt nhất của lời. Đồ hoạ lớn có lớp tối mềm phía sau (luôn đọc được trên nền sáng).
+   **KỊP NHÌN (người dùng chốt 13/11/2026: "hình chưa hiển thị lên đã bị tắt, chưa kịp nhìn — hiện trước 1 chút cũng được"):**
+   mỗi mục chữ / chip / dòng liệt kê / tên điểm đến đứng **≥ 1,6 s** trước khi tắt (`HIEN_MIN`), ảnh (cảnh ảnh, ảnh gắn ghim hành
+   trình) **≥ 2 s** (`HIEN_ANH`), đồ hoạ lớn nên ≥ 2 s. Cách sửa theo thứ tự: cho hiện SỚM hơn lời 0,3–0,8 s (được phép) → kéo `den`
+   tới sát đồ hoạ / cảnh sau → bớt mục. `kiem-kh` TỰ cho mục cuối của chip / liệt kê / từ khoá hiện sớm cho đủ 1,6 s (giữ thứ tự),
+   ⚠ mọi chỗ còn ngắn (mục < 1,2 s, ảnh < 2 s, đồ hoạ lớn < 2 s, tới nơi < 1,5 s trước khi bản đồ tắt); cảnh nằm dưới nền hành trình
+   che kín thì không tính.
 7. Sub karaoke: Be Vietnam Pro 700 60 px trắng viền tối, tâm y 1405, ≤ 2 dòng × 30 ký tự, chữ đang đọc vàng `#FFC845` phồng nhẹ
    (mỗi bên nở ≤ ~5 px — từ dài không lấn sang từ bên cạnh). Gom cụm bằng quy hoạch động: ngắt ở dấu câu / chỗ ngừng ≥ 0,38 s,
    ưu tiên ngắt TRƯỚC liên từ / giới từ (`TU_TRUOC`: và, với, nhưng, khi… / and, with, of, where…), KHÔNG tách từ ghép
@@ -102,7 +109,9 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
     TỰ VẼ: máy bay → `troi`, ô tô / xe máy / xe khách / tàu hoả / xe đạp → `duong` (`canh_xa`: `thanh_pho` khi đi vào / ra
     thành phố, `nui` cho Hạ Long / Ninh Bình / Hà Giang, `doi` mặc định), thuyền → `bien`, đi bộ / quãng ngắn trong phố / không rõ
     phương tiện → `ban_do`. Giờ: tên điểm đi hiện lúc đọc tên đó, phương tiện CHẠY từ lúc đọc "di chuyển / bay…" (`luc_di`) tới lúc đọc
-    tên điểm đến (`luc_den` ≈ giây chữ đến tên), số thời gian bật đúng giây đọc số (`luc_tg`), km nằm trên đường lúc đọc số km (`luc_kc`).
+    tên điểm đến (`luc_den` ≈ giây chữ đến tên — hoặc sớm hơn ở chữ "hạ cánh / tới…" cho ghim đứng ≥ 1,5 s trước `den`), số thời gian
+    bật đúng giây đọc số (`luc_tg`), km nằm trên đường lúc đọc số km (`luc_kc`). Bản đồ thật: `luc_ten_den` = lúc tên + ảnh điểm đến
+    hiện (mặc định `luc_den`; đặt sớm ở chữ "hạ cánh tại…" để ảnh đứng ≥ 2 s), ảnh điểm đi đứng từ `tu` + 0,45 tới `luc_di`.
     Thẻ ở y 180 (trên), phương tiện to giữa khung, sub vẫn đọc được (dải tối dưới). Nền tự vẽ che hết footage → cảnh dưới chỉ để nối chuyển.
     **Tự dò:** `quet` liệt kê mọi câu có số + km / phút / tiếng / giờ (mọi ngôn ngữ) + từ di chuyển ở mục "CÂU DI CHUYỂN" cuối
     `goi_y.txt` (kèm phương tiện đoán + câu trước để tìm điểm đi); `kiem-kh` báo ⚠ câu di chuyển chưa có `hanh_trinh` phủ. Câu dò nhầm

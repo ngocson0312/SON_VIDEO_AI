@@ -1,5 +1,5 @@
 {
- "_ghi_chu": "MẪU CHUẨN hành trình trên BẢN ĐỒ THẬT (13/11/2026, khách góp ý \"di chuyển máy bay hay ô tô thì kiểu bản đồ map thực\"): h1 máy bay Incheon → Nội Bài (cung bay, ảnh sân bay Resources gắn ghim đi / đến, diem_phu tên nước), h2 ô tô Nội Bài → trung tâm (OSRM 26,7 km ≈ lời 27 km), h3 Hồ Gươm → Văn Miếu (đi bộ 2,6 km). toa_do tra bằng run.py tim. Đừng chép giây — chép CÁCH LÀM.",
+ "_ghi_chu": "MẪU CHUẨN hành trình trên BẢN ĐỒ THẬT (13/11/2026, khách góp ý \"di chuyển máy bay hay ô tô thì kiểu bản đồ map thực\"): h1 máy bay Incheon → Nội Bài (cung bay, ảnh sân bay Resources gắn ghim đi / đến, diem_phu tên nước), h2 ô tô Nội Bài → trung tâm (OSRM 26,7 km ≈ lời 27 km), h3 Hồ Gươm → Văn Miếu (đi bộ 2,6 km). toa_do tra bằng run.py tim. Đừng chép giây — chép CÁCH LÀM. KỊP NHÌN (khách 13/11/2026 \"chưa kịp nhìn đã tắt\"): h1 luc_ten_den 10,6 (chữ «hạ cánh tại») cho ảnh Nội Bài đứng 2,15 s; h3 luc_den 55,2 cho ghim Văn Miếu đứng 1,85 s; mục cuối chip / liệt kê hiện sớm 0,3–0,7 s + kéo den cho đứng ≥ 1,6 s; ảnh phở vào sớm 0,6 s.",
  "CAN_CLAUDE_SUA": false,
  "ngon_ngu": "vi",
  "tieu_de": "Hà Nội — sub tiếng Việt, hành trình trên BẢN ĐỒ THẬT (khách góp ý: máy bay / ô tô kiểu bản đồ map thực)",
@@ -180,12 +180,12 @@
   },
   {
    "id": "c16",
-   "tu": 67.22,
+   "tu": 66.6,
    "nguon": "res_05",
    "khung": "tran",
    "chuyen": "nhoe",
    "chuyen_dong": "zoom_vao",
-   "_loi": "một bát phở bò nóng hổi"
+   "_loi": "một bát phở bò nóng hổi (vào sớm 0,6 s trước câu cho kịp nhìn)"
   },
   {
    "id": "c17",
@@ -284,7 +284,7 @@
     {
      "chu": "hành trình thú vị",
      "kieu": "tay",
-     "luc": 3.6
+     "luc": 3.3
     }
    ]
   },
@@ -292,7 +292,7 @@
    "id": "h1",
    "loai": "hanh_trinh",
    "tu": 5.14,
-   "den": 12.55,
+   "den": 12.95,
    "phuong_tien": "may_bay",
    "nen": "that",
    "xuat_phat": {
@@ -315,11 +315,11 @@
    },
    "thoi_gian": "~4h30",
    "nhan_tg": "thời gian bay",
-   "luc_ten_di": 6.9,
+   "luc_ten_di": 7.1,
    "luc_di": 8.2,
    "luc_tg": 8.75,
-   "luc_ten_den": 11.3,
-   "luc_den": 11.6,
+   "luc_ten_den": 10.6,
+   "luc_den": 10.95,
    "diem_phu": [
     {
      "ten": "Trung Quốc",
@@ -340,7 +340,7 @@
   {
    "id": "d02",
    "loai": "mo_dau",
-   "tu": 12.64,
+   "tu": 12.95,
    "den": 15.55,
    "tren": "Chào mừng đến",
    "chinh": "HÀ NỘI",
@@ -405,7 +405,7 @@
    "id": "d05",
    "loai": "liet_ke",
    "tu": 34.75,
-   "den": 40.95,
+   "den": 41.05,
    "dan": "Tản bộ quanh hồ",
    "tieu": "Hồ Gươm",
    "y": 380,
@@ -426,14 +426,14 @@
      "icon": "chua",
      "chu": "Đền Ngọc Sơn",
      "phu": "thơ mộng",
-     "luc": 39.75
+     "luc": 39.4
     }
    ]
   },
   {
    "id": "d06",
    "loai": "chuong",
-   "tu": 41.15,
+   "tu": 41.2,
    "den": 44.4,
    "nhan": "Điểm đến",
    "so": "02",
@@ -443,7 +443,7 @@
    "id": "d07",
    "loai": "chip",
    "tu": 44.5,
-   "den": 48.4,
+   "den": 49.5,
    "muc": [
     {
      "icon": "di_bo",
@@ -458,7 +458,7 @@
     {
      "icon": "qua_tang",
      "chu": "Cửa hàng truyền thống",
-     "luc": 47.85
+     "luc": 47.6
     }
    ]
   },
@@ -466,17 +466,17 @@
    "id": "d08",
    "loai": "tu_khoa",
    "tu": 49.6,
-   "den": 51.6,
+   "den": 51.7,
    "y": 800,
    "muc": [
     {
      "chu": "Nhịp sống",
-     "luc": 50.0
+     "luc": 49.75
     },
     {
      "chu": "đặc trưng",
      "kieu": "tay",
-     "luc": 50.5
+     "luc": 50.1
     }
    ]
   },
@@ -484,7 +484,7 @@
    "id": "h3",
    "loai": "hanh_trinh",
    "tu": 51.74,
-   "den": 56.6,
+   "den": 57.05,
    "phuong_tien": "khong",
    "nen": "that",
    "xuat_phat": {
@@ -505,14 +505,14 @@
    "khoang_cach": "~2,5 km",
    "luc_ten_di": 52.2,
    "luc_ten_den": 53.5,
-   "luc_di": 54.0,
+   "luc_di": 53.9,
    "luc_tg": 55.5,
-   "luc_den": 55.95
+   "luc_den": 55.2
   },
   {
    "id": "d09",
    "loai": "chuong",
-   "tu": 57.0,
+   "tu": 57.1,
    "den": 62.9,
    "nhan": "Điểm đến",
    "so": "03",
@@ -523,7 +523,7 @@
    "id": "d10",
    "loai": "chip",
    "tu": 59.6,
-   "den": 62.9,
+   "den": 63.2,
    "y": 1120,
    "muc": [
     {
@@ -534,7 +534,7 @@
     {
      "icon": "di_tich",
      "chu": "Văn hóa lâu đời",
-     "luc": 61.8
+     "luc": 61.3
     }
    ]
   },
@@ -591,7 +591,7 @@
    "id": "d14",
    "loai": "chip",
    "tu": 79.4,
-   "den": 84.4,
+   "den": 85.4,
    "muc": [
     {
      "icon": "di_bo",
@@ -606,7 +606,7 @@
     {
      "icon": "den_long",
      "chu": "Không khí nhộn nhịp",
-     "luc": 83.3
+     "luc": 82.9
     }
    ]
   },
@@ -623,7 +623,7 @@
    "id": "d16",
    "loai": "chip",
    "tu": 88.6,
-   "den": 92.3,
+   "den": 92.5,
    "muc": [
     {
      "icon": "la",
@@ -638,7 +638,7 @@
     {
      "icon": "gio",
      "chu": "Se lạnh",
-     "luc": 90.95
+     "luc": 90.6
     }
    ]
   },

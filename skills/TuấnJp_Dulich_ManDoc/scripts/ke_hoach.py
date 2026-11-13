@@ -5,7 +5,7 @@ import re
 import unicodedata
 from pathlib import Path
 
-from chung import (AN_TOAN, CHUYEN, DUOI, FPS, H, KHONG_CACH, NEN_HT, NEN_PT, NGON_NGU, PHUONG_TIEN, SFX, SUB_MAX_KY_TU, SUB_MAX_TU,
+from chung import (AN_TOAN, CHUYEN, DUOI, FPS, H, HIEN_ANH, HIEN_MIN, KHONG_CACH, NEN_HT, NEN_PT, NGON_NGU, PHUONG_TIEN, SFX, SUB_MAX_KY_TU, SUB_MAX_TU,
                    SUB_NGAT, SUB_Y, W, cau_di_chuyen, doc_json, giong_nhau, kiem_ngon_ngu, loi, nhan_ht)
 
 LOAI = ('mo_dau', 'tu_khoa', 'chuong', 'tieu_de', 'ghim', 'chip', 'so_lon', 'the_anh', 'liet_ke', 'trich', 'hanh_trinh')
@@ -563,6 +563,9 @@ def _hanh_trinh(d, did, nn, E, Wn, kiem_chu, work, lj):
         E(f"{did}: cần tu ≤ luc_di < luc_den ≤ den − 0,4 (đang {d['tu']} / {d['luc_di']} / {d['luc_den']} / {d['den']})")
     elif d['luc_den'] - d['luc_di'] < 1.2:
         Wn(f"{did}: phương tiện chạy {d['luc_den'] - d['luc_di']:.1f}s — quá nhanh, nên ≥ 1,2s")
+    if d['den'] - d['luc_den'] < 1.5:
+        Wn(f"{did}: tới nơi lúc {d['luc_den']:.2f}s mà {d['den']:.2f}s đã tắt — ghim / tên điểm đến chỉ đứng "
+           f"{d['den'] - d['luc_den']:.1f}s (≥ 1,5 s): cho luc_den sớm hơn (lúc đọc «hạ cánh / đến…») hoặc kéo den")
     if not d['tu'] <= d['luc_tg'] <= d['den'] - .8:
         E(f"{did}: luc_tg {d['luc_tg']} phải trong {d['tu']}–{d['den'] - .8} (thời gian / khoảng cách hiện ≥ 0,8s)")
     d['kc_tren'] = d['nen'] != 'ban_do' and bool(d.get('thoi_gian')) and bool(d.get('khoang_cach'))
@@ -636,6 +639,8 @@ def giai(work, bao=loi):
     if abs(float(canh[0]['tu'])) > 1e-6:
         E(f"cảnh đầu phải bắt đầu ở 0 (đang {canh[0]['tu']})")
     KC, CB, nguon_anh = [], [], []
+    phu_kin = [(float(d.get('tu', 0)), float(d.get('den', 0))) for d in kh.get('do_hoa', [])
+               if d.get('loai') == 'hanh_trinh' and d.get('nen') != 'canh']      # nền hành trình che hết footage
     for i, c in enumerate(canh):
         cid = c.get('id') or f'c{i + 1:02d}'
         tu0 = float(c['tu'])
@@ -707,6 +712,10 @@ def giai(work, bao=loi):
                     E(f"{cid}: thẻ ảnh đáy {o['the_y'] + hh / 2:.0f}px sát / đè sub 2 dòng (≤ 1300) — giảm the_y / the_rong "
                       f"(bỏ the_rong là tự co)")
             CB.append({'id': cid, 'loai': 'anh', 'file': a['file'], 'khung': khung})
+            an_duoi = any(t0 <= tu0 + .05 and den <= t1 + .05 for t0, t1 in phu_kin)   # nằm dưới nền hành trình che kín
+            if dai < HIEN_ANH - .05 and i + 1 < len(canh) and not an_duoi:
+                Wn(f'{cid}: ảnh chỉ hiện {dai:.1f}s — chưa kịp nhìn (≥ {HIEN_ANH:.0f} s: cho cảnh vào SỚM hơn lời '
+                   f'một chút / kéo dài / gộp mục)')
             if a.get('bai'):
                 nguon_anh.append({'tu': tu0 + .2, 'den': den, 'chu': f"{LN['anh']}: {tn.get('nguon_bai') or 'bài báo'}"})
         KC.append(o)
@@ -738,6 +747,8 @@ def giai(work, bao=loi):
             continue
         if d['den'] - d['tu'] < 1.2:
             E(f"{did}: hiện {d['den'] - d['tu']:.2f}s < 1,2s — không kịp đọc")
+        elif d['den'] - d['tu'] < 2.0 and loai not in NHO:
+            Wn(f"{did}: hiện {d['den'] - d['tu']:.1f}s — ngắn, chưa kịp nhìn đã tắt (nên ≥ 2 s: cho hiện sớm hơn / kéo den)")
         if d['tu'] < 0 or d['den'] > dur + .01:
             E(f"{did}: thời gian {d['tu']}–{d['den']} ngoài video 0–{dur:.2f}")
         if cta and d['den'] > float(cta['tu']) + .05:
@@ -759,6 +770,15 @@ def giai(work, bao=loi):
                 else:
                     d[k]['aw'], d[k]['ah'] = a['w'], a['h']
                     CB.append({'id': f'{did}_{k}', 'loai': 'anh_ht', 'did': did, 'k': k, 'file': a['file']})
+                    if k == 'xuat_phat':             # hiện từ đầu tới lúc rời bến
+                        a0, a1 = d['tu'] + .45, d['luc_di'] + .15
+                    else:                            # hiện từ lúc đọc tên điểm đến (hoặc lúc tới, cái nào sớm hơn) — không đợi tới nơi
+                        tden = d.get('luc_ten_den') if d.get('luc_ten_den') is not None else d['luc_den']
+                        a0 = d[k]['luc_anh'] = round(max(d['luc_di'] + .5, min(tden, d['luc_den']) - .1), 3)
+                        a1 = d['den'] - .3
+                    if a1 - a0 < HIEN_ANH - .05:
+                        Wn(f"{did}: ảnh {k} chỉ đứng {a1 - a0:.1f}s ({a0:.1f}–{a1:.1f}s) — chưa kịp nhìn đã tắt (≥ {HIEN_ANH:.0f} s): "
+                           + ("cho luc_di muộn hơn" if k == 'xuat_phat' else "cho luc_ten_den / luc_den sớm hơn hoặc kéo den"))
                     if a.get('bai'):
                         nguon_anh.append({'tu': d['tu'] + .3, 'den': d['den'],
                                           'chu': f"{LN['anh']}: {tn.get('nguon_bai') or 'bài báo'}"})
@@ -777,6 +797,17 @@ def giai(work, bao=loi):
                 m['luc_abs'] = float(m['luc'])
                 if not d['tu'] - .01 <= m['luc_abs'] <= d['den'] - .5:
                     E(f"{did}: mục «{m.get('chu')}» luc {m['luc']} ngoài {d['tu']}–{d['den'] - .5}")
+        ms = [m for m in (d.get('muc') or []) if m.get('luc_abs') is not None]
+        if ms and loai in ('chip', 'liet_ke', 'tu_khoa'):
+            han = d['den'] - HIEN_MIN
+            for m in reversed(ms):                   # mục cuối hiện sát lúc tắt → cho hiện SỚM hơn lời một chút (giữ thứ tự)
+                if m['luc_abs'] > han:
+                    m['luc_abs'] = round(max(d['tu'], han), 3)
+                han = m['luc_abs'] - .25
+            for m in ms:
+                con = d['den'] - m['luc_abs']
+                if con < 1.2:
+                    Wn(f"{did}: mục «{m.get('chu')}» chỉ đứng {con:.1f}s rồi tắt — kéo den muộn hơn / bớt mục")
         if loai == 'the_anh':
             a = NG.get(d.get('anh'))
             if not a or a['loai'] != 'anh':

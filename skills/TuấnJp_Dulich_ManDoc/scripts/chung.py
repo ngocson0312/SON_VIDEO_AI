@@ -21,6 +21,8 @@ FONT_DIR = ASSETS / 'fonts'
 KHUNG = ASSETS / 'khung'
 
 W, H, FPS = 1080, 1920, 30
+HIEN_MIN = 1.6          # mỗi mục chữ / chip / dòng liệt kê / tên điểm đến đứng ≥ 1,6 s trước khi tắt (tự cho hiện SỚM hơn lời)
+HIEN_ANH = 2.0          # ảnh (cảnh ảnh, ảnh gắn ghim hành trình) đứng ≥ 2 s
 DUOI = 0.9              # giữ hình sau tiếng cuối (giây) — CTA cần thời gian bấm nút
 LUFS, TP = -14.0, -1.0
 
