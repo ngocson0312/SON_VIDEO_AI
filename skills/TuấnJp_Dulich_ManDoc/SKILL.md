@@ -37,6 +37,7 @@ description: Dựng VIDEO QUẢNG BÁ / GIỚI THIỆU DU LỊCH dọc 9:16 (108
 | 13/11/2026 | KịchBảnVoice_1 bản tiếng Hàn — khách góp ý: "di chuyển máy bay hay ô tô thì kiểu dạng bản đồ map thực" → cập nhật skill, làm lại | Nền **`that` = BẢN ĐỒ THẬT** thành MẶC ĐỊNH cho mọi hành trình (`ban_do_that.py`): ảnh vệ tinh Esri + đường đi thật OSRM (Nội Bài → Hoàn Kiếm 26,7 km khớp lời 27 km; Hồ Gươm → Văn Miếu đi bộ 2,6 km) + cung bay Incheon → Nội Bài 2 684 km; camera từng khung tính sẵn (cận điểm đi z≈12 → lùi toàn tuyến → sà điểm đến), ô ảnh nạp theo khung (trang dựng chờ decode rồi vẽ canvas, nhả ô cũ). Ảnh Resources sân bay gắn ghim điểm đi / đến; tên nước (`diem_phu`) hiện lúc nhìn toàn tuyến; km trên tuyến. Sửa sau khi soi: máy bay ra khỏi khung lúc camera còn lùi → lùi TRƯỚC lúc rời bến 0,7 s; ảnh điểm đến đặt dưới ghim đè sub → đặt CẠNH ghim; nhãn km trôi lên mép thẻ lúc sà vào → ẩn khi tới / khi điểm neo ra khỏi vùng; ảnh Hà Nội mờ tối → sáng .96. Lệnh mới `run.py tim "<tên>"`. Ảnh vệ tinh Esri có chỗ ghép ảnh khác màu trên biển (dữ liệu thật, không phải lỗi dựng) |
 | 13/11/2026 | KịchBảnVoice_1 bản tiếng Việt bản đồ thật (ban2) — khách: "hình chưa hiển thị lên là bị tắt rồi, hiện trước 1 chút cũng được, ví dụ ảnh sân bay Nội Bài và vài cảnh khác — chưa kịp nhìn đã mất" → làm lại (ban3) | Luật **KỊP NHÌN** (ĐÃ CHỐT 6): mục chữ ≥ 1,6 s, ảnh ≥ 2 s, hiện SỚM hơn lời được. Rà cả video: ảnh Nội Bài gắn ghim chỉ 1,0 s (hiện lúc tới nơi 11,2 s, bản đồ tắt 12,2 s) → ảnh + tên điểm đến hiện từ `luc_ten_den` (chữ "hạ cánh tại…" 10,6 s) tới `den` − 0,3 = 2,15 s; ghim Văn Miếu đứng 0,6 s → 1,85 s; dòng "Đền Ngọc Sơn", chip "Cửa hàng truyền thống" / "Văn hóa lâu đời" / "Không khí nhộn nhịp" / "Se lạnh" đứng 0,5–1,0 s → ≥ 1,6 s (hiện sớm 0,3–0,7 s + kéo `den`); "Nhịp sống đặc trưng" 1,4 s → 2,1 s; ảnh phở 1,8 s → 2,4 s (vào sớm 0,6 s). `kiem-kh` tự đẩy mục cuối của chip / liệt kê / từ khoá sớm lên cho đủ 1,6 s + ⚠ mọi chỗ còn ngắn |
 | 13/11/2026 | Khách duyệt ban3: "OK, được rồi — update vào hết skill, sau này Resources và kịch bản nào cũng ra XỊN như này" | `vi-du-hanh-trinh-ban-do-that.json` = BẢN CHUẨN khách duyệt (đọc đầu tiên) + mục **CHUẨN XỊN** (8 điểm soát). **Kế hoạch nháp tự dựng khung `hanh_trinh` bản đồ thật** cho mọi câu di chuyển (thử lại `quet` từ đầu với KịchBảnVoice_1: ra đúng 3 chuyến, giờ `luc_di` / `luc_den` / `luc_tg` / `luc_kc` lệch bản chỉnh tay ≤ 0,7 s, "~4h30" / "~27 km" / "~40–50 phút" / "~2,5 km", ảnh Incheon + Nội Bài tự gắn ghim h1). Sửa khi thử: "ba" khớp nhầm đầu chữ "bay" (thêm ranh từ), "bay" trong "sân bay" / "máy bay" không phải lúc rời bến. **KỊP NHÌN tự sửa** (🔧) ở `kiem-kh` / `dung`: kéo `den` vào chỗ trống, tới nơi sớm, ảnh vào sớm — kế hoạch tiếng Hàn cũ (chưa chỉnh tay) tự hết 6 ⚠; bản Việt đã chỉnh giữ nguyên |
+| 13/11/2026 | Người dùng: "đóng gói skill thành zip gửi khách, giải nén ở máy khác là chạy được luôn, đủ SFX các thứ; Resources từng video khách tự chuẩn bị" | Thêm `requirements.txt`, **`run.py cai-dat`** (cài thư viện + kiểm máy), **`run.py dong-goi`** + mẫu `goi_khach\` (CLAUDE.md / AGENTS.md cho trợ lý AI, CAI_DAT.bat, HUONG_DAN_CAI_DAT.txt). Đường dẫn trong code đều tính theo vị trí skill (cache vệ tinh ở `<dự án>\_cache_tiles\esri`). Thử thật: giải nén bằng Windows (tên thư mục có dấu giữ nguyên), CAI_DAT.bat → SẴN SÀNG, quét + dựng trọn video từ bản giải nén với cache vệ tinh trống |
 
 ## ĐÃ CHỐT (không tự đổi trừ khi người dùng yêu cầu)
 
@@ -177,11 +178,23 @@ Soát kế hoạch theo danh sách này trước cổng duyệt (mẫu: `referen
 7. Nhạc nền trong Resources tự ghép (−14 dB dưới giọng, lùi nhạc cho nốt kết trùng CTA); SFX theo sự kiện; −14 LUFS.
 8. Trước khi giao: `run.py khung --times …` soi gần các chỗ hành trình / liệt kê / montage, tự kiểm ĐẠT hết, mở `soat.jpg`.
 
+## Máy mới / ĐÓNG GÓI GỬI KHÁCH
+
+- Máy mới: `run.py cai-dat` (tự `pip install -r requirements.txt` + kiểm ffmpeg full / Node ≥ 22 / Chrome-Edge / mô hình Whisper;
+  phải ra "CÀI ĐẶT: SẴN SÀNG"; `--tai-mo-hinh` tải sẵn Whisper large-v3 ~3 GB).
+- Gửi khách: `run.py dong-goi [--out <file.zip>]` → `<thư mục dự án>\Goi_khach\TuanJp_Dulich_ManDoc_<ngày>.zip` (không ghi đè, _ban2…):
+  `.claude\skills\<skill>` đủ code + font + SFX + khung + mẫu, `CLAUDE.md` / `AGENTS.md` (chỉ dẫn cho trợ lý AI — mẫu ở
+  `goi_khach\CLAUDE.md`), `CAI_DAT.bat` (gọi `cai-dat`), `HUONG_DAN_CAI_DAT.txt` (cài phần mềm, chuẩn bị Resources, lỗi hay gặp).
+  KHÔNG kèm Resources / work / video của khách, cache ảnh vệ tinh, mô hình Whisper. Sửa skill xong thì đóng gói lại; đổi quy trình
+  thì sửa luôn `goi_khach\CLAUDE.md` + `HUONG_DAN_CAI_DAT.txt`.
+
 ## Quy trình
 
-Mọi lệnh: `python -I -X utf8 .claude\skills\TuấnJp_Dulich_ManDoc\scripts\run.py <lệnh> …` (chạy từ `D:\____TTT_____\SON_AI_VIDEO`;
-đầu phiên PowerShell `[Console]::OutputEncoding=[Text.Encoding]::UTF8; $env:PYTHONUTF8='1'`). Cần Node ≥ 22 + Chrome / Edge
-(biến môi trường `DLV_CHROME` nếu Chrome nằm chỗ lạ), ffmpeg full, faster-whisper.
+Mọi lệnh: `python -I -X utf8 .claude\skills\TuấnJp_Dulich_ManDoc\scripts\run.py <lệnh> …` (chạy từ THƯ MỤC DỰ ÁN — thư mục chứa `.claude`; máy chủ skill: `D:\____TTT_____\SON_AI_VIDEO`, máy khách: thư mục giải nén;
+đầu phiên PowerShell `[Console]::OutputEncoding=[Text.Encoding]::UTF8; $env:PYTHONUTF8='1'`). Cần Python ≥ 3.10, Node ≥ 22 + Chrome / Edge
+(biến môi trường `DLV_CHROME` nếu Chrome nằm chỗ lạ), ffmpeg full, thư viện `requirements.txt`. **Máy mới: `run.py cai-dat`** (tự cài
+thư viện Python thiếu + kiểm ffmpeg / Node / Chrome / mô hình Whisper; `--tai-mo-hinh` tải sẵn Whisper large-v3 ~3 GB). Ảnh vệ tinh
+cache ở `<thư mục dự án>\_cache_tiles\esri` (biến `NNS_TILE_CACHE` để đổi).
 
 1. **Quét** (cần mạng cho bài báo):
    `run.py quet --audio "<giọng>" --link "<link bài báo>" --res "<thư mục Resources>" [--nhac "<nhạc>"] [--ngon-ngu vi]`

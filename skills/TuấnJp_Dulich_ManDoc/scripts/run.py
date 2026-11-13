@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """run.py — điểm vào skill TuấnJp_Dulich_ManDoc.
 
+  python -I -X utf8 run.py cai-dat [--tai-mo-hinh]   (máy mới: cài thư viện + kiểm ffmpeg / Node / Chrome / Whisper)
+  python -I -X utf8 run.py dong-goi [--out <file.zip>]   (đóng gói skill thành zip gửi khách — giải nén là chạy)
   python -I -X utf8 run.py quet   --audio <giọng> [--link <url bài báo>] [--res <thư mục clip/ảnh>] [--nhac <file>] [--ngon-ngu vi] [--work <dir>]
   python -I -X utf8 run.py kiem-kh --work <dir>
   python -I -X utf8 run.py tim "<tên địa điểm>"   (toạ độ cho hành trình bản đồ thật — cần mạng)
@@ -34,6 +36,7 @@ def main():
     ap.add_argument('--file')
     ap.add_argument('--times')
     ap.add_argument('--xem-truoc', dest='xem_truoc', action='store_true')
+    ap.add_argument('--tai-mo-hinh', dest='tai_mo_hinh', action='store_true')
     a = ap.parse_args()
     L = a.lenh.replace('_', '-')
     if L == 'quet':
@@ -41,6 +44,13 @@ def main():
             raise SystemExit('⛔ thiếu --audio')
         from quet import quet
         quet(a.audio, a.link, a.res, a.nhac, a.ngon_ngu, a.work)
+        return
+    if L == 'cai-dat':
+        from cai_dat import cai_dat
+        sys.exit(0 if cai_dat(a.tai_mo_hinh) else 2)
+    if L == 'dong-goi':
+        from dong_goi import dong_goi
+        dong_goi(a.out)
         return
     if L == 'tim':
         if not a.ten:

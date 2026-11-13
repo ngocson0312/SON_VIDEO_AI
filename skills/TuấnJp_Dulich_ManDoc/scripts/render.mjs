@@ -34,7 +34,7 @@ function timChrome() {
     'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
     '/usr/bin/google-chrome', '/usr/bin/chromium', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'];
   for (const p of ung) if (p && fs.existsSync(p)) return p;
-  throw new Error('⛔ Không tìm thấy Chrome / Edge. Cài Chrome hoặc đặt biến BDS3D_CHROME=<đường dẫn chrome.exe>');
+  throw new Error('⛔ Không tìm thấy Chrome / Edge. Cài Chrome hoặc đặt biến DLV_CHROME=<đường dẫn chrome.exe>');
 }
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
