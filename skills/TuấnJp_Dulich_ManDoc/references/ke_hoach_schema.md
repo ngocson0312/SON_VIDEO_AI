@@ -9,6 +9,8 @@ Bản điền chuẩn: `vi-du-ha-noi.json`; có hành trình (máy bay / ô tô 
 |---|---|---|
 | `CAN_CLAUDE_SUA` | bool | nháp = `true`; Claude sửa xong đặt `false` (còn `true` → ⛔) |
 | `ngon_ngu` | `vi` / `en` / `ko` / `ja` / `zh` / `th` / `fr` / `de` / `es` / `it` / `pt` / `id` / `ru` | PHẢI trùng ngôn ngữ audio (⛔). Mọi chữ trên hình viết bằng tiếng này |
+| `chu_ngon_ngu` | mã như trên | CHỈ khi người dùng yêu cầu chữ / sub khác tiếng giọng (vd `ko` cho giọng Việt): mọi chữ trên hình theo tiếng này, `ngon_ngu` vẫn là tiếng giọng. Tạo bằng `run.py sub-dich --work <dir> --ngon-ngu ko` |
+| `sub_dich` | `[{tu, den, goc, chu}]` | sub DỊCH (cần khi `chu_ngon_ngu` khác giọng): `goc` = lời gốc (tham khảo), `chu` = bản dịch 1–2 dòng (ngắt " / "), ≤ ~14,6 em / dòng; cụm ≥ 0,6 s, không chồng nhau; gộp cụm gốc theo nghĩa được. `sub.karaoke_dich: false` → chữ vàng không chạy |
 | `tieu_de` | chuỗi | ghi chú (tên bài) |
 | `kenh` | `{ten, handle, avatar}` | CTA: tên kênh, @handle, đường dẫn ảnh avatar (null → chữ cái / ★). Trống → ⚠ hỏi ở cổng duyệt |
 | `nhac` | `{file, muc_db, bat_dau?, khop_cuoi?}` / `null` / `false` | nhạc nền (file người dùng đưa — quet tự nhận trong Resources). `muc_db` −14 = nhạc dưới giọng (cả bài; to hơn: −12, nhỏ hơn: −16); `khop_cuoi` (mặc định true) lùi nhạc cho nốt kết trùng cuối video; `bat_dau` = giây bắt đầu trong nhạc (ghi đè lùi nhạc); `null` = không nhạc (Resources không có file nhạc — đúng luật, không nhắc), `false` = người dùng tắt nhạc dù có file |

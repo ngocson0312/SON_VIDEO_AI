@@ -56,7 +56,10 @@ def kiem(work, file=None):
     muc('Không có khung đen', not den, ('đen ở ' + ', '.join(den[:5]) + 's') if den else '')
     # chữ đúng ngôn ngữ + kế hoạch
     nl = [x for x in L if x[0] == '⛔' and ('ngôn ngữ' in x[1] or 'tiếng' in x[1])]
-    muc(f"Mọi chữ trên hình bằng ngôn ngữ audio ({KH['ngon_ngu']})", not nl, '; '.join(x[1] for x in nl[:3]))
+    gi = KH.get('ngon_ngu_giong') or KH['ngon_ngu']
+    nhan = (f"Mọi chữ trên hình bằng ngôn ngữ audio ({KH['ngon_ngu']})" if gi == KH['ngon_ngu'] else
+            f"Mọi chữ trên hình bằng {KH['ngon_ngu']} (giọng {gi}, sub dịch theo yêu cầu)")
+    muc(nhan, not nl, '; '.join(x[1] for x in nl[:3]))
     # chữ đè nhau: đo hộp ở nhiều mốc
     from dung import _render, kiem_hop, viet_trang
     trang = work / 'trang.html'

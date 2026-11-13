@@ -3,6 +3,7 @@
 
   python -I -X utf8 run.py quet   --audio <giọng> [--link <url bài báo>] [--res <thư mục clip/ảnh>] [--nhac <file>] [--ngon-ngu vi] [--work <dir>]
   python -I -X utf8 run.py kiem-kh --work <dir>
+  python -I -X utf8 run.py sub-dich --work <dir> --ngon-ngu ko   (giọng 1 tiếng, CHỮ trên hình tiếng khác: thêm khung sub dịch)
   python -I -X utf8 run.py duyet  --work <dir>            (dựng ảnh duyệt duyet.jpg + bang_duyet.txt)
   python -I -X utf8 run.py dung   --work <dir> [--luong 4] [--out <ra.mp4>] [--xem-truoc]
   python -I -X utf8 run.py tron-lai --work <dir> [--file <video đã dựng>] [--out <ra.mp4>]  (CHỈ đổi tiếng: mức / file nhạc, SFX — giữ hình)
@@ -46,6 +47,11 @@ def main():
         from ke_hoach import kiem_kh
         ok = kiem_kh(w)
         sys.exit(0 if ok else 2)
+    elif L == 'sub-dich':
+        if not a.ngon_ngu:
+            raise SystemExit('⛔ thiếu --ngon-ngu (tiếng của chữ trên hình, vd ko / en / ja)')
+        from ke_hoach import khung_sub_dich
+        khung_sub_dich(w, a.ngon_ngu)
     elif L == 'duyet':
         from dung import duyet
         duyet(w)

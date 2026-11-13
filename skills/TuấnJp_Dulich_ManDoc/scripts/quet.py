@@ -190,7 +190,7 @@ def tai_nguyen_jpg(tn, bai, work):
 
 
 def loi_doc_txt(tu, cau, nn, work):
-    dong = [f'NGÔN NGỮ AUDIO: {nn} ({NGON_NGU.get(nn, {}).get("ten", "?")}) — MỌI CHỮ TRÊN HÌNH PHẢI VIẾT BẰNG NGÔN NGỮ NÀY', '']
+    dong = [f'NGÔN NGỮ AUDIO: {nn} ({NGON_NGU.get(nn, {}).get("ten", "?")}) — MỌI CHỮ TRÊN HÌNH PHẢI VIẾT BẰNG NGÔN NGỮ NÀY (trừ khi người dùng yêu cầu chữ / sub tiếng khác → run.py sub-dich)', '']
     for c in cau:
         dong.append(f"[{c['s']:7.2f} – {c['e']:7.2f}] {c['text']}")
     dong += ['', '--- TỪNG TỪ (giây bắt đầu) ---']

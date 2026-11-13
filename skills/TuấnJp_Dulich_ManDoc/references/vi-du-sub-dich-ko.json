@@ -1,0 +1,822 @@
+{
+ "_ghi_chu": "MẪU CHUẨN SUB DỊCH (13/11/2026): giọng tiếng Việt (KịchBảnVoice_1), MỌI chữ trên hình tiếng Hàn theo yêu cầu người dùng. ngon_ngu = vi (giọng), chu_ngon_ngu = ko (chữ). sub_dich: 48 cụm gốc (run.py sub-dich) gộp theo nghĩa còn 32 cụm, mỗi cụm 1–2 dòng ngắt \" / \". Đồ hoạ / hành trình / CTA cùng giây bản tiếng Việt (vi-du-hanh-trinh-canh.json), chữ dịch sang Hàn; CTA bỏ nut / nut_da / nhan_icon để lấy mặc định 팔로우 / 팔로잉 / 좋아요. Đừng chép giây — chép CÁCH DỊCH.",
+ "CAN_CLAUDE_SUA": false,
+ "ngon_ngu": "vi",
+ "tieu_de": "Hà Nội — giọng Việt, chữ / sub tiếng Hàn (khách Hàn Quốc)",
+ "kenh": {
+  "ten": "",
+  "handle": "",
+  "avatar": null
+ },
+ "nhac": {
+  "file": "D:\\____TTT_____\\KH_Test\\Tuấn_jp\\Resources\\Music_Bg.mp3",
+  "muc_db": -14.0
+ },
+ "sua_loi": {
+  "vua lê": "vua Lê",
+  "tháp rùa": "tháp Rùa",
+  "cầu thê húc": "cầu Thê Húc",
+  "đền ngọc sơn": "đền Ngọc Sơn",
+  "xe lạnh": "se lạnh",
+  "40 -50": "40–50",
+  "2 ,5": "2,5"
+ },
+ "sub": {
+  "bat": true
+ },
+ "canh": [
+  {
+   "id": "c01",
+   "tu": 0.0,
+   "nguon": "clip_01",
+   "khung": "tran",
+   "chuyen": "loe",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 0.0,
+   "toc_do": 0.85,
+   "_loi": "hook: khám phá thủ đô Hà Nội (flycam)"
+  },
+  {
+   "id": "c02",
+   "tu": 5.14,
+   "nguon": "res_06",
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "bắt đầu từ sân bay quốc tế Incheon (ảnh Resources) — dưới thẻ hành trình bay"
+  },
+  {
+   "id": "c03",
+   "tu": 8.14,
+   "nguon": "clip_04",
+   "khung": "tran",
+   "chuyen": "lia",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 57.6,
+   "_loi": "4 tiếng rưỡi bay (máy bay trên trời, clip Resources)"
+  },
+  {
+   "id": "c04",
+   "tu": 10.68,
+   "nguon": "res_07",
+   "khung": "the",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_vao",
+   "the_y": 1010,
+   "_loi": "hạ cánh tại sân bay quốc tế Nội Bài (ảnh Resources)"
+  },
+  {
+   "id": "c05",
+   "tu": 12.64,
+   "nguon": "clip_01",
+   "khung": "tran",
+   "chuyen": "zoom",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 4.9,
+   "toc_do": 0.8,
+   "_loi": "Chào mừng… thủ đô ngàn năm văn hiến (flycam)"
+  },
+  {
+   "id": "c06",
+   "tu": 15.7,
+   "nguon": "clip_06",
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 38.0,
+   "_loi": "đi ô tô 27 km vào trung tâm (quay từ trong xe, clip Resources)"
+  },
+  {
+   "id": "c07",
+   "tu": 22.54,
+   "nguon": "clip_06",
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 16.0,
+   "_loi": "40–50 phút, tùy tình hình giao thông (xe máy trên đường)"
+  },
+  {
+   "id": "c08",
+   "tu": 26.36,
+   "nguon": "clip_03",
+   "khung": "tran",
+   "chuyen": "cat",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 0.0,
+   "toc_do": 0.9,
+   "_loi": "Điểm dừng chân đầu tiên… Hồ Hoàn Kiếm"
+  },
+  {
+   "id": "c09",
+   "tu": 30.54,
+   "nguon": "clip_03",
+   "khung": "tran",
+   "chuyen": "zoom",
+   "chuyen_dong": "lia_trai",
+   "vao_giay": 4.0,
+   "toc_do": 0.9,
+   "_loi": "trái tim của thủ đô… vua Lê trả gươm"
+  },
+  {
+   "id": "c10",
+   "tu": 34.66,
+   "nguon": "clip_03",
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_ra",
+   "vao_giay": 8.0,
+   "toc_do": 0.5,
+   "_loi": "tản bộ quanh hồ, tháp Rùa, cầu Thê Húc, đền Ngọc Sơn"
+  },
+  {
+   "id": "c11",
+   "tu": 41.1,
+   "nguon": "clip_02",
+   "khung": "tran",
+   "chuyen": "lia",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 0.0,
+   "_loi": "khu phố cổ… phố nhỏ, kiến trúc xưa, cửa hàng"
+  },
+  {
+   "id": "c12",
+   "tu": 48.46,
+   "nguon": "clip_06",
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "lia_trai",
+   "vao_giay": 28.0,
+   "_loi": "nhịp sống đặc trưng của người dân"
+  },
+  {
+   "id": "c13",
+   "tu": 51.74,
+   "nguon": "clip_06",
+   "khung": "tran",
+   "chuyen": "cat",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 0.0,
+   "_loi": "ẩn dưới bản đồ Hồ Gươm → Văn Miếu"
+  },
+  {
+   "id": "c14",
+   "tu": 56.0,
+   "nguon": "clip_02",
+   "khung": "tran",
+   "chuyen": "cat",
+   "chuyen_dong": "zoom_ra",
+   "vao_giay": 26.6,
+   "_loi": "Văn Miếu – trường đại học đầu tiên (THIẾU footage Văn Miếu)"
+  },
+  {
+   "id": "c15",
+   "tu": 63.06,
+   "nguon": "res_03",
+   "khung": "tran",
+   "chuyen": "zoom",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "không thể bỏ qua hành trình khám phá ẩm thực"
+  },
+  {
+   "id": "c16",
+   "tu": 67.22,
+   "nguon": "res_05",
+   "khung": "tran",
+   "chuyen": "nhoe",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "một bát phở bò nóng hổi"
+  },
+  {
+   "id": "c17",
+   "tu": 69.0,
+   "nguon": "res_02",
+   "khung": "tran",
+   "chuyen": "lia",
+   "chuyen_dong": "zoom_ra",
+   "lech_x": -0.75,
+   "_loi": "bún chả thơm lừng, bánh mì giòn rụm (không có ảnh bánh mì)"
+  },
+  {
+   "id": "c18",
+   "tu": 71.45,
+   "nguon": "res_04",
+   "khung": "the",
+   "chuyen": "truot",
+   "chuyen_dong": "zoom_vao",
+   "the_y": 900,
+   "_loi": "ly cà phê trứng béo ngậy… khó lòng quên"
+  },
+  {
+   "id": "c19",
+   "tu": 75.22,
+   "nguon": "clip_05",
+   "khung": "tran",
+   "chuyen": "nhoe",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 0.0,
+   "_loi": "Khi màn đêm buông xuống"
+  },
+  {
+   "id": "c20",
+   "tu": 78.78,
+   "nguon": "clip_05",
+   "khung": "tran",
+   "chuyen": "lia",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 12.0,
+   "_loi": "phố đi bộ Hồ Gươm, ẩm thực đường phố, nhộn nhịp"
+  },
+  {
+   "id": "c21",
+   "tu": 84.64,
+   "nguon": "clip_02",
+   "khung": "tran",
+   "chuyen": "loe",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 10.0,
+   "_loi": "mùa thu, con đường ngập lá vàng"
+  },
+  {
+   "id": "c22",
+   "tu": 89.18,
+   "nguon": "clip_02",
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_ra",
+   "vao_giay": 16.0,
+   "_loi": "hoa sữa, tiết trời se lạnh"
+  },
+  {
+   "id": "c23",
+   "tu": 92.4,
+   "nguon": "clip_06",
+   "khung": "tran",
+   "chuyen": "zoom",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 6.0,
+   "_loi": "Hà Nội không chỉ là một điểm đến…"
+  },
+  {
+   "id": "c24",
+   "tu": 98.64,
+   "nguon": "clip_02",
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_vao",
+   "vao_giay": 37.9,
+   "toc_do": 0.6,
+   "_loi": "CTA"
+  }
+ ],
+ "do_hoa": [
+  {
+   "id": "d01",
+   "loai": "tu_khoa",
+   "tu": 0.75,
+   "den": 5.0,
+   "y": 800,
+   "muc": [
+    {
+     "chu": "하노이 여행",
+     "luc": 0.85
+    },
+    {
+     "chu": "즐거운 여정",
+     "kieu": "tay",
+     "luc": 3.6
+    }
+   ]
+  },
+  {
+   "id": "h1",
+   "loai": "hanh_trinh",
+   "tu": 5.14,
+   "den": 12.55,
+   "phuong_tien": "may_bay",
+   "nen": "canh",
+   "xuat_phat": {
+    "ten": "인천",
+    "phu": "한국"
+   },
+   "diem_den": {
+    "ten": "노이바이",
+    "phu": "하노이"
+   },
+   "thoi_gian": "~4시간 30분",
+   "nhan_tg": "비행 시간",
+   "luc_ten_di": 6.9,
+   "luc_di": 8.2,
+   "luc_tg": 8.75,
+   "luc_ten_den": 11.3,
+   "luc_den": 11.6
+  },
+  {
+   "id": "d02",
+   "loai": "mo_dau",
+   "tu": 12.64,
+   "den": 15.55,
+   "tren": "환영합니다",
+   "chinh": "하노이",
+   "viet_tay": "천년 문화의 수도",
+   "duoi": "베트남",
+   "y": 800
+  },
+  {
+   "id": "h2",
+   "loai": "hanh_trinh",
+   "tu": 15.6,
+   "den": 26.3,
+   "phuong_tien": "o_to",
+   "nen": "canh",
+   "xuat_phat": {
+    "ten": "노이바이",
+    "phu": "국제공항"
+   },
+   "diem_den": {
+    "ten": "시내 중심",
+    "phu": "하노이"
+   },
+   "thoi_gian": "40–50분",
+   "nhan_tg": "교통 상황에 따라",
+   "khoang_cach": "~27km",
+   "luc_ten_di": 16.3,
+   "luc_di": 17.9,
+   "luc_kc": 18.55,
+   "luc_ten_den": 21.5,
+   "luc_den": 22.1,
+   "luc_tg": 23.75
+  },
+  {
+   "id": "d03",
+   "loai": "chuong",
+   "tu": 26.4,
+   "den": 30.4,
+   "nhan": "목적지",
+   "so": "01",
+   "ten": "호안끼엠 호수",
+   "phu": "일명 '검의 호수'"
+  },
+  {
+   "id": "d04",
+   "loai": "tieu_de",
+   "tu": 31.4,
+   "den": 34.55,
+   "dan": "수도의 심장",
+   "khoa": "환검 전설",
+   "viet_tay": "레 왕이 검을 돌려준 호수",
+   "y": 380
+  },
+  {
+   "id": "d05",
+   "loai": "liet_ke",
+   "tu": 34.75,
+   "den": 40.95,
+   "dan": "호수 주변 산책",
+   "tieu": "호안끼엠 호수",
+   "y": 380,
+   "muc": [
+    {
+     "icon": "di_tich",
+     "chu": "거북탑",
+     "phu": "고풍스러운",
+     "luc": 36.95
+    },
+    {
+     "icon": "cau",
+     "chu": "테훅 다리",
+     "phu": "붉은 빛",
+     "luc": 38.5
+    },
+    {
+     "icon": "chua",
+     "chu": "응옥선 사당",
+     "phu": "낭만적인",
+     "luc": 39.75
+    }
+   ]
+  },
+  {
+   "id": "d06",
+   "loai": "chuong",
+   "tu": 41.15,
+   "den": 44.4,
+   "nhan": "목적지",
+   "so": "02",
+   "ten": "하노이 구시가지"
+  },
+  {
+   "id": "d07",
+   "loai": "chip",
+   "tu": 44.5,
+   "den": 48.4,
+   "muc": [
+    {
+     "icon": "di_bo",
+     "chu": "좁은 골목",
+     "luc": 44.85
+    },
+    {
+     "icon": "di_tich",
+     "chu": "옛 건축",
+     "luc": 46.4
+    },
+    {
+     "icon": "qua_tang",
+     "chu": "전통 상점",
+     "luc": 47.85
+    }
+   ]
+  },
+  {
+   "id": "d08",
+   "loai": "tu_khoa",
+   "tu": 49.6,
+   "den": 51.6,
+   "y": 800,
+   "muc": [
+    {
+     "chu": "삶의 리듬",
+     "luc": 50.0
+    },
+    {
+     "chu": "현지인의 일상",
+     "kieu": "tay",
+     "luc": 50.5
+    }
+   ]
+  },
+  {
+   "id": "h3",
+   "loai": "hanh_trinh",
+   "tu": 51.74,
+   "den": 56.6,
+   "phuong_tien": "khong",
+   "nen": "ban_do",
+   "xuat_phat": {
+    "ten": "호안끼엠 호수"
+   },
+   "diem_den": {
+    "ten": "문묘",
+    "phu": "국자감"
+   },
+   "khoang_cach": "~2.5km",
+   "luc_ten_di": 52.2,
+   "luc_ten_den": 53.5,
+   "luc_di": 54.0,
+   "luc_tg": 55.5,
+   "luc_den": 55.95
+  },
+  {
+   "id": "d09",
+   "loai": "chuong",
+   "tu": 57.0,
+   "den": 62.9,
+   "nhan": "목적지",
+   "so": "03",
+   "ten": "문묘 – 국자감",
+   "phu": "베트남 최초의 대학"
+  },
+  {
+   "id": "d10",
+   "loai": "chip",
+   "tu": 59.6,
+   "den": 62.9,
+   "y": 1120,
+   "muc": [
+    {
+     "icon": "sach",
+     "chu": "배움의 전통",
+     "luc": 60.0
+    },
+    {
+     "icon": "di_tich",
+     "chu": "오랜 문화",
+     "luc": 61.8
+    }
+   ]
+  },
+  {
+   "id": "d11",
+   "loai": "tieu_de",
+   "tu": 63.3,
+   "den": 67.05,
+   "dan": "놓칠 수 없는",
+   "khoa": "미식 여행",
+   "y": 760
+  },
+  {
+   "id": "d12",
+   "loai": "chip",
+   "tu": 67.5,
+   "den": 74.8,
+   "y": 260,
+   "muc": [
+    {
+     "icon": "bat_pho",
+     "chu": "소고기 쌀국수",
+     "luc": 67.8
+    },
+    {
+     "icon": "lua",
+     "chu": "분짜",
+     "luc": 69.1
+    },
+    {
+     "icon": "an_uong",
+     "chu": "반미",
+     "luc": 70.12
+    },
+    {
+     "icon": "ca_phe",
+     "chu": "에그커피",
+     "luc": 71.62
+    }
+   ]
+  },
+  {
+   "id": "d13",
+   "loai": "tieu_de",
+   "tu": 75.45,
+   "den": 78.7,
+   "dan": "밤이 되면",
+   "khoa": "하노이의 밤",
+   "viet_tay": "또 다른 매력",
+   "mau": "trang",
+   "y": 760
+  },
+  {
+   "id": "d14",
+   "loai": "chip",
+   "tu": 79.4,
+   "den": 84.4,
+   "muc": [
+    {
+     "icon": "di_bo",
+     "chu": "호안끼엠 보행자 거리",
+     "luc": 79.66
+    },
+    {
+     "icon": "bat_pho",
+     "chu": "길거리 음식",
+     "luc": 81.3
+    },
+    {
+     "icon": "den_long",
+     "chu": "활기찬 분위기",
+     "luc": 83.3
+    }
+   ]
+  },
+  {
+   "id": "d15",
+   "loai": "tieu_de",
+   "tu": 85.6,
+   "den": 88.55,
+   "dan": "특히",
+   "khoa": "하노이의 가을",
+   "y": 760
+  },
+  {
+   "id": "d16",
+   "loai": "chip",
+   "tu": 88.6,
+   "den": 92.3,
+   "muc": [
+    {
+     "icon": "la",
+     "chu": "노란 낙엽",
+     "luc": 88.7
+    },
+    {
+     "icon": "hoa",
+     "chu": "우유꽃 향기",
+     "luc": 89.55
+    },
+    {
+     "icon": "gio",
+     "chu": "선선한 날씨",
+     "luc": 90.95
+    }
+   ]
+  },
+  {
+   "id": "d17",
+   "loai": "tieu_de",
+   "tu": 92.6,
+   "den": 98.4,
+   "dan": "여행지 그 이상",
+   "khoa": "하노이",
+   "viet_tay": "베트남의 영혼",
+   "co": 190,
+   "y": 760
+  }
+ ],
+ "cta": {
+  "tu": 98.59,
+  "them_giay": 1.6,
+  "tieu_de": "팔로우하고 함께 떠나요",
+  "viet_tay": "아름다운 베트남",
+  "icon": [
+   "thich",
+   "binh_luan",
+   "chia_se",
+   "luu"
+  ]
+ },
+ "chu_ngon_ngu": "ko",
+ "sub_dich": [
+  {
+   "tu": 0,
+   "den": 2.42,
+   "goc": "Bạn đang có kế hoạch khám phá thủ đô Hà Nội của Việt Nam,",
+   "chu": "베트남의 수도 하노이 여행을 / 계획하고 계신가요?"
+  },
+  {
+   "tu": 2.42,
+   "den": 5.06,
+   "goc": "vậy hãy cùng bắt đầu hành trình thú vị này nhé!",
+   "chu": "그럼 이 즐거운 여정을 / 함께 시작해 볼까요!"
+  },
+  {
+   "tu": 5.06,
+   "den": 8.06,
+   "goc": "Chuyến đi của chúng ta bắt đầu từ sân bay quốc tế Incheon, Hàn Quốc.",
+   "chu": "우리의 여정은 한국 / 인천국제공항에서 시작됩니다."
+  },
+  {
+   "tu": 8.06,
+   "den": 11.1,
+   "goc": "Sau khoảng 4 tiếng rưỡi bay, máy bay sẽ hạ cánh tại sân bay",
+   "chu": "약 4시간 30분을 비행한 뒤,"
+  },
+  {
+   "tu": 11.1,
+   "den": 12.56,
+   "goc": "quốc tế Nội Bài, Hà Nội.",
+   "chu": "하노이 노이바이 국제공항에 / 착륙합니다."
+  },
+  {
+   "tu": 12.56,
+   "den": 15.62,
+   "goc": "Chào mừng bạn đến với thủ đô ngàn năm văn hiến của Việt Nam.",
+   "chu": "베트남 천년 문화의 수도에 / 오신 것을 환영합니다!"
+  },
+  {
+   "tu": 15.62,
+   "den": 18.76,
+   "goc": "Từ sân bay Nội Bài, chúng ta tiếp tục di chuyển khoảng 27",
+   "chu": "노이바이 공항에서 자동차로"
+  },
+  {
+   "tu": 18.76,
+   "den": 22.46,
+   "goc": "km bằng ô tô để đến khu vực trung tâm thành phố.",
+   "chu": "약 27km를 달려 / 시내 중심가로 이동합니다."
+  },
+  {
+   "tu": 22.46,
+   "den": 26.28,
+   "goc": "Thời gian di chuyển khoảng 40–50 phút, tùy tình hình giao thông.",
+   "chu": "이동 시간은 약 40–50분, / 교통 상황에 따라 다릅니다."
+  },
+  {
+   "tu": 26.28,
+   "den": 30.46,
+   "goc": "Điểm dừng chân đầu tiên chính là Hồ Hoàn Kiếm, hay còn gọi là Hồ Gươm.",
+   "chu": "첫 번째 목적지는 호안끼엠 호수, / 일명 '검의 호수'입니다."
+  },
+  {
+   "tu": 30.46,
+   "den": 34.58,
+   "goc": "Đây được xem là trái tim của thủ đô, gắn liền với truyền thuyết vua Lê trả gươm.",
+   "chu": "수도의 심장으로 불리는 곳, / 레 왕이 검을 돌려준 전설의 호수"
+  },
+  {
+   "tu": 34.58,
+   "den": 37.86,
+   "goc": "Bạn có thể tản bộ quanh hồ, ngắm nhìn tháp Rùa cổ kính,",
+   "chu": "호수 주변을 산책하며 / 고풍스러운 거북탑을 감상하고,"
+  },
+  {
+   "tu": 37.86,
+   "den": 41.02,
+   "goc": "ghé thăm cầu Thê Húc đỏ rực và đền Ngọc Sơn thơ mộng.",
+   "chu": "붉은 테훅 다리와 낭만적인 / 응옥선 사당도 들러 보세요."
+  },
+  {
+   "tu": 41.02,
+   "den": 44.38,
+   "goc": "Rời Hồ Gươm, hãy dành thời gian khám phá khu phố cổ Hà Nội.",
+   "chu": "호안끼엠 호수를 떠나 / 하노이 구시가지를 둘러보세요."
+  },
+  {
+   "tu": 44.38,
+   "den": 47.04,
+   "goc": "Những con phố nhỏ, những ngôi nhà mang kiến trúc xưa",
+   "chu": "좁은 골목길과 / 옛 건축 양식의 집들,"
+  },
+  {
+   "tu": 47.04,
+   "den": 51.66,
+   "goc": "và các cửa hàng truyền thống sẽ giúp bạn cảm nhận rõ nét nhịp sống đặc trưng của người dân nơi đây.",
+   "chu": "전통 상점들에서 현지인의 / 고유한 삶의 리듬을 느껴 보세요."
+  },
+  {
+   "tu": 51.66,
+   "den": 56.57,
+   "goc": "Tiếp theo, chúng ta sẽ đến Văn Miếu Quốc Tử Giám, cách Hồ Gươm khoảng 2,5 km.",
+   "chu": "다음 목적지는 호안끼엠 호수에서 / 약 2.5km 떨어진 문묘 국자감."
+  },
+  {
+   "tu": 57.06,
+   "den": 59.22,
+   "goc": "Đây là trường đại học đầu tiên của Việt Nam,",
+   "chu": "베트남 최초의 대학으로,"
+  },
+  {
+   "tu": 59.22,
+   "den": 62.98,
+   "goc": "nơi lưu giữ truyền thống hiếu học và những giá trị văn hóa lâu đời.",
+   "chu": "배움을 중시하는 전통과 / 오랜 문화 가치를 지닌 곳입니다."
+  },
+  {
+   "tu": 62.98,
+   "den": 67.14,
+   "goc": "Đến Hà Nội, chắc chắn bạn không thể bỏ qua hành trình khám phá ẩm thực.",
+   "chu": "하노이에 왔다면 / 미식 탐방은 절대 놓칠 수 없죠."
+  },
+  {
+   "tu": 67.14,
+   "den": 70.04,
+   "goc": "Một bát phở bò nóng hổi, một suất bún chả thơm lừng,",
+   "chu": "뜨끈한 소고기 쌀국수 한 그릇, / 향긋한 분짜 한 접시,"
+  },
+  {
+   "tu": 70.04,
+   "den": 72.1,
+   "goc": "bánh mì giòn rụm hay một ly cà phê trứng",
+   "chu": "바삭한 반미, / 진한 에그커피 한 잔은"
+  },
+  {
+   "tu": 72.1,
+   "den": 75.14,
+   "goc": "béo ngậy sẽ khiến bạn khó lòng quên được hương vị nơi đây.",
+   "chu": "이곳의 맛을 / 잊을 수 없게 만들 거예요."
+  },
+  {
+   "tu": 75.14,
+   "den": 78.7,
+   "goc": "Khi màn đêm buông xuống, Hà Nội lại khoác lên mình một vẻ đẹp hoàn toàn khác.",
+   "chu": "밤이 되면 하노이는 / 완전히 다른 매력을 보여 줍니다."
+  },
+  {
+   "tu": 78.7,
+   "den": 80.62,
+   "goc": "Hãy ghé thăm phố đi bộ Hồ Gươm,",
+   "chu": "호안끼엠 호수 / 보행자 거리에 들러"
+  },
+  {
+   "tu": 80.62,
+   "den": 84.56,
+   "goc": "thưởng thức ẩm thực đường phố và tận hưởng không khí nhộn nhịp của thủ đô.",
+   "chu": "길거리 음식을 맛보며 / 활기찬 수도의 밤을 즐겨 보세요."
+  },
+  {
+   "tu": 84.56,
+   "den": 86.7,
+   "goc": "Đặc biệt, nếu đến Hà Nội vào mùa thu,",
+   "chu": "특히 가을에 하노이를 찾는다면,"
+  },
+  {
+   "tu": 86.7,
+   "den": 89.1,
+   "goc": "bạn sẽ được chiêm ngưỡng những con đường ngập lá vàng,",
+   "chu": "노란 낙엽으로 뒤덮인 / 거리를 만날 수 있고,"
+  },
+  {
+   "tu": 89.1,
+   "den": 92.32,
+   "goc": "hương hoa sữa thoang thoảng và tiết trời se lạnh vô cùng lãng mạn.",
+   "chu": "은은한 우유꽃 향기와 / 선선한 날씨가 무척 낭만적이에요."
+  },
+  {
+   "tu": 92.32,
+   "den": 95.58,
+   "goc": "Hà Nội không chỉ là một điểm đến du lịch, mà còn là nơi lưu giữ",
+   "chu": "하노이는 단순한 여행지가 아니라,"
+  },
+  {
+   "tu": 95.58,
+   "den": 98.56,
+   "goc": "những giá trị lịch sử, văn hóa và tâm hồn Việt Nam.",
+   "chu": "베트남의 역사와 문화, / 그리고 영혼이 깃든 곳입니다."
+  },
+  {
+   "tu": 98.56,
+   "den": 102.37,
+   "goc": "Hãy một lần đến Hà Nội để tự mình khám phá và trải nghiệm nhé!",
+   "chu": "꼭 한 번 하노이에 와서 / 직접 발견하고 경험해 보세요!"
+  }
+ ]
+}

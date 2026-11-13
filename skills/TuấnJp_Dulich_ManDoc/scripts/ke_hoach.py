@@ -264,6 +264,157 @@ def gom_sub(tu, nn, giu_lien=()):
     return out
 
 
+# ---------------- sub DỊCH (chữ trên hình khác tiếng giọng — người dùng yêu cầu, vd giọng Việt + sub Hàn) ----------------
+SUB_DICH_EM = 14.6          # 1 dòng sub dịch ≤ ~14,6 em (≈ 900 px ở cỡ 60 px; dài hơn → khung tự co chữ)
+
+
+def _rong_em(s):
+    """bề rộng ước lượng (em) của chuỗi ở phông sub: Hàn / Nhật / Trung ~0,95 em, chữ Latin / số ~0,58, khoảng trắng 0,3."""
+    r = 0.0
+    for c in str(s):
+        o = ord(c)
+        if c == ' ':
+            r += .3
+        elif 0x1100 <= o <= 0x11FF or 0x2E80 <= o <= 0x9FFF or 0xAC00 <= o <= 0xD7AF or 0xF900 <= o <= 0xFFEF:
+            r += .95
+        elif 0x0E00 <= o <= 0x0E7F:
+            r += .5
+        elif c.isalnum():
+            r += .58
+        else:
+            r += .35
+    return r
+
+
+def _chia_dich(chu, nn):
+    """chữ 1 cụm sub dịch → 1–2 dòng: theo chỗ Claude ngắt (xuống dòng hoặc ' / '), không có thì tự chia ở khoảng trắng cân nhất,
+    ưu tiên ngắt sau dấu câu."""
+    p = [x.strip() for x in re.split(r'\s*\n\s*|\s+/\s+', str(chu)) if x.strip()]
+    if len(p) != 1:
+        return p
+    s = p[0]
+    if _rong_em(s) <= SUB_DICH_EM:
+        return [s]
+    if nn in KHONG_CACH:                                  # không cách chữ → chia theo ký tự, cân 2 dòng
+        k = len(s) // 2
+        for d in range(0, len(s) // 3):                   # ưu tiên ngắt sau dấu câu gần giữa
+            for j in (k + d, k - d):
+                if 0 < j < len(s) and re.match(r'[、，,。！？!?]', s[j - 1]):
+                    return [s[:j], s[j:]]
+        return [s[:k], s[k:]]
+    ws = s.split(' ')
+    best = None
+    for j in range(1, len(ws)):
+        a, b = ' '.join(ws[:j]), ' '.join(ws[j:])
+        g = abs(_rong_em(a) - _rong_em(b)) - (3 if re.search(r'[,.!?…、，。]$', a) else 0)
+        g += 50 * (max(0, _rong_em(a) - SUB_DICH_EM) + max(0, _rong_em(b) - SUB_DICH_EM))
+        if best is None or g < best[0]:
+            best = (g, [a, b])
+    return best[1] if best else [s]
+
+
+def _tach_chu(dong, nn):
+    """1 dòng → các 'từ' để tô karaoke: tiếng có cách chữ → theo khoảng trắng; ja / zh / th → nhóm 2 ký tự."""
+    if nn in KHONG_CACH:
+        return [dong[i:i + 2] for i in range(0, len(dong), 2)]
+    return [w for w in dong.split(' ') if w]
+
+
+def sub_dich(kh, tu, dur, nn, E, Wn, kiem_chu):
+    """kh['sub_dich'] = [{tu, den, chu}] (chữ đã dịch, đặt theo giây của lời gốc) → cụm sub cùng khuôn gom_sub.
+    Karaoke: chữ vàng chạy dần theo nhịp lời gốc trong cụm (ước lượng theo bề rộng chữ); 'sub.karaoke_dich': false → tắt."""
+    ds = [x for x in (kh.get('sub_dich') or []) if isinstance(x, dict)]
+    if not ds:
+        E(f'chu_ngon_ngu = {nn} khác tiếng giọng → cần sub_dich (chạy run.py sub-dich --work <dir> --ngon-ngu {nn} rồi điền chữ dịch)')
+        return []
+    karaoke = (kh.get('sub') or {}).get('karaoke_dich', True) is not False
+    ds = sorted(ds, key=lambda x: float(x.get('tu', 0)))
+    out = []
+    for k, x in enumerate(ds):
+        t0, t1 = float(x.get('tu', 0)), float(x.get('den', 0))
+        chu = str(x.get('chu') or '').strip()
+        noi = f'sub_dich {t0:.2f}s'
+        if not chu:
+            E(f'{noi}: chưa có chữ dịch (goc: «{str(x.get("goc", ""))[:50]}»)')
+            continue
+        if t1 - t0 < .6:
+            E(f'{noi}: cụm chỉ {t1 - t0:.2f}s (< 0,6 s) — gộp với cụm bên cạnh')
+            continue
+        if t0 < 0 or t1 > dur + .05:
+            E(f'{noi}: ngoài video (0–{dur:.2f}s)')
+            continue
+        kiem_chu(chu, noi)
+        dong = _chia_dich(chu, nn)
+        if len(dong) > 2:
+            E(f'{noi}: {len(dong)} dòng — sub tối đa 2 dòng, tách thành 2 cụm')
+            continue
+        for d in dong:
+            r = _rong_em(d)
+            if r > SUB_DICH_EM * 1.15:
+                E(f'{noi}: dòng «{d}» quá dài ({r:.1f} em > {SUB_DICH_EM}) — rút gọn hoặc tách cụm')
+            elif r > SUB_DICH_EM:
+                Wn(f'{noi}: dòng «{d}» hơi dài ({r:.1f} em) — khung tự co chữ nhỏ lại')
+        # nhịp karaoke: trải các từ dịch lên khoảng lời gốc đọc trong cụm
+        trong = [w for w in tu if w['s'] >= t0 - .1 and w['s'] < t1]
+        s0 = trong[0]['s'] if trong else t0 + .1
+        e0 = max(s0 + .3, min(t1, trong[-1]['e'])) if trong else t1 - .1
+        toks = [[c for c in _tach_chu(d, nn)] for d in dong]
+        tong = sum(_rong_em(c) + .15 for dd in toks for c in dd) or 1
+        luc, dong_out = s0, []
+        for dd in toks:
+            hang = []
+            for c in dd:
+                dai = (e0 - s0) * (_rong_em(c) + .15) / tong
+                if karaoke:
+                    hang.append({'w': c, 's': round(luc, 3), 'e': round(luc + dai, 3)})
+                else:
+                    hang.append({'w': c, 's': -9.0, 'e': -9.0})
+                luc += dai
+            dong_out.append(hang)
+        out.append({'tu': round(t0, 3), 'den': round(t1, 3), 'mo_ra': True, 'dong': dong_out})
+    for a, b in zip(out, out[1:]):
+        if a['den'] > b['tu'] + .05:
+            E(f"sub_dich {a['tu']:.2f}s chồng cụm sau ({b['tu']:.2f}s) — den phải ≤ tu của cụm sau")
+        if b['tu'] - a['den'] < .6:
+            a['den'], a['mo_ra'] = min(a['den'], b['tu']), False
+    # lời gốc chưa có sub dịch
+    ho, cu = [], None
+    for w in tu:
+        co = any(c['tu'] - .15 <= w['s'] <= c['den'] for c in out)
+        if not co:
+            cu = [w['s'], w['e']] if cu is None or w['s'] - cu[1] > 1.0 else [cu[0], w['e']]
+            if not ho or ho[-1] is not cu:
+                ho.append(cu)
+        else:
+            cu = None
+    for a, b in ho:
+        Wn(f'lời {a:.1f}–{b:.1f}s chưa có sub dịch')
+    return out
+
+
+def khung_sub_dich(work, nn):
+    """khung sub_dich NHÁP: cụm sub lời gốc (giây, chữ gốc) + chữ dịch trống → ghi vào ke_hoach.json để Claude dịch từng cụm."""
+    work = Path(work)
+    kh = doc_json(work / 'ke_hoach.json')
+    lj = doc_json(work / 'loi.json')
+    if nn not in NGON_NGU:
+        raise SystemExit(f'⛔ --ngon-ngu {nn} chưa hỗ trợ (có: {", ".join(NGON_NGU)})')
+    if kh.get('sub_dich'):
+        raise SystemExit('⛔ ke_hoach.json đã có sub_dich — sửa trực tiếp (xoá sub_dich nếu muốn tạo lại khung)')
+    goc = lj.get('ngon_ngu') or 'vi'
+    tu, _ = sua_tu(lj['tu'], kh.get('sua_loi'))
+    giu = list((kh.get('sub') or {}).get('giu_lien') or []) + list((kh.get('sua_loi') or {}).values())
+    cum = gom_sub(tu, goc, giu)
+    kh['chu_ngon_ngu'] = nn
+    kh['sub_dich'] = [{'tu': c['tu'], 'den': c['den'], 'goc': ' '.join(w['w'] for d in c['dong'] for w in d), 'chu': ''}
+                      for c in cum]
+    from chung import ghi_json
+    ghi_json(work / 'ke_hoach.json', kh)
+    loi(f'Đã thêm chu_ngon_ngu = {nn} + {len(cum)} cụm sub_dich (chữ dịch TRỐNG) vào {work / "ke_hoach.json"}')
+    loi(f'→ dịch từng «goc» sang {NGON_NGU[nn]["ten"]} vào «chu» (1–2 dòng, ≤ ~{SUB_DICH_EM:.0f} em / dòng; ngắt dòng bằng " / "), '
+        f'rồi đổi MỌI chữ đồ hoạ / CTA / hành trình sang {NGON_NGU[nn]["ten"]} → run.py kiem-kh')
+
+
 # ---------------- giải kế hoạch ----------------
 _CHU_SO = {}
 
@@ -409,6 +560,12 @@ def giai(work, bao=loi):
     nn = kh.get('ngon_ngu') or lj.get('ngon_ngu') or 'vi'
     if lj.get('ngon_ngu') and nn != lj['ngon_ngu']:
         E(f"ke_hoach.ngon_ngu = {nn} nhưng audio là {lj['ngon_ngu']} — chữ trên hình PHẢI theo ngôn ngữ audio")
+    nn_giong = nn
+    nn = kh.get('chu_ngon_ngu') or nn_giong      # tiếng CHỮ trên hình: mặc định = tiếng giọng; người dùng yêu cầu tiếng khác → sub dịch
+    if nn not in NGON_NGU:
+        E(f'chu_ngon_ngu «{nn}» chưa hỗ trợ (có: {", ".join(NGON_NGU)})')
+        nn = nn_giong
+    dich = nn != nn_giong
     LN = NGON_NGU.get(nn, NGON_NGU['en'])
 
     def kiem_chu(chu, noi):
@@ -679,7 +836,7 @@ def giai(work, bao=loi):
     # ---- câu nói di chuyển A → B mà chưa có đồ hoạ hanh_trinh (SKILL mục 13) ----
     ht = [(float(d.get('tu', 0)), float(d.get('den', 0))) for d in kh.get('do_hoa', []) if d.get('loai') == 'hanh_trinh']
     bo = [float(x) for x in kh.get('bo_di_chuyen', []) or []]
-    for r in cau_di_chuyen(lj.get('cau'), nn):
+    for r in cau_di_chuyen(lj.get('cau'), nn_giong):
         if any(r['s'] - .3 <= x <= r['e'] + .3 for x in bo):
             continue
         if not any(min(b, r['e']) - max(a, r['s']) > min(.8, (r['e'] - r['s']) * .4) for a, b in ht):
@@ -699,7 +856,12 @@ def giai(work, bao=loi):
             o = d.get(k)
             if isinstance(o, dict) and o.get('ten'):
                 giu.append(str(o['ten']))
-    sub =gom_sub(tu, nn, giu) if (kh.get('sub') or {}).get('bat', True) else []
+    if not (kh.get('sub') or {}).get('bat', True):
+        sub = []
+    elif dich:
+        sub = sub_dich(kh, tu, dur, nn, E, Wn, kiem_chu)
+    else:
+        sub = gom_sub(tu, nn_giong, giu)
     # ---- SFX: bỏ tiếng sát nhau ----
     sfx.sort(key=lambda e: e['luc'])
     gon = []
@@ -713,7 +875,7 @@ def giai(work, bao=loi):
     loe = []
     if KC and KC[0]['vao']['kieu'] == 'loe':
         loe.append({'t': -.25, 'dai': 1.1})
-    KH = {'fps': FPS, 'dur': dur, 'ngon_ngu': nn, 'canh': KC, 'do_hoa': DH, 'cta': CT, 'sub': sub, 'sub_y': SUB_Y,
+    KH = {'fps': FPS, 'dur': dur, 'ngon_ngu': nn, 'ngon_ngu_giong': nn_giong, 'canh': KC, 'do_hoa': DH, 'cta': CT, 'sub': sub, 'sub_y': SUB_Y,
           'nguon_anh': nguon_anh, 'loe': loe, 'het_loi': het_loi, 'an_toan': AN_TOAN}
     return KH, gon, CB, L
 
@@ -727,6 +889,7 @@ def kiem_kh(work, in_ra=True):
             loi(f'{m} {msg}')
         if KH:
             loi(f"\nVideo {KH['dur']:.2f}s · {len(KH['canh'])} cảnh · {len(KH['do_hoa'])} đồ hoạ · {len(KH['sub'])} cụm sub · "
-                f"{len(sfx)} SFX · ngôn ngữ chữ {KH['ngon_ngu']}")
+                f"{len(sfx)} SFX · ngôn ngữ chữ {KH['ngon_ngu']}"
+                + (f" (giọng {KH['ngon_ngu_giong']} — sub dịch)" if KH['ngon_ngu'] != KH['ngon_ngu_giong'] else ''))
         loi(f"KIỂM KẾ HOẠCH: {'ĐẠT' if nd == 0 else 'CHƯA ĐẠT'} — {nd} ⛔, {nw} ⚠")
     return nd == 0
