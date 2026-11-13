@@ -11,6 +11,8 @@
                                         (lop mau quy hoach + line sang tu ranh toi tung diem ghi khoang cach m/km) 9:16, nhan ban tu nns-ban-do-ha-tang
 - skills/bds-sale-viral               : video nguoi noi (sale BDS, 9:16) + Resources tuy chon -> edit kieu "Het Hon Real"
                                         (tieu de 3 tang SAU DAU nguoi, sub nguc day ngang, icon 3D moc tu ban tay, SFX)
+- skills/TuấnJp_Dulich_ManDoc         : link bai bao du lich + audio giong doc + Resources clip/anh (+ nhac nen) -> video quang ba
+                                        du lich 9:16 (do hoa chu, hanh trinh A->B tu ve / de len clip, sub karaoke, CTA theo doi)
 
 ## Cai tren may moi (PowerShell, trong thu muc du an co .claude\skills)
     git clone https://github.com/ngocson0312/SON_VIDEO_AI.git SON_VIDEO_AI
@@ -23,6 +25,7 @@
     New-Item -ItemType Junction -Path .claude\skills\nns-ban-do-ha-tang -Target SON_VIDEO_AI\skills\nns-ban-do-ha-tang
     New-Item -ItemType Junction -Path .claude\skills\nns-ha-tang-quy-hoach-tien-ich -Target SON_VIDEO_AI\skills\nns-ha-tang-quy-hoach-tien-ich
     New-Item -ItemType Junction -Path .claude\skills\bds-sale-viral -Target SON_VIDEO_AI\skills\bds-sale-viral
+    New-Item -ItemType Junction -Path .claude\skills\TuấnJp_Dulich_ManDoc -Target SON_VIDEO_AI\skills\TuấnJp_Dulich_ManDoc
     python -I -m pip install -r SON_VIDEO_AI\requirements.txt
     python -I -X utf8 .claude\skills\skill-bando-tintuc-chinhtri\scripts\run.py chuan-bi   (tai ~200 MB cache, lan dau)
 Cap nhat: git pull trong SON_VIDEO_AI. Skill co repo rieng (ban-do-tien-ich-nha-dat, nns-ha-tang-quy-hoach-tien-ich): git pull / git push ngay trong thu muc skill do. Thu muc cache/ khong len git (tu tai lai).
@@ -44,3 +47,9 @@ Cap nhat: git pull trong SON_VIDEO_AI. Skill co repo rieng (ban-do-tien-ich-nha-
   venv nay cung do MAT + DAU (mat_mp.py, MediaPipe FaceDetection + Pose) cho luat "chu khong de mat nguoi noi"
   (chot 12/11/2026). May da cai-tay roi thi khong cai them; git pull xong la dung duoc.
 - SFX trong assets\sfx\ chua ro giay phep (xem CREDITS.md) - lam thuong mai thi thay file cung ten.
+
+## TuấnJp_Dulich_ManDoc - ghi chu
+- Can ffmpeg/ffprobe trong PATH, Node.js >= 22 + Chrome hoac Edge (dung khung bang Chrome headless; Chrome cho la -> bien DLV_CHROME).
+- Whisper large-v3 (~3 GB) tu tai lan dau, chay CPU. Anh HEIC iPhone: cai them pillow-heif (khong co thi tu doi qua ffmpeg).
+- SFX hanh trinh (jet-flyby / xe-chay / song-nuoc .wav) tu tong hop bang scripts\tao_sfx_ht.py, da len git.
+- Lenh: python -I -X utf8 .claude\skills\TuấnJp_Dulich_ManDoc\scripts\run.py quet --audio <giong> --link <bai bao> --res <Resources>

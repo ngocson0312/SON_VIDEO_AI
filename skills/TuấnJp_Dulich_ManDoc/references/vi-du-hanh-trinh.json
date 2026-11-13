@@ -1,0 +1,598 @@
+{
+ "_ghi_chu": "MẪU CHUẨN có 3 HÀNH TRÌNH (KịchBảnVoice_1, Hà Nội, duyệt + dựng 13/11/2026, bản 2 sửa ô tô hướng phải): h1 máy bay nền trời Incheon → Nội Bài (chỉ thời gian), h2 ô tô nền đường canh_xa thanh_pho (km + thời gian, kc_tren), h3 khong nền ban_do Hồ Gươm → Văn Miếu (chỉ km, ho_tai tự = di). Giây luc_* đặt đúng lúc đọc tên / số. nhac.file là đường dẫn máy người dùng — khi dùng làm mẫu thì quet tự điền nhạc trong Resources.",
+ "CAN_CLAUDE_SUA": false,
+ "ngon_ngu": "vi",
+ "tieu_de": "Hành trình khám phá Hà Nội",
+ "kenh": {
+  "ten": "",
+  "handle": "",
+  "avatar": null
+ },
+ "nhac": {
+  "file": "D:\\____TTT_____\\KH_Test\\Tuấn_jp\\Resources\\Music_Bg.mp3",
+  "muc_db": -14.0
+ },
+ "sua_loi": {
+  "vua lê": "vua Lê",
+  "tháp rùa": "tháp Rùa",
+  "cầu thê húc": "cầu Thê Húc",
+  "đền ngọc sơn": "đền Ngọc Sơn",
+  "xe lạnh": "se lạnh",
+  "40 -50": "40–50",
+  "2 ,5": "2,5"
+ },
+ "sub": {
+  "bat": true
+ },
+ "cta": {
+  "tu": 98.59,
+  "them_giay": 1.6,
+  "tieu_de": "Theo dõi để khám phá",
+  "viet_tay": "Việt Nam tươi đẹp",
+  "nut": "Theo dõi",
+  "nut_da": "Đã theo dõi",
+  "icon": [
+   "thich",
+   "binh_luan",
+   "chia_se",
+   "luu"
+  ]
+ },
+ "canh": [
+  {
+   "id": "c01",
+   "tu": 0.0,
+   "nguon": "clip_03",
+   "vao_giay": 0.0,
+   "khung": "tran",
+   "chuyen": "loe",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "hook: khám phá thủ đô Hà Nội — Hồ Gươm, tháp Rùa"
+  },
+  {
+   "id": "c02",
+   "tu": 5.65,
+   "nguon": "clip_04",
+   "vao_giay": 18.0,
+   "khung": "tran",
+   "chuyen": "cat",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "ẩn dưới hành trình bay Incheon → Nội Bài"
+  },
+  {
+   "id": "c03",
+   "tu": 12.0,
+   "nguon": "clip_01",
+   "vao_giay": 0.0,
+   "khung": "tran",
+   "chuyen": "cat",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "Chào mừng… thủ đô ngàn năm văn hiến (flycam Hà Nội)"
+  },
+  {
+   "id": "c04",
+   "tu": 16.6,
+   "nguon": "clip_05",
+   "vao_giay": 30.0,
+   "khung": "tran",
+   "chuyen": "cat",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "ẩn dưới hành trình ô tô Nội Bài → trung tâm"
+  },
+  {
+   "id": "c05",
+   "tu": 25.5,
+   "nguon": "clip_03",
+   "vao_giay": 5.4,
+   "toc_do": 0.8,
+   "khung": "tran",
+   "chuyen": "cat",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "Điểm dừng chân đầu tiên… Hồ Hoàn Kiếm"
+  },
+  {
+   "id": "c06",
+   "tu": 30.5,
+   "nguon": "bai_02",
+   "khung": "the",
+   "the_y": 975,
+   "chuyen": "zoom",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "trái tim của thủ đô… vua Lê trả gươm (ảnh Hồ Gươm + tháp Rùa)"
+  },
+  {
+   "id": "c07",
+   "tu": 34.66,
+   "nguon": "clip_03",
+   "vao_giay": 9.5,
+   "toc_do": 0.5,
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_ra",
+   "_loi": "tản bộ quanh hồ, tháp Rùa, cầu Thê Húc, đền Ngọc Sơn"
+  },
+  {
+   "id": "c08",
+   "tu": 41.1,
+   "nguon": "clip_05",
+   "vao_giay": 18.0,
+   "khung": "tran",
+   "chuyen": "lia",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "khu phố cổ… phố nhỏ, kiến trúc xưa, cửa hàng"
+  },
+  {
+   "id": "c09",
+   "tu": 48.46,
+   "nguon": "clip_02",
+   "vao_giay": 3.3,
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "lia_trai",
+   "_loi": "nhịp sống đặc trưng của người dân"
+  },
+  {
+   "id": "c10",
+   "tu": 52.3,
+   "nguon": "clip_05",
+   "vao_giay": 0.0,
+   "khung": "tran",
+   "chuyen": "cat",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "ẩn dưới bản đồ Hồ Gươm → Văn Miếu"
+  },
+  {
+   "id": "c11",
+   "tu": 56.0,
+   "nguon": "clip_02",
+   "vao_giay": 26.6,
+   "khung": "tran",
+   "chuyen": "cat",
+   "chuyen_dong": "zoom_ra",
+   "_loi": "Văn Miếu – trường đại học đầu tiên (THIẾU footage Văn Miếu)"
+  },
+  {
+   "id": "c12",
+   "tu": 63.06,
+   "nguon": "res_03",
+   "khung": "tran",
+   "chuyen": "zoom",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "không thể bỏ qua hành trình khám phá ẩm thực"
+  },
+  {
+   "id": "c13",
+   "tu": 67.22,
+   "nguon": "res_05",
+   "khung": "tran",
+   "chuyen": "nhoe",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "một bát phở bò nóng hổi"
+  },
+  {
+   "id": "c14",
+   "tu": 69.0,
+   "nguon": "res_02",
+   "khung": "tran",
+   "lech_x": -0.75,
+   "chuyen": "lia",
+   "chuyen_dong": "zoom_ra",
+   "_loi": "bún chả thơm lừng, bánh mì giòn rụm (không có ảnh bánh mì)"
+  },
+  {
+   "id": "c15",
+   "tu": 71.45,
+   "nguon": "res_04",
+   "khung": "the",
+   "the_y": 900,
+   "chuyen": "truot",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "ly cà phê trứng béo ngậy… khó lòng quên"
+  },
+  {
+   "id": "c16",
+   "tu": 75.22,
+   "nguon": "clip_04",
+   "vao_giay": 0.0,
+   "khung": "tran",
+   "chuyen": "nhoe",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "Khi màn đêm buông xuống"
+  },
+  {
+   "id": "c17",
+   "tu": 78.78,
+   "nguon": "clip_04",
+   "vao_giay": 12.0,
+   "khung": "tran",
+   "chuyen": "lia",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "phố đi bộ Hồ Gươm, ẩm thực đường phố, nhộn nhịp"
+  },
+  {
+   "id": "c18",
+   "tu": 84.64,
+   "nguon": "clip_02",
+   "vao_giay": 10.0,
+   "khung": "tran",
+   "chuyen": "loe",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "mùa thu, con đường ngập lá vàng"
+  },
+  {
+   "id": "c19",
+   "tu": 89.18,
+   "nguon": "clip_02",
+   "vao_giay": 16.0,
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_ra",
+   "_loi": "hoa sữa, tiết trời se lạnh"
+  },
+  {
+   "id": "c20",
+   "tu": 92.4,
+   "nguon": "clip_05",
+   "vao_giay": 6.0,
+   "khung": "tran",
+   "chuyen": "zoom",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "Hà Nội không chỉ là một điểm đến…"
+  },
+  {
+   "id": "c21",
+   "tu": 98.64,
+   "nguon": "clip_02",
+   "vao_giay": 37.9,
+   "toc_do": 0.6,
+   "khung": "tran",
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_vao",
+   "_loi": "CTA"
+  }
+ ],
+ "do_hoa": [
+  {
+   "id": "d01",
+   "loai": "tu_khoa",
+   "tu": 0.75,
+   "den": 5.0,
+   "y": 800,
+   "muc": [
+    {
+     "chu": "Khám phá Hà Nội",
+     "luc": 0.85
+    },
+    {
+     "chu": "hành trình thú vị",
+     "kieu": "tay",
+     "luc": 3.6
+    }
+   ]
+  },
+  {
+   "id": "h1",
+   "loai": "hanh_trinh",
+   "tu": 5.14,
+   "den": 12.55,
+   "phuong_tien": "may_bay",
+   "nen": "troi",
+   "xuat_phat": {
+    "ten": "Incheon",
+    "phu": "Hàn Quốc"
+   },
+   "diem_den": {
+    "ten": "Nội Bài",
+    "phu": "Hà Nội"
+   },
+   "thoi_gian": "~4h30",
+   "nhan_tg": "thời gian bay",
+   "luc_ten_di": 6.9,
+   "luc_di": 8.2,
+   "luc_tg": 8.75,
+   "luc_ten_den": 11.3,
+   "luc_den": 11.6
+  },
+  {
+   "id": "d02",
+   "loai": "mo_dau",
+   "tu": 12.64,
+   "den": 15.55,
+   "tren": "Chào mừng đến",
+   "chinh": "HÀ NỘI",
+   "viet_tay": "ngàn năm văn hiến",
+   "duoi": "Việt Nam",
+   "y": 800
+  },
+  {
+   "id": "h2",
+   "loai": "hanh_trinh",
+   "tu": 15.6,
+   "den": 26.3,
+   "phuong_tien": "o_to",
+   "nen": "duong",
+   "canh_xa": "thanh_pho",
+   "xuat_phat": {
+    "ten": "Nội Bài",
+    "phu": "Sân bay quốc tế"
+   },
+   "diem_den": {
+    "ten": "Trung tâm",
+    "phu": "Thành phố Hà Nội"
+   },
+   "thoi_gian": "40–50 phút",
+   "nhan_tg": "tùy tình hình giao thông",
+   "khoang_cach": "~27 km",
+   "luc_ten_di": 16.3,
+   "luc_di": 17.9,
+   "luc_kc": 18.55,
+   "luc_ten_den": 21.5,
+   "luc_den": 22.1,
+   "luc_tg": 23.75
+  },
+  {
+   "id": "d03",
+   "loai": "chuong",
+   "tu": 26.4,
+   "den": 30.4,
+   "nhan": "Điểm đến",
+   "so": "01",
+   "ten": "Hồ Hoàn Kiếm",
+   "phu": "hay còn gọi là Hồ Gươm"
+  },
+  {
+   "id": "d04",
+   "loai": "tieu_de",
+   "tu": 31.4,
+   "den": 34.55,
+   "dan": "Trái tim của thủ đô",
+   "khoa": "Vua Lê trả gươm",
+   "viet_tay": "truyền thuyết",
+   "y": 380
+  },
+  {
+   "id": "d05",
+   "loai": "liet_ke",
+   "tu": 34.75,
+   "den": 40.95,
+   "dan": "Tản bộ quanh hồ",
+   "tieu": "Hồ Gươm",
+   "y": 380,
+   "muc": [
+    {
+     "icon": "di_tich",
+     "chu": "Tháp Rùa",
+     "phu": "cổ kính",
+     "luc": 36.95
+    },
+    {
+     "icon": "cau",
+     "chu": "Cầu Thê Húc",
+     "phu": "đỏ rực",
+     "luc": 38.5
+    },
+    {
+     "icon": "chua",
+     "chu": "Đền Ngọc Sơn",
+     "phu": "thơ mộng",
+     "luc": 39.75
+    }
+   ]
+  },
+  {
+   "id": "d06",
+   "loai": "chuong",
+   "tu": 41.15,
+   "den": 44.4,
+   "nhan": "Điểm đến",
+   "so": "02",
+   "ten": "Phố cổ Hà Nội"
+  },
+  {
+   "id": "d07",
+   "loai": "chip",
+   "tu": 44.5,
+   "den": 48.4,
+   "muc": [
+    {
+     "icon": "di_bo",
+     "chu": "Phố nhỏ",
+     "luc": 44.85
+    },
+    {
+     "icon": "di_tich",
+     "chu": "Kiến trúc xưa",
+     "luc": 46.4
+    },
+    {
+     "icon": "qua_tang",
+     "chu": "Cửa hàng truyền thống",
+     "luc": 47.85
+    }
+   ]
+  },
+  {
+   "id": "d08",
+   "loai": "tu_khoa",
+   "tu": 49.6,
+   "den": 51.6,
+   "y": 800,
+   "muc": [
+    {
+     "chu": "Nhịp sống",
+     "luc": 50.0
+    },
+    {
+     "chu": "đặc trưng",
+     "kieu": "tay",
+     "luc": 50.5
+    }
+   ]
+  },
+  {
+   "id": "h3",
+   "loai": "hanh_trinh",
+   "tu": 51.74,
+   "den": 56.6,
+   "phuong_tien": "khong",
+   "nen": "ban_do",
+   "xuat_phat": {
+    "ten": "Hồ Gươm"
+   },
+   "diem_den": {
+    "ten": "Văn Miếu",
+    "phu": "Quốc Tử Giám"
+   },
+   "khoang_cach": "~2,5 km",
+   "luc_ten_di": 52.2,
+   "luc_ten_den": 53.5,
+   "luc_di": 54.0,
+   "luc_tg": 55.5,
+   "luc_den": 55.95
+  },
+  {
+   "id": "d09",
+   "loai": "chuong",
+   "tu": 57.0,
+   "den": 62.9,
+   "nhan": "Điểm đến",
+   "so": "03",
+   "ten": "Văn Miếu – Quốc Tử Giám",
+   "phu": "Trường đại học đầu tiên của Việt Nam"
+  },
+  {
+   "id": "d10",
+   "loai": "chip",
+   "tu": 59.6,
+   "den": 62.9,
+   "y": 1120,
+   "muc": [
+    {
+     "icon": "sach",
+     "chu": "Truyền thống hiếu học",
+     "luc": 60.0
+    },
+    {
+     "icon": "di_tich",
+     "chu": "Văn hóa lâu đời",
+     "luc": 61.8
+    }
+   ]
+  },
+  {
+   "id": "d11",
+   "loai": "tieu_de",
+   "tu": 63.3,
+   "den": 67.05,
+   "dan": "Không thể bỏ qua",
+   "khoa": "Hành trình ẩm thực",
+   "y": 760
+  },
+  {
+   "id": "d12",
+   "loai": "chip",
+   "tu": 67.5,
+   "den": 74.8,
+   "y": 260,
+   "muc": [
+    {
+     "icon": "bat_pho",
+     "chu": "Phở bò",
+     "luc": 67.8
+    },
+    {
+     "icon": "lua",
+     "chu": "Bún chả",
+     "luc": 69.1
+    },
+    {
+     "icon": "an_uong",
+     "chu": "Bánh mì",
+     "luc": 70.12
+    },
+    {
+     "icon": "ca_phe",
+     "chu": "Cà phê trứng",
+     "luc": 71.62
+    }
+   ]
+  },
+  {
+   "id": "d13",
+   "loai": "tieu_de",
+   "tu": 75.45,
+   "den": 78.7,
+   "dan": "Khi màn đêm buông xuống",
+   "khoa": "Hà Nội về đêm",
+   "viet_tay": "một vẻ đẹp khác",
+   "mau": "trang",
+   "y": 760
+  },
+  {
+   "id": "d14",
+   "loai": "chip",
+   "tu": 79.4,
+   "den": 84.4,
+   "muc": [
+    {
+     "icon": "di_bo",
+     "chu": "Phố đi bộ Hồ Gươm",
+     "luc": 79.66
+    },
+    {
+     "icon": "bat_pho",
+     "chu": "Ẩm thực đường phố",
+     "luc": 81.3
+    },
+    {
+     "icon": "den_long",
+     "chu": "Không khí nhộn nhịp",
+     "luc": 83.3
+    }
+   ]
+  },
+  {
+   "id": "d15",
+   "loai": "tieu_de",
+   "tu": 85.6,
+   "den": 88.55,
+   "dan": "Đặc biệt vào",
+   "khoa": "Mùa thu Hà Nội",
+   "y": 760
+  },
+  {
+   "id": "d16",
+   "loai": "chip",
+   "tu": 88.6,
+   "den": 92.3,
+   "muc": [
+    {
+     "icon": "la",
+     "chu": "Lá vàng",
+     "luc": 88.7
+    },
+    {
+     "icon": "hoa",
+     "chu": "Hoa sữa",
+     "luc": 89.55
+    },
+    {
+     "icon": "gio",
+     "chu": "Se lạnh",
+     "luc": 90.95
+    }
+   ]
+  },
+  {
+   "id": "d17",
+   "loai": "tieu_de",
+   "tu": 92.6,
+   "den": 98.4,
+   "dan": "Không chỉ là điểm đến",
+   "khoa": "Hà Nội",
+   "viet_tay": "tâm hồn Việt Nam",
+   "co": 190,
+   "y": 760
+  }
+ ]
+}

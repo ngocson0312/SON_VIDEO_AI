@@ -1,0 +1,354 @@
+# Từ ghép tiếng Việt — sub KHÔNG ngắt giữa các âm tiết của 1 dòng dưới đây (chữ thường, có dấu).
+# Tên riêng (các âm tiết viết hoa liền nhau) tự được giữ liền, không cần ghi ở đây.
+# Kế hoạch có thể thêm: "sub": {"giu_lien": ["phố đi bộ", ...]}; chữ trong đồ hoạ ≤ 4 âm tiết cũng tự được giữ liền.
+# Thêm từ mới khi gặp sub ngắt xấu (ghi vào bảng Nhật ký của SKILL.md).
+
+# — du lịch, địa điểm —
+du lịch
+du khách
+điểm đến
+địa điểm
+địa danh
+danh lam
+thắng cảnh
+danh lam thắng cảnh
+di tích
+di sản
+di sản văn hóa
+thế giới
+thủ đô
+thành phố
+thị trấn
+làng quê
+nông thôn
+miền núi
+miền biển
+vùng đất
+quê hương
+đất nước
+tổ quốc
+dân tộc
+quốc gia
+trung tâm
+khu vực
+phố cổ
+phố đi bộ
+đường phố
+con phố
+con đường
+con người
+ngôi nhà
+ngôi chùa
+ngôi trường
+ngôi đền
+đền thờ
+chùa chiền
+nhà thờ
+cung điện
+hoàng thành
+lăng tẩm
+bảo tàng
+công viên
+quảng trường
+chợ đêm
+chợ nổi
+bãi biển
+bờ biển
+hòn đảo
+vịnh biển
+hang động
+núi non
+ruộng bậc thang
+bậc thang
+thác nước
+sông nước
+dòng sông
+hồ nước
+mặt hồ
+bến thuyền
+du thuyền
+khách sạn
+nhà hàng
+quán ăn
+cửa hàng
+khu nghỉ dưỡng
+nghỉ dưỡng
+homestay
+check in
+sân bay
+nhà ga
+tàu hỏa
+xe máy
+ô tô
+đại học
+trường học
+học sinh
+sinh viên
+
+# — văn hóa, lịch sử —
+văn hóa
+lịch sử
+truyền thống
+truyền thuyết
+huyền thoại
+lễ hội
+phong tục
+tập quán
+tín ngưỡng
+tâm linh
+kiến trúc
+nghệ thuật
+âm nhạc
+ẩm thực
+đặc sản
+đặc trưng
+bản sắc
+cổ kính
+cổ xưa
+lâu đời
+nghìn năm
+ngàn năm
+trăm năm
+biểu tượng
+dấu ấn
+giá trị
+ký ức
+kỷ niệm
+chứng nhân
+anh hùng
+chủ tịch
+vua chúa
+triều đại
+
+# — món ăn —
+món ăn
+món ngon
+phở bò
+phở gà
+bún chả
+bún bò
+bún riêu
+bánh mì
+bánh cuốn
+bánh xèo
+bánh chưng
+chả cá
+chả giò
+nem rán
+cà phê
+cà phê trứng
+cà phê muối
+trà đá
+nước mắm
+hải sản
+đồ ăn
+thức ăn
+nóng hổi
+thơm lừng
+thơm ngon
+béo ngậy
+giòn tan
+đậm đà
+thanh mát
+ngọt ngào
+hấp dẫn
+thưởng thức
+
+# — thiên nhiên, mùa —
+thiên nhiên
+phong cảnh
+khung cảnh
+cảnh quan
+cảnh đẹp
+bầu trời
+ánh nắng
+nắng vàng
+hoàng hôn
+bình minh
+màn đêm
+ban đêm
+ban ngày
+buổi sáng
+buổi tối
+mùa xuân
+mùa hạ
+mùa hè
+mùa thu
+mùa đông
+lá vàng
+lá đỏ
+hoa sữa
+hoa sen
+hoa đào
+hoa mai
+cây xanh
+hàng cây
+rừng thông
+tiết trời
+thời tiết
+se lạnh
+mát mẻ
+gió nhẹ
+làn gió
+sương mù
+mây trời
+
+# — tính từ, cảm xúc —
+tuyệt vời
+tuyệt đẹp
+xinh đẹp
+rực rỡ
+lung linh
+huyền ảo
+lãng mạn
+thơ mộng
+yên bình
+bình yên
+thanh bình
+tĩnh lặng
+yên tĩnh
+nhộn nhịp
+sôi động
+náo nhiệt
+tấp nập
+hiện đại
+sầm uất
+san sát
+rộng lớn
+hùng vĩ
+nguy nga
+tráng lệ
+độc đáo
+đặc biệt
+nổi tiếng
+nổi bật
+nổi tiếng nhất
+quen thuộc
+thân quen
+gần gũi
+thân thiện
+hiếu khách
+mến khách
+dễ thương
+đáng yêu
+ấn tượng
+khó quên
+thú vị
+mới lạ
+hoang sơ
+trong xanh
+trong lành
+xanh mát
+ngập tràn
+tràn ngập
+thoang thoảng
+nhẹ nhàng
+dịu dàng
+chậm rãi
+vội vã
+rõ ràng
+hoàn toàn
+vô cùng
+vô vàn
+vô số
+rất nhiều
+chắc chắn
+nhất định
+
+# — động từ, hư từ hay gặp —
+khám phá
+trải nghiệm
+cảm nhận
+tận hưởng
+chiêm ngưỡng
+ngắm nhìn
+tham quan
+ghé thăm
+dạo quanh
+dạo bước
+đặt chân
+lưu giữ
+gìn giữ
+bảo tồn
+hòa mình
+mang lại
+mong muốn
+yêu thích
+yêu mến
+tìm kiếm
+tìm hiểu
+lựa chọn
+bỏ lỡ
+gắn liền
+nằm ngay
+nằm giữa
+được mệnh danh
+mệnh danh
+khoác lên
+buông xuống
+trở nên
+trở thành
+bắt đầu
+kết thúc
+tiếp theo
+ngoài ra
+bên cạnh
+không chỉ
+mà còn
+thậm chí
+đặc biệt là
+nếu có
+hãy cùng
+theo dõi
+chia sẻ
+bình luận
+nhịp sống
+cuộc sống
+không khí
+cơ hội
+thời gian
+thời điểm
+khoảng cách
+phương tiện
+giá vé
+miễn phí
+mỗi năm
+hàng năm
+hàng ngày
+mỗi ngày
+mọi người
+người dân
+du khách quốc tế
+đầu tiên
+cuối cùng
+hương hoa
+mùi hương
+vẻ đẹp
+nét đẹp
+rất riêng
+bao giờ hết
+hơn bao giờ hết
+một lần
+lần đầu
+# — cụm cố định (không ngắt giữa) —
+một trong những
+một trong
+chính là
+đó là
+đây là
+cũng là
+trở nên
+nổi tiếng
+đường phố
+món ăn đường phố
+ẩm thực đường phố
+không chỉ
+mà còn
+không khí
+nhộn nhịp
+hòa mình
+đặt chân
+ghé thăm
+tham quan
+check in
+sống ảo
