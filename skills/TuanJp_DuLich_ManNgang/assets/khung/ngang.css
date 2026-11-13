@@ -1,0 +1,151 @@
+/* ngang.css — trang dựng 1920×1080 cho TuanJp_DuLich_ManNgang. Màu / phông chuẩn của skill nằm ở :root. */
+:root {
+  --vang: #F4C66A;
+  --vang2: #FFE3A3;
+  --vang3: #D9A441;
+  --kem: #FFF6E6;
+  --toi: rgba(8, 11, 16, .62);
+  --do: #FF0033;
+  --sub-vang: #FFC845;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+#stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; background: #050608;
+  font-family: 'BVP', sans-serif; color: var(--kem); -webkit-font-smoothing: antialiased; }
+.abs { position: absolute; }
+img { display: block; }
+
+/* ---------- footage ---------- */
+#canh_lop { position: absolute; inset: 0; z-index: 1; }
+.canh { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; background: #07080b; will-change: transform, opacity; }
+.canh .full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; transform-origin: 50% 50%; }
+.canh .nen { position: absolute; left: -96px; top: -54px; width: 2112px; height: 1188px; object-fit: cover; filter: brightness(.58) saturate(1.15); }
+.canh .nen_phu { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 30%, rgba(0,0,0,.45) 100%); }
+.the_doc { position: absolute; overflow: hidden; border-radius: 26px; box-shadow: 0 30px 70px rgba(0,0,0,.55), 0 0 0 3px rgba(255,246,230,.88);
+  background: #111; }
+.the_doc img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+.the_doc .bong { position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 32%); }
+.ghep_nen { position: absolute; inset: 0; background: #0b0c10; }
+.o_ghep { position: absolute; top: 0; height: 1080px; overflow: hidden; background: #111; }
+.o_ghep img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+.o_ghep .vien { position: absolute; inset: 0; box-shadow: inset 0 0 0 2px rgba(255,246,230,.18); }
+.the_anh { position: absolute; background: #FFF9EE; padding: 16px 16px 16px 16px; border-radius: 10px;
+  box-shadow: 0 34px 80px rgba(0,0,0,.6); }
+.the_anh .khung_anh { position: relative; overflow: hidden; border-radius: 4px; }
+.the_anh img { width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+
+/* ---------- màu phim ---------- */
+#mau { position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,190,110,.10) 0%, rgba(255,190,110,0) 40%, rgba(20,40,70,0) 70%, rgba(10,20,40,.16) 100%);
+  mix-blend-mode: soft-light; }
+#vignette { position: absolute; inset: 0; z-index: 6; pointer-events: none;
+  background: radial-gradient(ellipse 75% 70% at 50% 48%, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%); }
+#day_toi { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; z-index: 7; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.18) 45%, rgba(0,0,0,.5) 100%); }
+#hat { position: absolute; inset: -64px; z-index: 8; pointer-events: none; opacity: .075; mix-blend-mode: overlay; }
+#loe { position: absolute; inset: -20%; z-index: 9; pointer-events: none; mix-blend-mode: screen; opacity: 0;
+  background:
+    radial-gradient(ellipse 34% 52% at 30% 45%, rgba(255,170,70,.95) 0%, rgba(255,140,40,.0) 70%),
+    radial-gradient(ellipse 28% 44% at 62% 55%, rgba(255,215,140,.9) 0%, rgba(255,200,120,0) 70%),
+    radial-gradient(ellipse 22% 36% at 80% 35%, rgba(255,120,140,.75) 0%, rgba(255,110,130,0) 70%); }
+#trang { position: absolute; inset: 0; z-index: 9; pointer-events: none; background: #FFF4DE; opacity: 0; }
+#man { position: absolute; top: -200px; height: 1480px; width: 520px; z-index: 9; pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,246,230,0) 0%, rgba(255,240,214,.95) 22%, #FFF6E6 50%, rgba(244,198,106,.95) 78%, rgba(244,198,106,0) 100%);
+  transform-origin: 50% 50%; }
+#den { position: absolute; inset: 0; z-index: 10; background: #000; pointer-events: none; opacity: 0; }
+.bar { position: absolute; left: 0; width: 1920px; height: 132px; background: #000; z-index: 11; pointer-events: none; }
+#bar_tren { top: 0; }
+#bar_duoi { bottom: 0; }
+
+/* ---------- lớp đồ hoạ ---------- */
+#lop { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+.dh { position: absolute; }   /* ẩn / hiện do JS (style inline) — CSS KHÔNG được display:none */
+.man_toi { position: absolute; pointer-events: none; }
+
+/* chữ */
+/* Chữ GRADIENT (background-clip:text, màu trong suốt): phần glyph ra NGOÀI hộp phần tử không được tô → MẤT DẤU tiếng Việt
+   (Ể, Ấ, Ữ… cao hơn line-height 1). Nới hộp trên / dưới bằng padding rồi bù margin âm để bố cục không đổi. */
+.vang_grad, .kem_grad, .chu_drop { padding: .26em .05em .16em; margin: -.26em -.05em -.16em; }
+.serif { font-family: 'PF', serif; font-weight: 900; line-height: 1.02; letter-spacing: .005em; }
+.tay { font-family: 'DS', cursive; font-weight: 700; color: var(--vang); line-height: 1.1;
+  text-shadow: 0 3px 14px rgba(0,0,0,.55); }
+.caps { font-family: 'MS', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .32em; }
+.vang_grad { background: linear-gradient(180deg, #FFF1C9 0%, #F8D486 45%, #E4AE4C 100%); -webkit-background-clip: text; background-clip: text;
+  color: transparent; filter: drop-shadow(0 4px 18px rgba(0,0,0,.55)); }
+.chu_drop { background: linear-gradient(100deg, #F3DDB4 0%, #FFF6E6 36%, #FFFFFF 45%, #FFE09A 50%, #FFFFFF 55%, #FFF6E6 64%, #F3DDB4 100%);
+  background-size: 300% 100%; background-position: 100% 50%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 6px 26px rgba(0,0,0,.65)); transform-origin: 50% 55%; }
+.kem_grad { background: linear-gradient(180deg, #FFFFFF 0%, #FFF6E6 55%, #F3DDB4 100%); -webkit-background-clip: text; background-clip: text;
+  color: transparent; filter: drop-shadow(0 5px 22px rgba(0,0,0,.6)); }
+.bong_chu { text-shadow: 0 4px 18px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.5); }
+.ch { display: inline-block; white-space: pre; }
+.dong { display: block; white-space: nowrap; }
+.mask { display: block; overflow: hidden; padding: .06em .04em .14em; margin: -.06em -.04em -.14em; }
+.vach { position: absolute; height: 2px; background: linear-gradient(90deg, rgba(244,198,106,0), var(--vang) 30%, var(--vang) 70%, rgba(244,198,106,0)); }
+
+/* chương */
+.so_vien { font-family: 'AN', sans-serif; font-size: 230px; line-height: .9; color: transparent; -webkit-text-stroke: 2.5px var(--vang);
+  position: relative; display: inline-block; }
+.so_vien .to { position: absolute; left: 0; top: 0; color: var(--vang); -webkit-text-stroke: 0; }
+.nhan_chuong { display: flex; align-items: center; gap: 22px; }
+.nhan_chuong .gach { width: 90px; height: 3px; background: var(--vang); }
+
+/* địa danh (lower third) */
+.ld_tron { position: absolute; width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(160deg, #FFE7A8, #E2A94A);
+  box-shadow: 0 8px 26px rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; color: #2A1B05; }
+.ld_tron svg { width: 46px; height: 46px; }
+.ld_gach { position: absolute; width: 3px; background: var(--vang); }
+
+/* chip */
+.chip { position: absolute; display: flex; align-items: center; gap: 16px; height: 86px; padding: 0 34px 0 14px; border-radius: 44px;
+  background: linear-gradient(180deg, rgba(20,24,32,.78), rgba(10,12,18,.72)); box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1.5px rgba(244,198,106,.55);
+  white-space: nowrap; font-weight: 700; font-size: 40px; color: var(--kem); }
+.chip .ic { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(160deg, #FFE7A8, #E2A94A); display: flex;
+  align-items: center; justify-content: center; color: #2A1B05; flex: none; }
+.chip .ic svg { width: 32px; height: 32px; }
+
+/* liệt kê */
+.bang { position: absolute; border-radius: 30px; padding: 40px 48px 44px; background: linear-gradient(170deg, rgba(18,22,30,.80), rgba(8,10,14,.74));
+  box-shadow: 0 30px 70px rgba(0,0,0,.45), inset 0 0 0 1.5px rgba(244,198,106,.45); }
+.bang .dan { font-family: 'MS', sans-serif; font-weight: 700; letter-spacing: .28em; text-transform: uppercase; color: var(--vang); font-size: 32px;
+  margin-bottom: 22px; }
+.muc { display: flex; align-items: center; gap: 24px; height: 94px; font-size: 50px; font-weight: 700; white-space: nowrap; }
+.muc .tick { width: 58px; height: 58px; border-radius: 50%; border: 3px solid var(--vang); display: flex; align-items: center;
+  justify-content: center; color: var(--vang); flex: none; }
+.muc .tick svg { width: 30px; height: 30px; }
+
+/* sub */
+#sub { position: absolute; left: 0; right: 0; z-index: 30; text-align: center; pointer-events: none; }
+#sub .sd { display: block; white-space: nowrap; font-family: 'BVP', sans-serif; font-weight: 700; font-size: 50px; line-height: 64px; color: #FFFFFF;
+  text-shadow: 0 0 2px #000, 0 0 4px rgba(0,0,0,.9), 2px 2px 0 rgba(0,0,0,.85), -2px 2px 0 rgba(0,0,0,.85), 2px -2px 0 rgba(0,0,0,.85),
+    -2px -2px 0 rgba(0,0,0,.85), 0 4px 14px rgba(0,0,0,.7); }
+#sub .w { display: inline-block; transform-origin: 50% 70%; }
+#sub .w.on { color: var(--sub-vang); }
+
+/* màn kết */
+#cta { position: absolute; inset: 0; z-index: 40; }
+.cta_toi { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4,6,10,.78) 0%, rgba(4,6,10,.55) 48%, rgba(4,6,10,.12) 100%); }
+.avatar { position: absolute; width: 190px; height: 190px; border-radius: 50%; overflow: hidden; background: linear-gradient(160deg, #2a2f3a, #12151c);
+  display: flex; align-items: center; justify-content: center; font-family: 'PF', serif; font-weight: 900; font-size: 96px; color: var(--vang); }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.vong { position: absolute; width: 214px; height: 214px; border-radius: 50%;
+  background: conic-gradient(from 0deg, #FFE3A3, #F4C66A, #FF4D6D, #FF0033, #F4C66A, #FFE3A3); }
+.vong_trong { position: absolute; width: 202px; height: 202px; border-radius: 50%; background: #0b0d12; }
+.ten_kenh { position: absolute; font-weight: 800; font-size: 56px; white-space: nowrap; display: flex; align-items: center; gap: 16px; }
+.tich { width: 40px; height: 40px; border-radius: 50%; background: #3EA6FF; display: inline-flex; align-items: center; justify-content: center; }
+.tich svg { width: 26px; height: 26px; color: #fff; }
+.handle { position: absolute; font-family: 'MS', sans-serif; font-weight: 600; font-size: 28px; color: rgba(255,246,230,.75); letter-spacing: .04em; }
+.nut_dk { position: absolute; height: 104px; border-radius: 52px; display: flex; align-items: center; justify-content: center; gap: 18px;
+  font-family: 'BVP', sans-serif; font-weight: 800; font-size: 42px; letter-spacing: .04em; color: #fff; white-space: nowrap; overflow: hidden;
+  background: linear-gradient(180deg, #FF2A4D 0%, #E5001F 100%); box-shadow: 0 16px 40px rgba(255,0,40,.35); }
+.nut_dk.da { background: linear-gradient(180deg, #4A4F5A, #2E323B); box-shadow: 0 12px 30px rgba(0,0,0,.4); color: #E8E8E8; }
+.nut_dk .quet { position: absolute; top: -20px; bottom: -20px; width: 120px; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.45), rgba(255,255,255,0));
+  transform: skewX(-20deg); }
+.nut_dk svg { width: 44px; height: 44px; }
+.nut_tron { position: absolute; width: 104px; height: 104px; border-radius: 50%; background: rgba(255,255,255,.14);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); display: flex; align-items: center; justify-content: center; color: #fff; }
+.nut_tron svg { width: 52px; height: 52px; }
+.nhan_nut { position: absolute; font-weight: 700; font-size: 24px; color: rgba(255,246,230,.85); text-align: center; width: 160px; }
+.song { position: absolute; border-radius: 60px; border: 3px solid rgba(255,60,90,.8); }
+.tay_bam { position: absolute; width: 120px; height: 170px; z-index: 5; filter: drop-shadow(0 10px 18px rgba(0,0,0,.5)); }
+.tim_bay { position: absolute; color: #FF3355; width: 40px; height: 40px; }
