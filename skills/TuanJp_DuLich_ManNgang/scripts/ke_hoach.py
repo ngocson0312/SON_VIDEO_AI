@@ -5,7 +5,8 @@ import re
 import unicodedata
 from pathlib import Path
 
-from chung import (BAN_DO_MIN, BINH_LUAN_CACH, BINH_LUAN_DUNG, BO_CUC, BO_CUC_CHO, CANH_MIN, CANH_TEASER_MIN, CAT_Y_DOC, CHUYEN, CHUYEN_DONG,
+from chung import (BAN_DO_MIN, BINH_LUAN_CACH, BINH_LUAN_DUNG, BO_CUC, BO_CUC_CHO, CANH_MIN, CANH_TEASER_MIN, CAO_TRAO_DAI, CAO_TRAO_DAP, CAT_Y_DOC,
+                   CHUYEN, CHUYEN_DONG, KY_XAO, KY_XAO_DROP,
                    CTA_MIN, DUOI, FPS, GHEP_KHE, H, HIEN_ANH, HIEN_MIN, ICON, KHONG_CACH, LOAI_DH, MO_MAN_DAI, MO_MAN_MAX, MO_MAN_MIN, NGON_NGU, NHO,
                    SFX, SFX_TREN, SUB_MAX_KY_TU, SUB_MAX_TU, SUB_NGAT, THE_DOC_CAO, THE_DOC_X, W, XUAT_PHAT_MAC_DINH, ASSETS, doc_json, gio_phut, loi,
                    so_km)
@@ -255,7 +256,7 @@ def giai(work, bao=loi):
     kh = copy.deepcopy(kh)
     mm = kh.get('mo_man') or {}
     nhac_f = _nhac_file(kh, work)
-    OFF, nhip_d, nhac_dau = 0.0, None, None
+    OFF, nhip_d, nhac_dau, phach = 0.0, None, None, []
     if mm and mm.get('bat', True) is not False and mm.get('canh'):
         if not nhac_f:
             Wn('mo_man: teaser cần NHẠC NỀN (Resources không có nhạc) → bỏ teaser, video mở thẳng bằng hook lời')
@@ -339,6 +340,56 @@ def giai(work, bao=loi):
     if canh[0]['tu'] > .01:
         Wn(f"cảnh đầu bắt đầu {canh[0]['tu']}s → kéo về 0")
         canh[0]['tu'] = 0
+    # ---- CAO TRÀO ~30 s đầu (khách 14/11/2026: "những cảnh đầu làm xịn xò, hiệu ứng chuyển cảnh xịn xò liên tục, kỹ xảo điện ảnh…
+    # 5 s đầu kỹ xảo xịn vào… những cái hay tinh tuý ở 30 s đầu, sau 30 giây đầu như bình thường"): MỌI cú cắt từ 0 tới cú DROP
+    # (mo_dau đầu tiên; không có thì 30 s) tự thành 1 KỸ XẢO ĐIỆN ẢNH xoay vòng (KY_XAO), cú cắt trùng DROP = xuyên cảnh; kỹ xảo Claude
+    # ghi rõ thì giữ; `man` (mở chương) / `giu_chuyen: true` giữ nguyên. Teaser: cú đập theo phách giữa 2 cú cắt. Sau đoạn này: chuyển êm.
+    ct = kh.get('cao_trao', {})
+    ct = {'bat': False} if ct is False else (ct if isinstance(ct, dict) else {})
+    moc_drop = min([float(d['tu']) for d in kh.get('do_hoa') or [] if d.get('loai') == 'mo_dau'] or [-1.0])
+    het_ct = float(ct.get('het') or (moc_drop if 8 <= moc_drop <= 45 else CAO_TRAO_DAI))
+    cao_trao = None
+    if ct.get('bat', True) is not False:
+        seq = [x for x in (ct.get('fx') or KY_XAO) if x in CHUYEN] or list(KY_XAO)
+        lay = lambda k: seq[k] if k < len(seq) else seq[1 + (k - len(seq)) % max(1, len(seq) - 1)] if len(seq) > 1 else seq[0]
+        k, truoc, doi = 0, None, []
+        for i in range(1, len(canh)):
+            c = canh[i]
+            if float(c['tu']) > het_ct + .01:
+                break
+            ch0 = c.get('chuyen')
+            if ch0 in KY_XAO or ch0 == 'man' or c.get('giu_chuyen'):
+                truoc = ch0
+                continue
+            if moc_drop > 0 and abs(float(c['tu']) - moc_drop) < .06:
+                ch = KY_XAO_DROP if truoc != KY_XAO_DROP else 'xoay'
+            else:
+                ch = lay(k); k += 1
+                sau_drop = i + 1 < len(canh) and moc_drop > 0 and abs(float(canh[i + 1]['tu']) - moc_drop) < .06
+                if ch == truoc or (sau_drop and ch == KY_XAO_DROP):
+                    ch = lay(k); k += 1
+            c['chuyen'] = ch
+            truoc = ch
+            doi.append(f"{c.get('id', i)} {ch}")
+        # cửa sổ kỹ xảo không nuốt quá nửa cảnh kề (cảnh 2 s → mỗi cú ≤ 1 s, còn ≥ 1 s đứng yên cho người xem kịp nhìn)
+        for i in range(1, len(canh)):
+            c = canh[i]
+            if float(c['tu']) > het_ct + .01:
+                break
+            if c.get('chuyen') in KY_XAO:
+                dai_truoc = float(c['tu']) - float(canh[i - 1]['tu'])
+                dai_nay = (float(canh[i + 1]['tu']) if i + 1 < len(canh) else dur) - float(c['tu'])
+                c['_d'] = round(min(CHUYEN[c['chuyen']][0], .5 * min(dai_truoc, dai_nay)), 3)
+        dap = []
+        if phach:                                   # teaser: đập theo phách ở GIỮA 2 cú cắt (cú cắt đã nằm đầu ô nhịp)
+            cat = [float(c['tu']) for c in canh if float(c['tu']) <= OFF + .01]
+            for j, b in enumerate(phach):
+                if j % 2 or b < .45 or b > OFF - .3 or any(abs(b - x) < .45 for x in cat):
+                    continue
+                dap.append({'t': round(b, 3), 'm': CAO_TRAO_DAP[0] if b < 5.2 else CAO_TRAO_DAP[1]})
+        cao_trao = {'het': round(het_ct, 3), 'mo': bool(OFF) and ct.get('mo', True) is not False, 'dap': dap}
+        if doi:
+            TS(f"cao trào 0–{het_ct:.1f}s: kỹ xảo {', '.join(doi)}" + (f'; {len(dap)} cú đập theo phách' if dap else ''))
     for c in canh:                       # ô ghép không ghi luc_o → trượt vào so le 0,12 s ngay đầu cảnh
         if c.get('bo_cuc') == 'ghep' and not c.get('luc_o') and isinstance(c.get('nguon'), list):
             c['luc_o'] = [round(float(c['tu']) + k * .12, 3) for k in range(len(c['nguon']))]
@@ -351,9 +402,9 @@ def giai(work, bao=loi):
         if ch not in CHUYEN:
             E(f'{cid}: chuyển cảnh lạ «{ch}» (có: {", ".join(CHUYEN)})')
             ch = 'hoa_tan'
-        d_in = CHUYEN[ch][0] if i > 0 else 0
+        d_in = float(c.get('_d', CHUYEN[ch][0])) if i > 0 else 0
         ch_ra = canh[i + 1].get('chuyen', 'hoa_tan') if i + 1 < len(canh) else 'cat'
-        d_out = CHUYEN.get(ch_ra, (0,))[0] if i + 1 < len(canh) else 0
+        d_out = float(canh[i + 1].get('_d', CHUYEN.get(ch_ra, (0,))[0])) if i + 1 < len(canh) else 0
         moc_hook = min([float(d['tu']) for d in kh.get('do_hoa') or [] if d.get('loai') == 'mo_dau'] or [0])
         truoc = canh[i - 1] if i > 0 else None
         montage = bool(truoc and c.get('bo_cuc') == 'the_doc' and truoc.get('bo_cuc') == 'the_doc'
@@ -521,6 +572,9 @@ def giai(work, bao=loi):
             if c['bo_cuc'] == 'ghep' and c.get('luc_o'):
                 xong = max(float(x) for x in c['luc_o']) + .45
             if c['tu'] - c['d_in'] / 2 - .05 <= d['tu'] < xong - .02:
+                if d.get('_teaser') and phach:            # teaser: kỹ xảo xong → tên đập vào ĐÚNG PHÁCH kế tiếp (vẫn bám nhạc)
+                    sau = [b for b in phach if xong - .02 <= b <= xong + .45]
+                    xong = sau[0] if sau else xong
                 TS(f"{d['id']}: chữ «{d.get('chu')}» chờ cảnh {c['id']} vào xong {d['tu']:.2f}→{xong:.2f}s")
                 d['tu'] = round(xong, 2)
                 break
@@ -684,10 +738,17 @@ def giai(work, bao=loi):
         f, db, lech = SFX[ten]
         cue.append({'luc': round(max(0, luc + lech), 3), 'file': f, 'db': db, 'ten': ten, **({'dai': dai} if dai else {}),
                     **({'tren': SFX_TREN[ten]} if ten in SFX_TREN else {})})
+    if cao_trao and cao_trao['mo']:
+        S('fx_mo', 0.0)                          # khung 0 teaser: cú đập mở màn
     for i, c in enumerate(CS):
-        if i == 0 or c.get('teaser'):            # teaser: nhạc là xương sống — cắt cảnh không kèm whoosh
+        if i == 0:
             continue
         sf = CHUYEN[c['chuyen']][1]
+        if c['chuyen'] in KY_XAO:                # kỹ xảo cao trào: đỉnh tiếng đúng CÚ CẮT (cả trong teaser)
+            S(sf, c['tu'])
+            continue
+        if c.get('teaser'):                      # teaser: nhạc là xương sống — cắt thường không kèm whoosh
+            continue
         if sf:
             S(sf, c['tu'] - c['d_in'] / 2)
     for d in DH:
@@ -739,6 +800,9 @@ def giai(work, bao=loi):
         S('chuong_bell', cta['luc_chuong'])
         S('thich', cta['luc_thich'])
     cue.sort(key=lambda x: x['luc'])
+    # chữ teaser hiện cùng / ngay sau kỹ xảo → bỏ whoosh chữ (1 cú chuyển = 1 tiếng; khách chê "chuyển hình xong có sfx")
+    moc_fx = [x['luc'] - SFX[x['ten']][2] for x in cue if x['ten'].startswith('fx_')]
+    cue = [x for x in cue if not (x['ten'] == 'teaser_dap' and any(-.45 < x['luc'] - SFX['teaser_dap'][2] - m < 1.0 for m in moc_fx))]
     gon = []
     UU = ('boom', 'riser')
     for x in cue:
@@ -750,7 +814,8 @@ def giai(work, bao=loi):
           'mau': kh.get('mau', {}), 'dien_anh': kh.get('dien_anh', True),
           # teaser: giọng / sub / phần thân lùi `lech` giây; nhạc teaser lấy từ `teaser_dau` của bài, phần thân theo nhac_bat_dau
           'lech': round(OFF, 3), 'teaser_dau': round(nhac_dau, 3) if OFF and nhac_dau is not None else None,
-          'nhac_bat_dau': kh.get('nhac_bat_dau'), 'bpm': nhip_d['bpm'] if nhip_d else None}
+          'nhac_bat_dau': kh.get('nhac_bat_dau'), 'bpm': nhip_d['bpm'] if nhip_d else None,
+          'cao_trao': cao_trao}
     return KH, CB, gon, L
 
 

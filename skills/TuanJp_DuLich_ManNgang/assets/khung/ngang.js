@@ -129,11 +129,19 @@ function kenBurns(cd, u, manh) {
   }
 }
 const tfKB = (k, w, h) => `translate(${(k.x * w).toFixed(2)}px,${(k.y * h).toFixed(2)}px) scale(${k.s.toFixed(5)})`;
-function veCanh(o, t) {
+function kbOf(o, t) {
   const c = o.c, u = clamp((t - c.a) / Math.max(.01, c.b - c.a));
-  const anh = (c.loai_nguon || [])[0] === 'anh';
-  setSrc(o.img, partUrl(c.lop[0], t, c.a));
-  o.img.style.transform = tfKB(kenBurns(c.chuyen_dong, u, anh ? 1 : .55), W, H);
+  return kenBurns(c.chuyen_dong, u, (c.loai_nguon || [])[0] === 'anh' ? 1 : .55);
+}
+function veCanh(o, t) {
+  setSrc(o.img, partUrl(o.c.lop[0], t, o.c.a));
+  o.img.style.transform = tfKB(kbOf(o, t), W, H);
+}
+// vẽ 1 khung cảnh lên canvas y hệt <img class="full"> (object-fit: cover, tâm giữa) + Ken Burns k
+function veKhung(g, img, k) {
+  const iw = img.naturalWidth || W, ih = img.naturalHeight || H, s = Math.max(W / iw, H / ih);
+  g.save(); g.translate(W / 2 + k.x * W, H / 2 + k.y * H); g.scale(k.s, k.s);
+  g.drawImage(img, -iw * s / 2, -ih * s / 2, iw * s, ih * s); g.restore();
 }
 
 // ---------------- lớp màu phim, hạt, loé, màn đen, khung điện ảnh ----------------
@@ -153,6 +161,108 @@ const BAR_HET = KH.dien_anh === false ? -1 : (KH.bar_het != null ? KH.bar_het : 
 // CÚ DROP: mỗi mo_dau (trừ drop:false) = loé trắng + rung khung 0,4 s đúng lúc chữ đập vào
 const DROP = (KH.do_hoa || []).filter(d => d.loai === 'mo_dau' && d.drop !== false).map(d => d.tu);
 
+// ---------------- KỸ XẢO CAO TRÀO (khách 14/11/2026: "30 s đầu cao trào giật gân… kỹ xảo điện ảnh chuyển cảnh xịn liên tục,
+// 5 s đầu phải xịn; sau 30 s bình thường"). KH.cao_trao = {het, mo, dap: [{t, m}]} do ke_hoach.py lập; kiểu chuyển nằm ở c.chuyen.
+const CAO_TRAO = KH.cao_trao || null;
+CL.style.perspective = '2000px';                                   // cho lat_3d (khối hộp xoay)
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const SVG_FX = document.createElementNS(SVG_NS, 'svg');
+SVG_FX.setAttribute('width', '0'); SVG_FX.setAttribute('height', '0'); SVG_FX.style.position = 'absolute';
+// TÁCH MÀU RGB sắc nét (không nhoè): kênh đỏ lệch phải, lam lệch trái, ghép lại bằng screen
+SVG_FX.innerHTML = `<filter id="rgb_tach" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+<feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
+<feOffset in="r" dx="0" dy="0" result="r2"/>
+<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
+<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
+<feOffset in="b" dx="0" dy="0" result="b2"/>
+<feBlend in="r2" in2="g" mode="screen" result="rg"/>
+<feBlend in="rg" in2="b2" mode="screen"/></filter>`;
+stage.appendChild(SVG_FX);
+const [RGB_R, RGB_B] = SVG_FX.querySelectorAll('feOffset');
+const FXC = mk('canvas', '', CL); FXC.id = 'fx_ve'; FXC.width = W; FXC.height = H; show(FXC, false);
+const FXG = FXC.getContext('2d');
+const FX_ANH = new Image();                                        // khung ĐỨNG của cảnh cũ lúc cắt — để vỡ thành mảnh kính
+const CHAY = mk('div', '', stage); CHAY.id = 'chay_phim'; show(CHAY, false);
+const CHAY_D = [0, 1, 2].map(() => mk('div', 'dom_chay', CHAY));
+// đốm cháy: [x0, y0, x1, y1, scale0, scale1] (phần khung) — loang từ mép phải / dưới vào giữa
+const CHAY_DUONG = [[1.02, .28, .52, .46, .45, 1.95], [.82, 1.05, .34, .62, .35, 1.7], [1.12, .7, .72, .3, .3, 1.35]];
+const VONG = mk('div', '', stage); VONG.id = 'vong_iris'; show(VONG, false);
+
+function rngSeed(s) {
+  return () => { s |= 0; s = s + 0x6D2B79F5 | 0; let x = Math.imul(s ^ s >>> 15, 1 | s); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; };
+}
+const MANH = {};
+// mảnh kính: 10 tia toả từ điểm va + 3 vòng gãy → ~60 mảnh (tam giác giữa, tứ giác vòng 1, tam giác vòng ngoài); tất định theo id cảnh
+function manhKinh(id) {
+  if (MANH[id]) return MANH[id];
+  let sd = 7; for (const ch of String(id)) sd = Math.imul(sd, 31) + ch.charCodeAt(0) | 0;
+  const r = rngSeed(sd), n = 10;
+  const I = [W * (.42 + .16 * r()), H * (.4 + .2 * r())], goc = [], RR = [];
+  for (let j = 0; j < n; j++) { goc.push((j + (r() - .5) * .6) / n * 2 * Math.PI); RR.push([0, 140 + 120 * r(), 400 + 240 * r(), 850 + 300 * r(), 2600]); }
+  const pt = (j, q) => { const jj = j % n; return [I[0] + Math.cos(goc[jj]) * RR[jj][q], I[1] + Math.sin(goc[jj]) * RR[jj][q]]; };
+  const poly = [];
+  for (let j = 0; j < n; j++) {
+    const k = j + 1;
+    poly.push([I, pt(j, 1), pt(k, 1)]);
+    poly.push([pt(j, 1), pt(j, 2), pt(k, 2), pt(k, 1)]);
+    for (const q of [2, 3]) {
+      const a = pt(j, q), b = pt(j, q + 1), c = pt(k, q + 1), d = pt(k, q);
+      if (r() < .5) { poly.push([a, b, c]); poly.push([a, c, d]); } else { poly.push([a, b, d]); poly.push([b, c, d]); }
+    }
+  }
+  const ds = poly.map(p => {
+    const cx = p.reduce((s, v) => s + v[0], 0) / p.length, cy = p.reduce((s, v) => s + v[1], 0) / p.length;
+    const dx = cx - I[0], dy = cy - I[1], L = Math.hypot(dx, dy) || 1;
+    return { p, cx, cy, ux: dx / L, uy: dy / L, L, v: 500 + 900 * r(), z: .15 + .85 * r() * (1 - Math.min(1, L / 1400)),
+      rz: (r() - .5) * 2.4, tx: (r() - .5) * 2.8, ty: (r() - .5) * 2.8, tre: Math.min(.3, L / 4200) };
+  });
+  ds.sort((a, b) => a.z - b.z);                                   // mảnh bay gần máy quay vẽ sau (nằm trên)
+  return (MANH[id] = { I, ds });
+}
+const duongManh = (g, p) => { g.moveTo(p[0][0], p[0][1]); for (let i = 1; i < p.length; i++) g.lineTo(p[i][0], p[i][1]); g.closePath(); };
+function veFx(j, t) {
+  const g = FXG;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+  if (j.loai === 'nut') {                                         // vết nứt toả ra từ điểm va (0,16 s trước cắt)
+    const M = manhKinh(j.id), rr = 90 + j.k * 1500;
+    g.save(); g.strokeStyle = 'rgba(255,255,255,.92)'; g.lineWidth = 2.4; g.lineJoin = 'round';
+    g.shadowColor = 'rgba(190,255,248,.95)'; g.shadowBlur = 12; g.beginPath();
+    for (const s of M.ds) if (s.L < rr) duongManh(g, s.p);
+    g.stroke(); g.restore();
+    const gr = g.createRadialGradient(M.I[0], M.I[1], 0, M.I[0], M.I[1], 80 + 70 * j.k);
+    gr.addColorStop(0, `rgba(255,255,255,${(.9 * j.k).toFixed(3)})`); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(M.I[0] - 200, M.I[1] - 200, 400, 400);
+  } else if (j.loai === 'vo') {                                    // mảnh kính bay ra: tịnh tiến + rơi + xoay + lật + phóng về máy quay
+    const M = manhKinh(j.id);
+    for (const s of M.ds) {
+      const q = clamp((j.p - s.tre) / (1 - s.tre)), al = 1 - clamp((q - .55) / .45);
+      if (al <= 0) continue;
+      const D = s.v * .6 * q + 300 * q * q, x = s.cx + s.ux * D, y = s.cy + s.uy * D + 520 * q * q;
+      const sc = 1 + s.z * E.outQ(q) * 1.2, sx = Math.cos(s.tx * q), sy = Math.cos(s.ty * q);
+      g.save(); g.globalAlpha = al;
+      g.translate(x, y); g.rotate(s.rz * q); g.scale(sc * sx, sc * sy); g.translate(-s.cx, -s.cy);
+      g.beginPath(); duongManh(g, s.p); g.clip();
+      veKhung(g, FX_ANH, j.kb);
+      const toi = .45 * (1 - Math.abs(sx * sy)), sang = .4 * Math.abs(Math.sin(s.tx * q * 1.6)) * (1 - .5 * q);
+      if (toi > .02) { g.fillStyle = `rgba(0,0,0,${toi.toFixed(3)})`; g.fill(); }
+      if (sang > .02) { g.fillStyle = `rgba(235,255,252,${sang.toFixed(3)})`; g.fill(); }
+      g.strokeStyle = `rgba(255,255,255,${(.85 * (1 - .6 * q)).toFixed(3)})`; g.lineWidth = 3 / Math.max(.2, sc * Math.max(Math.abs(sx), Math.abs(sy))); g.stroke();
+      g.restore();
+    }
+  } else if (j.loai === 'glitch') {                                // dải ngang lệch + dải lẫn cảnh kia + vạch xanh-hồng
+    const r = rngSeed(1000 + Math.floor(j.f / 2)), K = 4 + Math.round(8 * j.g);
+    const sA = { img: j.a.img, kb: kbOf(j.a, t) }, sB = { img: j.b.img, kb: kbOf(j.b, t) };
+    for (let i = 0; i < K; i++) {
+      const y0 = r() * H, h = 8 + r() * (40 + 120 * j.g), off = (r() - .5) * 2 * (40 + 240 * j.g), khac = r() < .28;
+      const src = (j.hienB !== khac) ? sB : sA, mau = r();
+      g.save(); g.beginPath(); g.rect(0, y0, W, h); g.clip(); g.translate(off, 0); veKhung(g, src.img, src.kb);
+      if (mau < .35) { g.globalCompositeOperation = 'screen'; g.fillStyle = mau < .17 ? 'rgba(0,255,230,.35)' : 'rgba(255,0,150,.35)'; g.fillRect(-off, y0, W, h); }
+      g.restore();
+    }
+    for (let i = 0; i < 4; i++) { g.fillStyle = i % 2 ? 'rgba(255,60,170,.75)' : 'rgba(60,255,235,.75)'; g.fillRect(r() * W * .7, r() * H, 120 + r() * 700 * j.g, 2 + r() * 8); }
+  }
+}
+
 function veMau(t) {
   const f = Math.floor(t * FPS);
   HAT.style.backgroundPosition = `${(f * 73) % 256}px ${(f * 151) % 256}px`;
@@ -167,17 +277,20 @@ function veMau(t) {
 // ---------------- ghép cảnh + chuyển cảnh ----------------
 function apDung(o, s) {
   show(o.root, true);
-  css(o.root, { opacity: (s.o ?? 1).toFixed ? (s.o ?? 1).toFixed(3) : String(s.o), transform: s.tf || 'none', filter: s.f || 'none', clipPath: s.clip || 'none' });
+  css(o.root, { opacity: (s.o ?? 1).toFixed ? (s.o ?? 1).toFixed(3) : String(s.o), transform: s.tf || 'none', filter: s.f || 'none',
+    clipPath: s.clip || 'none', transformOrigin: s.org || '50% 50%' });
 }
 function ghepCanh(t) {
   const vis = SC.filter(o => t >= o.c.a - 1e-6 && t <= o.c.b + 1e-6);
   for (const o of SC) if (!vis.includes(o)) show(o.root, false);
   let loe = 0, trang = 0, man = null;
+  let rgb = 0, clS = 1, clX = 0, rungFx = 0, chay = 0, chayU = 0, iris = null, fx = null, po = null;   // kỹ xảo cao trào
   if (vis.length === 1) apDung(vis[0], {});
   else if (vis.length >= 2) {
     const ra = vis[vis.length - 2], vao = vis[vis.length - 1];
     for (const o of vis.slice(0, -2)) show(o.root, false);
     const c = vao.c, d = Math.max(.01, c.d_in), u = clamp((t - (c.tu - d / 2)) / d);
+    const gc = Math.max(0, 1 - Math.abs(t - c.tu) / (d / 2));       // 1 đúng cú cắt → 0 ở 2 mép cửa sổ
     let A = {}, B = {};
     switch (c.chuyen) {
       case 'cat': if (t < c.tu) B = { o: 0 }; else A = { o: 0 }; break;
@@ -218,18 +331,103 @@ function ghepCanh(t) {
         B = { clip: `polygon(0 0, ${(bx + k).toFixed(1)}px 0, ${(bx - k).toFixed(1)}px ${H}px, 0 ${H}px)` };
         man = bx; break;
       }
+      // ---------- KỸ XẢO ĐIỆN ẢNH (đoạn cao trào) — tâm cửa sổ = cú cắt đúng phách ----------
+      case 'vo_kinh': {
+        if (t < c.tu) {                                             // nứt toả 0,16 s cuối
+          const k = P(t, c.tu - .16, .16, E.outC);
+          A = { tf: `scale(${(1 + .025 * k).toFixed(4)})` }; B = { o: 0 };
+          if (k > 0) fx = { loai: 'nut', id: c.id, k };
+        } else {                                                    // vỡ: mảnh khung đứng của cảnh cũ bay ra, cảnh mới đập vào
+          const p = clamp((t - c.tu) / Math.max(.2, d / 2));
+          A = { o: 0 }; B = { tf: `scale(${(1.16 - .16 * E.outC(p)).toFixed(4)})` };
+          setSrc(FX_ANH, partUrl(ra.c.lop[0], c.tu, ra.c.a));
+          fx = { loai: 'vo', id: c.id, p, kb: kbOf(ra, c.tu) };
+          trang = .5 * (1 - P(t, c.tu, .2, E.outC)); rgb = 16 * (1 - E.outC(p)); rungFx = .5 * (1 - P(t, c.tu, .3, E.outC));
+        }
+        break;
+      }
+      case 'xoay': {
+        if (u < .5) { const k = E.inC(u * 2); A = { tf: `rotate(${(24 * k).toFixed(2)}deg) scale(${(1 + .9 * k).toFixed(4)})` }; B = { o: 0 }; }
+        else { const k = 1 - E.outC((u - .5) * 2); A = { o: 0 }; B = { tf: `rotate(${(-24 * k).toFixed(2)}deg) scale(${(1 + .9 * k).toFixed(4)})` }; }
+        trang = .5 * gc ** 4; rgb = 24 * gc ** 2; break;
+      }
+      case 'glitch': {
+        const f = Math.floor(t * FPS + 1e-4), nhay = gc > .45 && rngSeed(7919 * f + 13)() < .3;
+        const hienB = (t >= c.tu) !== nhay;
+        if (hienB) A = { o: 0 }; else B = { o: 0 };
+        rgb = 30 * gc; clX = (rngSeed(31 * f + 7)() - .5) * 26 * gc;
+        if (gc > .02) fx = { loai: 'glitch', a: ra, b: vao, hienB, g: gc, f };
+        break;
+      }
+      case 'lat_3d': {
+        const e = E.ioC(u);
+        A = { org: '100% 50%', tf: `translateX(${(-W * e).toFixed(1)}px) rotateY(${(-90 * e).toFixed(2)}deg)`, f: `brightness(${(1 - .6 * e).toFixed(3)})` };
+        B = { org: '0% 50%', tf: `translateX(${(W * (1 - e)).toFixed(1)}px) rotateY(${(90 * (1 - e)).toFixed(2)}deg)`, f: `brightness(${(.4 + .6 * e).toFixed(3)})` };
+        rgb = 8 * Math.sin(Math.PI * u);
+        clS = 1 + .28 * Math.sin(Math.PI * e);                      // phóng theo lúc xoay: mép xa của khối không hở nền đen
+        po = W * (1 - e);                                           // điểm nhìn bám cạnh khối → luôn thấy 2 mặt từ NGOÀI (không lộ mặt trong)
+        break;
+      }
+      case 'chay_phim': {
+        const k = Math.sin(Math.PI * u), f = `brightness(${(1 + .8 * k ** 1.5).toFixed(3)}) saturate(${(1 + .3 * k).toFixed(3)})`;
+        if (t < c.tu) { A = { f }; B = { o: 0 }; } else { A = { o: 0 }; B = { f }; }
+        chay = k; chayU = u; trang = .45 * k ** 6; break;
+      }
+      case 'xuyen': {
+        if (u < .5) { const k = E.inC(u * 2); A = { tf: `scale(${(1 + 1.2 * k).toFixed(4)})`, f: `brightness(${(1 + .7 * k).toFixed(3)})` }; B = { o: 0 }; }
+        else { const k = 1 - E.outC((u - .5) * 2); A = { o: 0 }; B = { tf: `scale(${(1 + .55 * k).toFixed(4)})`, f: `brightness(${(1 + .6 * k).toFixed(3)})` }; }
+        trang = .55 * gc ** 3; rgb = 30 * gc ** 1.5;
+        if (t >= c.tu) rungFx = .7 * (1 - P(t, c.tu, .35, E.outC));
+        break;
+      }
+      case 'iris': {
+        const e = E.ioC(u), R = e * Math.hypot(W, H) / 2 * 1.04, sB = 1.12 - .12 * e;
+        A = { tf: `scale(${(1 + .1 * e).toFixed(4)})`, f: `brightness(${(1 - .35 * e).toFixed(3)})` };
+        B = { clip: `circle(${R.toFixed(1)}px at 50% 50%)`, tf: `scale(${sB.toFixed(4)})` };
+        iris = { R: R * sB, o: Math.min(1, 4 * (1 - e), e * 12) }; rgb = 10 * Math.sin(Math.PI * u); break;
+      }
+      case 'tia_sang': {
+        const e = E.ioC(u), k = Math.tan(18 * Math.PI / 180) * H / 2, bx = lerp(-k - 300, W + k + 300, e), s = Math.sin(Math.PI * u);
+        B = { clip: `polygon(0 0, ${(bx + k).toFixed(1)}px 0, ${(bx - k).toFixed(1)}px ${H}px, 0 ${H}px)` };
+        man = bx; loe = Math.pow(s, .8); trang = .22 * s ** 4; rgb = 8 * s; break;
+      }
       default: B = { o: E.ioS(u) };
     }
     ra.root.style.zIndex = '1'; vao.root.style.zIndex = '2';
     apDung(ra, A); apDung(vao, B);
   }
   for (const o of vis) veCanh(o, t);
-  let rung = 0;
+  if (CAO_TRAO) {
+    if (CAO_TRAO.mo && t < .7) { const k = 1 - P(t, 0, .6, E.outC); clS *= 1 + .32 * k; rgb = Math.max(rgb, 26 * k); }   // khung 0: đập mở màn
+    for (const h of CAO_TRAO.dap || []) if (t >= h.t - .02 && t < h.t + .4) {                 // đập theo PHÁCH giữa 2 cú cắt
+      const k = 1 - P(t, h.t, .34, E.outC);
+      clS *= 1 + .055 * h.m * k; rgb = Math.max(rgb, 12 * h.m * k); trang = Math.max(trang, .16 * h.m * k);
+    }
+  }
+  css(CL, { perspectiveOrigin: po != null ? `${f1(po)}px 50%` : '50% 50%' });
+  if (fx) { show(FXC, true); const j = fx; VE_SAU.push(() => veFx(j, t)); } else show(FXC, false);
+  if (chay > .005) {
+    show(CHAY, true); CHAY.style.opacity = Math.min(1, chay * 1.25).toFixed(3);
+    CHAY_D.forEach((el, i) => {
+      const q = CHAY_DUONG[i];
+      el.style.transform = `translate(${(lerp(q[0], q[2], chayU) * W).toFixed(1)}px, ${(lerp(q[1], q[3], chayU) * H).toFixed(1)}px) scale(${lerp(q[4], q[5], chayU).toFixed(3)})`;
+    });
+  } else show(CHAY, false);
+  if (iris && iris.o > .01) {
+    show(VONG, true);
+    css(VONG, { width: f1(2 * iris.R) + 'px', height: f1(2 * iris.R) + 'px', transform: `translate(${f1(W / 2 - iris.R)}px, ${f1(H / 2 - iris.R)}px)`, opacity: iris.o.toFixed(3) });
+  } else show(VONG, false);
+  let rung = rungFx;
   for (const dt of DROP) if (t >= dt - .02 && t < dt + .5) {
     trang = Math.max(trang, .9 * (1 - P(t, dt, .38, E.outC)));
-    rung = 1 - P(t, dt, .42, E.outC);
+    rung = Math.max(rung, 1 - P(t, dt, .42, E.outC));
   }
-  CL.style.transform = rung > .01 ? `translate(${(Math.sin(t * 97) * 14 * rung).toFixed(1)}px, ${(Math.cos(t * 83) * 10 * rung).toFixed(1)}px) scale(${(1 + .03 * rung).toFixed(4)})` : 'none';
+  // tách màu: phóng nhẹ khung cho dải mép thiếu kênh màu ra ngoài khung
+  const sc = clS * (1 + .03 * rung) * (rgb > .4 ? 1 + 2.4 * rgb / W : 1);
+  const tx = clX + Math.sin(t * 97) * 14 * rung, ty = Math.cos(t * 83) * 10 * rung;
+  CL.style.transform = (Math.abs(sc - 1) > 1e-4 || Math.abs(tx) > .05 || Math.abs(ty) > .05) ? `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${sc.toFixed(4)})` : 'none';
+  if (rgb > .4) { RGB_R.setAttribute('dx', rgb.toFixed(1)); RGB_B.setAttribute('dx', (-rgb).toFixed(1)); CL.style.filter = 'url(#rgb_tach)'; }
+  else CL.style.filter = 'none';
   LOE.style.opacity = loe.toFixed(3);
   LOE.style.transform = `translateX(${(Math.sin(t * .9) * 160).toFixed(1)}px) rotate(${(t * 6 % 360).toFixed(1)}deg)`;
   TRANG.style.opacity = trang.toFixed(3);

@@ -68,7 +68,23 @@ CHUYEN = {
     'zoom':      (0.45, None),        # zoom xuyên sắc nét (phóng vụt → loé → thu) — dùng HIẾM, chỗ cần lực
     'phong':     (0.30, 'phong'),     # cắt + đập vào 1,22 → 1 — chỉ khi CỐ Ý (không dùng mặc định cho hook)
     'man':       (0.80, 'zoom'),      # MÀN SÁNG quét chéo — mở CHƯƠNG / điểm đến mới (có whoosh)
+    # ---- KỸ XẢO ĐIỆN ẢNH — chỉ dùng trong đoạn CAO TRÀO ~30 s đầu (khách 14/11/2026: "những cảnh đầu làm xịn xò, hiệu ứng
+    # chuyển cảnh xịn xò liên tục, kỹ xảo điện ảnh… 5 s đầu kỹ xảo xịn vào… sau 30 giây đầu như bình thường").
+    # Thời lượng = cửa sổ quanh cú cắt (tâm = `tu`, đúng phách); SFX đặt theo CÚ CẮT (không theo đầu cửa sổ). Đều SẮC NÉT, không nhoè.
+    'vo_kinh':   (1.20, 'fx_vo_kinh'),  # VỠ KÍNH: nứt toả từ 1 điểm 0,16 s trước cắt → cảnh cũ vỡ ~60 mảnh bay ra (xoay, lật, rơi) lộ cảnh mới
+    'xoay':      (0.80, 'fx_xoay'),     # XOAY ZOOM: cũ xoáy +24° phóng 1,9× → loé → mới xoáy về từ −24°
+    'glitch':    (0.60, 'fx_glitch'),   # GLITCH số: dải ngang lệch, tách màu RGB, nháy qua lại 2 cảnh, vạch xanh-hồng
+    'lat_3d':    (0.90, 'fx_lat_3d'),   # LẬT KHỐI 3D: 2 cảnh là 2 mặt hộp xoay 90° quanh trục đứng
+    'chay_phim': (1.00, 'fx_chay_phim'),  # CHÁY PHIM: vệt lửa cam-trắng loang vào, cũ cháy sáng → mới hiện ra
+    'xuyen':     (0.70, 'fx_xuyen'),    # XUYÊN CẢNH: lao vụt vào cũ 2,2× + loé + tách màu → mới đập ra + rung (hợp cú DROP)
+    'iris':      (0.90, 'fx_iris'),     # MỞ TRÒN: cảnh mới nở ra từ vòng tròn tâm khung, viền sáng xanh ngọc
+    'tia_sang':  (0.90, 'fx_tia_sang'), # TIA SÁNG: màn sáng quét chéo + loé nắng mạnh
 }
+# thứ tự xoay vòng kỹ xảo trong đoạn cao trào: mạnh nhất trước (vỡ kính rơi vào 5 s đầu); vòng sau bỏ vỡ kính (nặng, 1 lần là đủ)
+KY_XAO = ('vo_kinh', 'xoay', 'glitch', 'lat_3d', 'chay_phim', 'xuyen', 'iris', 'tia_sang')
+KY_XAO_DROP = 'xuyen'     # cảnh mở cùng cú DROP tên chủ đề (mo_dau) → xuyên cảnh + rung, khớp tiếng boom
+CAO_TRAO_DAI = 30.0       # đoạn cao trào mặc định khi không có mo_dau (giây); có mo_dau 8–45 s thì cao trào kết ở cú DROP
+CAO_TRAO_DAP = (1.3, 0.85)  # cú đập theo PHÁCH giữa 2 cú cắt trong teaser: mạnh trong 5 s đầu / sau đó
 CANH_MIN = 2.5          # mỗi cảnh đứng ≥ 2,5 s (kịp nhìn); montage thẻ dọc cùng chỗ (chỉ đổi hình) ≥ 2,0; hook ≥ 1,8 (theo nhịp vế câu)
 
 # ---- SFX: sự kiện → (file, dB so với đỉnh −1 dBFS, lệch giây so với mốc) ----
@@ -104,13 +120,25 @@ SFX = {
     'toi_noi':   ('ding.mp3', -16, 0.0),              # tới điểm đến — ghim rơi
     'binh_luan': ('pop-2.mp3', -12, 0.0),             # mỗi thẻ bình luận ảo bật lên
     'teaser_dap': ('whoosh-short.mp3', -9, -0.12),    # cú đập chữ trong teaser (chỉ cảnh `phong`)
+    # kỹ xảo cao trào: lệch = −(giây đỉnh của file) → đỉnh tiếng trùng CÚ CẮT (vo_kinh / xoay / glitch tự tổng hợp: tao_sfx.py)
+    'fx_vo_kinh':   ('vo_kinh.wav', -6, -0.02),
+    'fx_xoay':      ('xoay.wav', -8, -0.36),
+    'fx_glitch':    ('glitch.wav', -8, -0.04),
+    'fx_lat_3d':    ('swoosh.mp3', -9, -0.09),
+    'fx_chay_phim': ('xoay.wav', -12, -0.36),
+    'fx_xuyen':     ('whoosh-short.mp3', -7, -0.16),
+    'fx_iris':      ('quick-swoosh.mp3', -10, -0.06),
+    'fx_tia_sang':  ('swoosh.mp3', -10, -0.09),
+    'fx_mo':        ('boom.wav', -6, 0.0),            # khung 0 của teaser: cú đập mở màn (zoom 1,32 → 1 + tách màu)
 }
 
 # SFX phải NGHE RÕ trên nền giọng (người dùng từng chê "không thấy có SFX" khi đặt nhỏ): mức đỉnh 10 ms của tiếng so với giọng
 # TẠI CHỖ (±1,5 s quanh tiếng, trung vị RMS 50 ms) — bộ trộn tự tính gain cho từng tiếng; tiếng không có trong bảng dùng dB cố định.
 SFX_TREN = {'phong': 4, 'boom': 7, 'riser': 3, 'mo_dau': 4, 'zoom': 2, 'chuong_so': 0, 'bam': 4, 'thich': 2, 'cta_vao': 1,
             'chip': -4, 'liet_ke': -4, 'ghim': -3, 'chuong_bell': 1, 'ban_do_vao': 1, 'toi_noi': -2, 'binh_luan': -5,
-            'xe_chay': -12}
+            'xe_chay': -12,
+            'fx_vo_kinh': 3, 'fx_xoay': 1, 'fx_glitch': 0, 'fx_lat_3d': 0, 'fx_chay_phim': -2, 'fx_xuyen': 2, 'fx_iris': -1,
+            'fx_tia_sang': -1, 'fx_mo': 3}
 
 # ---- TEASER mở màn (khách 14/11/2026: "đầu video để đoạn cao trào giật gân giữ người xem tầm 30 s, xem cái là muốn đi du lịch luôn")
 #   ke_hoach.mo_man = {dai, canh[], do_hoa[]} — giờ RIÊNG 0…dai; giọng đọc lùi `dai` giây (mọi giờ phần thân = giờ trong loi_doc.txt).
