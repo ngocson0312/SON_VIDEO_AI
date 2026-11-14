@@ -28,12 +28,10 @@
   "Sapa": "Sa Pa"
  },
  "mo_man": {
-  "dai": 20.0,
-  "_y": "TEASER 8 ô nhịp: mỗi điểm đến 2 cảnh đẹp nhất, tên đập đúng phách mạnh, kết bằng '4 điểm đến · 4 vẻ đẹp' (chữ lấy từ lời 97,7–103,3 s)",
+  "_y": "MONTAGE TỔNG HỢP 15 phách (9,42 s): Claude chỉ xếp THỨ TỰ — 3 cảnh BA CỘT có tên (Sa Pa · Hạ Long · Ninh Bình) → Bản Giốc (khung bung, tự gán) → mây Sa Pa KHÁC điểm đến nên vai nhanh + hai_nua ghi tay (vai ten không chữ thì tên trước còn đứng) → 4 cảnh dồn hay nhất khắp video → ruộng bậc thang (dải ảnh trượt chạy trên cảnh này) → đỉnh thác Bản Giốc + tít (chữ lấy từ lời 97,7–103,3 s)",
+  "kieu": "tong_hop",
   "canh": [
    {
-    "id": "t1",
-    "tu": 0.0,
     "nguon": "res_07",
     "vung": [
      0.12,
@@ -41,41 +39,17 @@
      0.92,
      0.75
     ],
-    "chuyen": "cat",
-    "chuyen_dong": "zoom_vao",
-    "loi": "Sa Pa — bình minh trên biển mây"
+    "chu": "Sa Pa",
+    "nhan": "Thơ mộng",
+    "loi": "Sa Pa — bình minh biển mây"
    },
    {
-    "id": "t2",
-    "tu": 2.51,
-    "nguon": "clip_09",
-    "vao": 9.0,
-    "cat_y": 0.36,
-    "chuyen": "cat",
-    "chuyen_dong": "zoom_vao",
-    "loi": "Sa Pa — mây cuộn qua núi"
-   },
-   {
-    "id": "t3",
-    "tu": 5.03,
     "nguon": "res_05",
-    "chuyen": "phong",
-    "chuyen_dong": "lia_phai",
+    "chu": "Hạ Long",
+    "nhan": "Kỳ vĩ",
     "loi": "Hạ Long — du thuyền giữa đảo đá"
    },
    {
-    "id": "t4",
-    "tu": 7.54,
-    "nguon": "clip_13",
-    "vao": 7.6,
-    "cat_y": 0.4,
-    "chuyen": "cat",
-    "chuyen_dong": "zoom_vao",
-    "loi": "Hạ Long — cano rẽ sóng"
-   },
-   {
-    "id": "t5",
-    "tu": 10.05,
     "nguon": "res_06",
     "vung": [
      0.05,
@@ -83,82 +57,63 @@
      0.85,
      0.95
     ],
-    "chuyen": "phong",
-    "chuyen_dong": "zoom_vao",
+    "chu": "Ninh Bình",
+    "nhan": "Bình yên",
     "loi": "Ninh Bình — sông uốn quanh núi"
    },
    {
-    "id": "t6",
-    "tu": 12.57,
-    "nguon": "clip_10",
-    "vao": 0.6,
-    "chuyen": "cat",
-    "chuyen_dong": "zoom_vao",
-    "loi": "Ninh Bình — thả đèn trên thuyền đêm"
-   },
-   {
-    "id": "t7",
-    "tu": 15.08,
-    "nguon": "res_08",
-    "chuyen": "phong",
-    "chuyen_dong": "zoom_vao",
-    "loi": "Bản Giốc — toàn cảnh thác"
-   },
-   {
-    "id": "t8",
-    "tu": 17.59,
     "nguon": "clip_03",
     "vao": 3.6,
     "cat_y": 0.38,
-    "chuyen": "zoom",
-    "chuyen_dong": "zoom_ra",
-    "loi": "Bản Giốc — cận dải thác"
+    "chu": "Bản Giốc",
+    "nhan": "Hoang sơ",
+    "loi": "Bản Giốc — dải thác"
+   },
+   {
+    "nguon": "clip_09",
+    "vao": 9.0,
+    "cat_y": 0.36,
+    "loi": "Sa Pa — mây cuộn qua núi",
+    "vai": "nhanh",
+    "nhip": 2,
+    "chuyen": "hai_nua"
+   },
+   {
+    "nguon": "clip_16",
+    "vao": 0.3,
+    "loi": "đầm sen — xích đu"
+   },
+   {
+    "nguon": "clip_08",
+    "vao": 17.0,
+    "loi": "đỉnh Fansipan"
+   },
+   {
+    "nguon": "clip_11",
+    "vao": 3.5,
+    "cat_y": 0.4,
+    "loi": "đi thuyền Hạ Long"
+   },
+   {
+    "nguon": "res_04",
+    "loi": "cabin cáp treo"
+   },
+   {
+    "nguon": "clip_06",
+    "vao": 6.5,
+    "cat_y": 0.4,
+    "loi": "đồng lúa"
+   },
+   {
+    "nguon": "res_08",
+    "loi": "ĐỈNH: Bản Giốc toàn cảnh"
    }
   ],
-  "do_hoa": [
-   {
-    "id": "z1",
-    "loai": "hook_tu",
-    "tu": 0.0,
-    "den": 4.9,
-    "chu": "Sa Pa",
-    "nhan": "Thơ mộng"
-   },
-   {
-    "id": "z2",
-    "loai": "hook_tu",
-    "tu": 5.03,
-    "den": 9.95,
-    "chu": "Hạ Long",
-    "nhan": "Kỳ vĩ"
-   },
-   {
-    "id": "z3",
-    "loai": "hook_tu",
-    "tu": 10.05,
-    "den": 14.95,
-    "chu": "Ninh Bình",
-    "nhan": "Bình yên"
-   },
-   {
-    "id": "z4",
-    "loai": "hook_tu",
-    "tu": 15.08,
-    "den": 17.45,
-    "chu": "Bản Giốc",
-    "nhan": "Hoang sơ"
-   },
-   {
-    "id": "z5",
-    "loai": "tieu_de",
-    "tu": 17.59,
-    "den": 19.85,
-    "vi_tri": "giua",
-    "dan": "4 điểm đến",
-    "khoa": "4 vẻ đẹp",
-    "viet_tay": "khác nhau"
-   }
-  ]
+  "dinh": {
+   "dan": "4 điểm đến",
+   "khoa": "4 vẻ đẹp",
+   "viet_tay": "khác nhau"
+  }
  },
  "canh": [
   {

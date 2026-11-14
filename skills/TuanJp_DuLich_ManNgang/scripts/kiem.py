@@ -118,7 +118,9 @@ def kiem(work, file=None, bao=loi):
             M(len(bl) >= len([d for d in ch if d.get('binh_luan') is not False]), 'bình luận ảo',
               f"{len(bl)} đợt / {len(ch)} điểm đến ({', '.join(sorted(x for x in co if x))})")
         if kh.get('mo_man'):
-            M(lech > 0, 'teaser mở màn', f'{lech:.1f}s chỉ nhạc trước khi giọng vào' if lech else 'không bật (thiếu nhạc?)')
+            # khách 14/11/2026 vòng 3: "chỉ giới thiệu tầm 5–10 s, sau giây thứ 10 phải có giọng nói"
+            M(0 < lech <= 10.05, 'teaser mở màn', (f'montage {lech:.2f}s chỉ nhạc, giọng vào {lech:.2f}s' + ('' if lech <= 10.05 else ' — QUÁ 10 s'))
+              if lech else 'không bật (thiếu nhạc?)')
         c = KH.get('cta') or {}
         if c:
             M(bool(c.get('cam_on')), 'màn cảm ơn', f"«{c.get('cam_on')}» + Thích / Đăng ký")

@@ -46,6 +46,17 @@ img { display: block; }
 #den { position: absolute; inset: 0; z-index: 10; background: #000; pointer-events: none; opacity: 0; }
 /* ---------- kỹ xảo cao trào 30 s đầu ---------- */
 #fx_ve { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 999; pointer-events: none; }
+/* 5 kỹ xảo mẫu (14/11/2026): A ba cột — tên nhỏ dưới cột; D dải ảnh trượt */
+.nhom_cot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 996; pointer-events: none; }
+.cot_toi { position: absolute; top: 520px; height: 440px; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.66) 100%); }
+.cot_giua { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; opacity: 0;
+  background: radial-gradient(ellipse 50% 40% at 50% 50%, rgba(0,0,0,.5) 0%, rgba(0,0,0,.22) 60%, rgba(0,0,0,0) 100%); }
+.cot_nhan { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; white-space: nowrap; opacity: 0; }
+.cot_nhan .tit_i { font-size: 92px; color: #fff; text-shadow: 0 4px 22px rgba(0,0,0,.55); }
+.cot_nhan .nhan_nho { font-size: 26px; margin-bottom: 8px; }
+.cot_nhan .vach_n { position: relative; width: 140px; margin-top: 12px; }
+.dai_anh { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 3; pointer-events: none; }
+.dai_anh img { position: absolute; left: 0; top: 0; object-fit: cover; box-shadow: 0 0 0 5px rgba(255,255,255,.95), 0 16px 48px rgba(0,0,0,.55); }
 #chay_phim { position: absolute; inset: 0; z-index: 9; pointer-events: none; mix-blend-mode: screen; overflow: hidden; }
 #chay_phim .dom_chay { position: absolute; left: 0; top: 0; width: 1400px; height: 1400px; margin: -700px 0 0 -700px; border-radius: 50%; }
 #chay_phim .dom_chay:nth-child(1) { background: radial-gradient(circle, rgba(255,250,232,1) 0%, rgba(255,200,95,.95) 22%, rgba(255,112,32,.78) 45%, rgba(205,42,12,.36) 63%, rgba(120,20,0,0) 71%); }

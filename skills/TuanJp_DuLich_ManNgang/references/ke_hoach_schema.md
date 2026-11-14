@@ -26,20 +26,30 @@ từ 0 của video. `ke_hoach.py` tự dời cả phần thân thêm `OFF` = đ�
 }
 ```
 
-## `mo_man` — TEASER mở màn ~20 s, CHỈ NHẠC (khách: "đầu video ~30 s cao trào, xem cái là muốn đi du lịch luôn")
+## `mo_man` — MONTAGE TỔNG HỢP ≤ 10 s, CHỈ NHẠC (khách vòng 3: "chỉ giới thiệu 5–10 s, sau giây 10 phải có giọng… giống 1 cái tổng hợp cả video trong 10 giây đầu")
+
+Claude chỉ XẾP THỨ TỰ cảnh + chữ, KHÔNG ghi giờ: `ke_hoach._tong_hop` đặt lên LƯỚI PHÁCH (độ dài tự khớp phách gần 9,5 s, 5–10 s), tự gán
+vai + kỹ xảo + chữ (SKILL mục 15, 17). `kiem-kh` in 🔧 bảng "montage tổng hợp: nguồn vai giây kỹ xảo «tên»".
 
 | Trường | Ý nghĩa |
 |---|---|
-| `dai` | độ dài teaser (12–32 s, mặc định 20) — tự khớp về ô nhịp gần nhất (`nhip.py`: BPM, phách mạnh) |
-| `nhac_tu` | giây trong file nhạc bắt đầu teaser; bỏ trống = tự chọn đoạn CAO TRÀO (`nhip.chon_dau`). Nhạc teaser to ~ngang giọng (+12 dB so với nền), hoà vào nhạc thân 1 s ở chỗ giọng vào |
-| `canh` | 6–10 cảnh ĐẸP NHẤT (mỗi điểm đến 1–2 cảnh), `tu` từ 0, cảnh ≥ 1,8 s (`CANH_TEASER_MIN`); `tu` tự bám phách; cú cắt tự thành KỸ XẢO ĐIỆN ẢNH (mục `cao_trao` dưới) — không cần ghi `chuyen`; cảnh cuối phải kết ≥ 1,8 s trước khi giọng vào |
-| `do_hoa` | `hook_tu` mỗi điểm đến (`chu` = tên, `nhan` = 1 tính từ đắt trong lời: Thơ mộng / Kỳ vĩ…) hiện khi cảnh vào xong; kết bằng `tieu_de` tóm tắt (chữ lấy từ lời, vd "4 điểm đến / 4 vẻ đẹp / khác nhau"); mọi chữ teaser phải hết trước `dai` |
+| `kieu` | `tong_hop` (mặc định) · `nhip` (kiểu cũ 1 cảnh / ô nhịp — khách chê tuần tự, ⚠) |
+| `nhac_tu` | giây trong file nhạc bắt đầu; trống = tự chọn đoạn CAO TRÀO / DROP (`nhip.chon_dau`). Nhạc teaser to ~ngang giọng (+12 dB so với nền), hoà vào nhạc thân 1 s ở chỗ giọng vào |
+| `canh` | 10–14 cảnh hay nhất KHẮP video, THEO THỨ TỰ: 3 cảnh đầu = **BA CỘT** (3 điểm đến khác nhau, mỗi cảnh `chu` + `nhan`) → **tên** (cảnh đầu mỗi điểm đến còn lại có `chu` = tên, `nhan` = 1 tính từ đắt trong lời: Thơ mộng / Kỳ vĩ…; + 0–1 cảnh cùng điểm) → **dồn** (4–8 cảnh không chữ: người, trải nghiệm, món, cảnh lạ) → cảnh cuối = **đỉnh** (ảnh to nét nhất). Mỗi cảnh: `nguon`, `vao` (giây clip), `cat_y` / `vung`, `chu`, `nhan`; tuỳ chọn `nhip` (số phách, bước 0,5), `vai` (`cot` / `mo` / `ten` / `nhanh` / `dinh`), `chuyen` (kỹ xảo bất kỳ trong bảng `canh.chuyen`), `toc_do`, `khop`, `loi` (ghi chú, không dùng) |
+| `dinh` | tít cảnh đỉnh `{dan, khoa, viet_tay}` — chữ lấy từ lời (vd "4 điểm đến / 4 vẻ đẹp / khác nhau"), cỡ 210, đập cùng cảnh đỉnh |
+| `ba_cot` | `false` = cảnh đầu mở thường (cảnh `mo` 2 phách, không ba cột) |
 | `bat` | `false` = bỏ teaser |
+
+Ví dụ (Màn Ngang 14/11/2026, 15 phách × 0,628 s = 9,42 s):
+`{"kieu": "tong_hop", "canh": [{"nguon": "res_07", "chu": "Sa Pa", "nhan": "Thơ mộng"}, {"nguon": "res_05", "chu": "Hạ Long", "nhan": "Kỳ vĩ"},
+{"nguon": "res_06", "chu": "Ninh Bình", "nhan": "Bình yên"}, {"nguon": "clip_03", "vao": 3.6, "chu": "Bản Giốc", "nhan": "Hoang sơ"},
+{"nguon": "clip_09", "vao": 9.0}, {"nguon": "clip_16", "vao": 0.3}, …, {"nguon": "res_08"}], "dinh": {"dan": "4 điểm đến", "khoa": "4 vẻ đẹp", "viet_tay": "khác nhau"}}`
 
 ## `cao_trao` — KỸ XẢO ĐIỆN ẢNH ~30 s đầu (tự động; người dùng 14/11/2026: "cảnh đầu hiệu ứng chuyển cảnh xịn liên tục… sau 30 s bình thường")
 
 Không ghi gì = BẬT: mọi cú cắt từ 0 tới cú DROP (`mo_dau` đầu tiên; không có thì 30 s) tự gán kỹ xảo xoay vòng
-`vo_kinh` → `xoay` → `glitch` → `lat_3d` → `chay_phim` → `xuyen` → `iris` → `tia_sang` (vòng 2 bỏ `vo_kinh`), cú trùng DROP = `xuyen`;
+`vo_kinh` → `xoay` → `glitch` → `lat_3d` → `chay_phim` → `xuyen` → `iris` → `tia_sang` → `khung_bung` → `hai_nua` → `dai_truot` →
+`hai_nua_doc` (kiểu montage CHƯA dùng lên trước, không lặp vỡ kính; kiểu dài cần 2 cảnh kề ≥ 1,8 s, không thì `xoay`), cú trùng DROP = `xuyen`;
 + khung 0 đập mở màn, đập theo phách giữa 2 cú cắt teaser, 1 tiếng mỗi kỹ xảo. `kiem-kh` in 🔧 danh sách đã gán.
 Tuỳ chỉnh: `"cao_trao": {"fx": ["xoay", "glitch"], "het": 25, "mo": false}` · tắt: `"cao_trao": false` · giữ 1 cú: `chuyen` là 1 kỹ xảo
 (giữ nguyên), hoặc `"giu_chuyen": true` trên cảnh; `man` (mở chương) luôn giữ.
@@ -54,7 +64,7 @@ Tuỳ chỉnh: `"cao_trao": {"fx": ["xoay", "glitch"], "het": 25, "mo": false}` 
 | `bo_cuc` | chỉ `tran` (mặc định). `the_doc` / `ghep` / `the_anh` ĐÃ BỎ (khách 14/11: "giống màn hình dọc quá") → ⛔ |
 | `cat_y`, `cat_x` | neo dải 16:9 khi cắt (0 trên/trái … 1 dưới/phải). Nguồn DỌC mặc định `cat_y` 0,42 (trời + chủ thể); soi khung rồi chỉnh để giữ mặt / chủ thể |
 | `vung` | cắt 1 vùng nguồn `[x0, y0, x1, y1]` (0–1) TRƯỚC khi khớp khung — 1 ảnh to cho nhiều cảnh khác khung, cắt logo dán |
-| `chuyen` | chuyển VÀO cảnh (KHÔNG nhoè, MƯỢT 0,6–0,8 s): `zoom_muot` · `lia` / `lia_doc` · `truot` · `loe` · `hoa_tan` · `nhoe` (ngày → đêm) · `man` (màn quét — mở CHƯƠNG / bản đồ) · `cat`. Gấp, chỉ khi cố ý: `zoom`, `phong`. Kỹ xảo điện ảnh (đoạn cao trào, tự gán): `vo_kinh` · `xoay` · `glitch` · `lat_3d` · `chay_phim` · `xuyen` · `iris` · `tia_sang` |
+| `chuyen` | chuyển VÀO cảnh (KHÔNG nhoè, MƯỢT 0,6–0,8 s): `zoom_muot` · `lia` / `lia_doc` · `truot` · `loe` · `hoa_tan` · `nhoe` (ngày → đêm) · `man` (màn quét — mở CHƯƠNG / bản đồ) · `cat`. Gấp, chỉ khi cố ý: `zoom`, `phong`. Kỹ xảo điện ảnh (đoạn cao trào, tự gán): `vo_kinh` · `xoay` · `glitch` · `lat_3d` · `chay_phim` · `xuyen` · `iris` · `tia_sang` · `dap` · `nhay_trang` · `nhay_den`. **5 kỹ xảo mẫu** (SKILL mục 17; chia màn tạm thời → tràn): `khung_bung` (khung nhỏ viền trắng bung to) · `hai_nua` / `hai_nua_doc` (hai nửa đổi vai, đường chia trượt theo nấc) · `dai_truot` (dải ảnh trượt, ảnh cảnh mới phóng ra; `dai: [id…]` chọn ảnh dải) · `khop_hinh` (cắt nối theo hình; `khop: {ra: [x, y, r], vao: [x, y, r]}` 0–1, thiếu = tự dò) · `ba_cot` (chỉ montage) — kiểu dài cần 2 cảnh kề ≥ 1,8 s |
 | `chuyen_dong` | Ken Burns: `zoom_vao` · `zoom_ra` · `lia_trai` · `lia_phai` · `lia_len` · `lia_xuong` · `dung` |
 | `toc_do` | tốc độ clip (0,6–1,2) |
 

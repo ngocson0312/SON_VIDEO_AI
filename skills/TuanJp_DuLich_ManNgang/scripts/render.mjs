@@ -8,7 +8,7 @@
 //   node render.mjs --html <file.html> --anh <thư mục> --times 1.2,3.4,...      (chụp khung lẻ ra .jpg)
 //   node render.mjs --html <file.html> --report <ra.json> --times 1.2,3.4,...   (đo hộp chữ để tự kiểm)
 //   node render.mjs --html <file.html> --khung <thư mục> --tu 0 --n 270 --fps 30 [--luong 3]   (xuất chuỗi ảnh 00001.jpg… — cảnh 3D làm footage)
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -52,12 +52,15 @@ async function moChrome() {
   const f = path.join(dir, 'DevToolsActivePort');
   for (let i = 0; i < 300 && !fs.existsSync(f); i++) await sleep(50);
   let port = 0;
-  for (let i = 0; i < 100; i++) { const s = fs.existsSync(f) ? fs.readFileSync(f, 'utf8').split('\n')[0] : ''; if (s) { port = +s; break; } await sleep(50); }
-  if (!port) throw new Error('⛔ Chrome không mở cổng DevTools');
+  // Chrome đang ghi DevToolsActivePort → đọc có thể EBUSY (14/11/2026: đoạn 3 lỗi, Chrome sót làm node treo 15 phút) → thử lại;
+  // hỏng hẳn thì GIẾT cả cây Chrome trước khi báo lỗi
+  const giet = () => { try { if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'ignore' }); else proc.kill(); } catch { } };
+  for (let i = 0; i < 160; i++) { let s = ''; try { s = fs.existsSync(f) ? fs.readFileSync(f, 'utf8').split('\n')[0] : ''; } catch { } if (s) { port = +s; break; } await sleep(50); }
+  if (!port) { giet(); throw new Error('⛔ Chrome không mở cổng DevTools'); }
   let ds = [];
   for (let i = 0; i < 100; i++) { try { ds = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json(); } catch { } if (ds.find(d => d.type === 'page')) break; await sleep(50); }
   const page = ds.find(d => d.type === 'page');
-  if (!page) { try { proc.kill(); } catch { } throw new Error('⛔ Chrome không mở được trang (DevTools)'); }
+  if (!page) { giet(); throw new Error('⛔ Chrome không mở được trang (DevTools)'); }
   const ws = new WebSocket(page.webSocketDebuggerUrl);
   await new Promise((r, j) => { ws.onopen = r; ws.onerror = j; });
   let id = 0; const cho = new Map(), nghe = new Map();
@@ -68,7 +71,8 @@ async function moChrome() {
   };
   const send = (method, params = {}) => new Promise((r, j) => { const i = ++id; cho.set(i, { r, j }); ws.send(JSON.stringify({ id: i, method, params })); });
   const on = (m, fn) => { if (!nghe.has(m)) nghe.set(m, []); nghe.get(m).push(fn); };
-  const dong = () => { try { ws.close(); } catch { } try { proc.kill(); } catch { } setTimeout(() => { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { } }, 800); };
+  // Windows: proc.kill() chỉ giết tiến trình Chrome chính, tiến trình con còn giữ ống → node treo sau khi dựng xong (14/11/2026) → giết cả cây
+  const dong = () => { try { ws.close(); } catch { } try { if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'ignore' }); else proc.kill(); } catch { } setTimeout(() => { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { } }, 800); };
   return { send, on, dong };
 }
 
@@ -197,4 +201,4 @@ async function main() {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
-main().catch(e => { console.error(e.message || e); process.exit(1); });
+main().then(() => setTimeout(() => process.exit(0), 1200), e => { console.error(e.message || e); process.exit(1); });   // xong là thoát, không chờ Chrome sót

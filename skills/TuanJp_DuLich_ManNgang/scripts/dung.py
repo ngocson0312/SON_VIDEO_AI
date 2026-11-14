@@ -99,7 +99,7 @@ def chuan_bi(work, CB, bao=loi):
                 for i in range(co + 1, p['n'] + 1):          # clip hết sớm → lặp khung cuối
                     shutil.copyfile(d / f'{co:05d}.jpg', d / f'{i:05d}.jpg')
                 bao(f"  khung {p['id']}: {p['n']} khung {tw}x{th} ({Path(p['file']).name} từ {p['vao']:.1f}s)")
-            out[p['id']] = {'dir': url(d, thu_muc=True), 'n': p['n'], 'w': tw, 'h': th, 'anh': False}
+            out[p['id']] = {'dir': url(d, thu_muc=True), 'n': p['n'], 'w': tw, 'h': th, 'anh': False, '_tep': str(d)}
         else:
             khoa = bam(p['file'], k, tw, th, p['cat_x'], p['cat_y'], p.get('vung'), 4)
             f = fd / f"{p['id']}_{khoa}.jpg"
@@ -129,9 +129,75 @@ def chuan_bi(work, CB, bao=loi):
                             im = im.filter(ImageFilter.UnsharpMask(2, 60, 2))
                 im.save(f, quality=93)
             im = Image.open(f)
-            out[p['id']] = {'src': url(f), 'n': 1, 'w': im.width, 'h': im.height, 'anh': True}
+            out[p['id']] = {'src': url(f), 'n': 1, 'w': im.width, 'h': im.height, 'anh': True, '_tep': str(f)}
     bao(f'  footage sẵn sàng ({time.time() - t0:.0f}s)')
     return out
+
+
+def _do_hinh(f):
+    """E — tìm HÌNH NỔI BẬT trong 1 khung → [x, y, r] chuẩn hoá 0–1 (x theo ngang, y theo dọc, r theo chiều cao):
+    1) VÙNG SÁNG GỌN, tròn (mặt trời, đèn lồng, trăng): điểm sáng hẳn so với cả khung, khối liền đủ tròn;
+    2) HÌNH TRÒN NÉT (bánh xe, miệng bát, vòm hang) — Hough ngưỡng CAO (ngưỡng thấp bắt nhầm vòng ảo trên phong cảnh, thử 14/11/2026);
+    3) không có → giữa khung r 0,2 (khớp tâm, vẫn mượt). Hình chắc chắn thì Claude ghi `khop` tay."""
+    import cv2
+    import numpy as np
+    im = cv2.imdecode(np.fromfile(str(f), dtype=np.uint8), cv2.IMREAD_COLOR)
+    if im is None:
+        return None
+    h0, w0 = im.shape[:2]
+    im = cv2.resize(im, (480, max(1, int(h0 * 480 / w0))), interpolation=cv2.INTER_AREA)
+    h, w = im.shape[:2]
+    v = cv2.GaussianBlur(cv2.cvtColor(im, cv2.COLOR_BGR2HSV)[:, :, 2], (0, 0), 2.5).astype(np.float32)
+    nguong = max(238.0, float(np.percentile(v, 99.4)), float(v.max()) - 9)       # lõi sáng nhất (tách mặt trời khỏi dải chân trời sáng)
+    if float(v.max()) >= 238:                                              # có điểm cháy sáng
+        so, nhan, tk, _ = cv2.connectedComponentsWithStats((v >= nguong).astype(np.uint8), 8)
+        tot = None
+        for i in range(1, so):
+            x, y, bw, bh, s = tk[i]
+            m = int(.03 * h)
+            if s < .0004 * w * h or s > .05 * w * h or x <= m or y <= m or x + bw >= w - m or y + bh >= h - m:
+                continue                                                   # vụn nhỏ / mảng trời lớn / chạm mép khung → bỏ
+            (cx, cy), r = cv2.minEnclosingCircle(np.argwhere(nhan == i)[:, ::-1].astype(np.float32))
+            tron = s / max(1.0, math.pi * r * r)                         # 1 = tròn đầy
+            if tron >= .3 and (tot is None or s > tot[3]):           # mặt trời sát chân trời loe ngang ~0,37
+                tot = (cx, cy, r, s)
+        if tot:
+            cx, cy, r, _ = tot
+            return [round(cx / w, 3), round(cy / h, 3), round(max(.05, min(.4, 1.6 * r / h)), 3)]   # quầng sáng to hơn lõi
+    g = cv2.medianBlur(cv2.cvtColor(im, cv2.COLOR_BGR2GRAY), 5)
+    c = cv2.HoughCircles(g, cv2.HOUGH_GRADIENT, dp=1.2, minDist=80, param1=140, param2=80,
+                         minRadius=int(.07 * h), maxRadius=int(.42 * h))
+    if c is not None and len(c[0]):
+        x, y, r = c[0][0]                           # HoughCircles xếp hình tròn nhiều phiếu nhất lên đầu
+        return [round(float(x) / w, 3), round(float(y) / h, 3), round(float(r) / h, 3)]
+    return [.5, .5, .2]
+
+
+def _tep_khung(P, pid, t, a):
+    """file khung của lớp `pid` ở giây t (như partUrl trong ngang.js)."""
+    p = P.get(pid) or {}
+    if p.get('anh'):
+        return p.get('_tep')
+    i = min(max(int((t - a) * FPS + 1e-4), 0), p.get('n', 1) - 1) + 1
+    return str(Path(p['_tep']) / f'{i:05d}.jpg') if p.get('_tep') else None
+
+
+def _tu_do_khop(KH, bao=loi):
+    """E — cắt nối theo hình thiếu `khop` → dò hình ở khung cuối cảnh trước + khung đầu cảnh vào (cv2), ghi vào cảnh."""
+    C = KH.get('canh') or []
+    for i, c in enumerate(C):
+        if c.get('chuyen') != 'khop_hinh' or c.get('khop') or i == 0:
+            continue
+        r = C[i - 1]
+        fa = _tep_khung(KH['part'], (r.get('lop') or [None])[0], c['tu'] - .04, r['a'])
+        fb = _tep_khung(KH['part'], (c.get('lop') or [None])[0], c['tu'] + .04, c['a'])
+        try:
+            ka, kb = (_do_hinh(fa) if fa else None), (_do_hinh(fb) if fb else None)
+        except Exception as e:                      # thiếu cv2 / lỗi đọc → khớp giữa khung
+            bao(f'  ⚠ {c.get("id")}: không dò được hình ({e}) — khớp giữa khung')
+            ka = kb = None
+        c['khop'] = {'ra': ka or [.5, .5, .2], 'vao': kb or [.5, .5, .2]}
+        bao(f"  khớp hình {c.get('id')}: {c['khop']['ra']} → {c['khop']['vao']}")
 
 
 def viet_trang(work, KH):
@@ -186,6 +252,7 @@ def _chuan_bi_trang(work, bao=loi, cho_phep_loi=False):
         raise SystemExit(f'⛔ Kế hoạch còn {so} lỗi — chạy kiem-kh, sửa rồi dựng lại')
     tn = doc_json(Path(work) / 'tai_nguyen.json')
     KH['part'] = chuan_bi(work, CB, bao)
+    _tu_do_khop(KH, bao)
     bds = [d for d in KH['do_hoa'] if d.get('diem_den') and d.get('xuat_phat') and (d['loai'] == 'hanh_trinh' or d['loai'] == 'chuong')]
     if bds:
         import ban_do_that as BDT

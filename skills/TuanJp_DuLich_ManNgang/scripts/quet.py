@@ -179,26 +179,35 @@ def loi_doc_txt(tu, cau, work):
 
 
 def _teaser_nhap(ds, nhip_d, nn):
-    """khung TEASER mở màn: ~20 s, 1 cảnh / ô nhịp, xoay vòng tài nguyên (ưu tiên clip), 1 tít đập cuối — Claude chọn lại cảnh ĐẸP NHẤT."""
+    """khung MONTAGE TỔNG HỢP ≤ 10 s (khách 14/11/2026 vòng 3: "chỉ giới thiệu 5–10 s, sau giây 10 phải có giọng… đang tuần tự, chưa wao…
+    1 cái tổng hợp cả video trong 10 s đầu"): danh sách cảnh THEO THỨ TỰ, script tự xếp lên lưới phách (kiem-kh).
+    Nháp (+ 5 kỹ xảo mẫu người dùng gửi 14/11/2026): 3 cảnh BA CỘT có chỗ chừa tên → 1 cảnh tên (khung bung) → 7 cảnh dồn (cảnh cuối
+    tự 2 phách cho dải ảnh trượt) → ảnh to thứ 2 làm cảnh đỉnh — Claude chọn lại cảnh ĐẸP NHẤT, đúng điểm đến."""
     import nhip as NH
     from chung import MO_MAN_DAI
     dau = NH.chon_dau(nhip_d, MO_MAN_DAI)
-    bars = [round(x - dau, 2) for x in nhip_d['o_nhip'] if 0 <= x - dau < MO_MAN_DAI - 1.5]
-    clip = [r for r in ds if r['loai'] == 'clip'] + [r for r in ds if r['loai'] == 'anh']
+    anh = sorted([r for r in ds if r['loai'] == 'anh'], key=lambda r: -r['w'] * r['h'])
+    clip = sorted([r for r in ds if r['loai'] == 'clip'], key=lambda r: (r.get('doc', False), -r['w']))
+    tron = []
+    for k in range(max(len(anh), len(clip))):
+        tron += ([anh[k]] if k < len(anh) else []) + ([clip[k]] if k < len(clip) else [])
+    dinh = anh[1] if len(anh) > 1 else (tron[-1] if tron else None)
+    con = [r for r in tron if r is not dinh]
     canh = []
-    for k, t in enumerate(bars):
-        if not clip:
-            break
-        r = clip[k % len(clip)]
-        canh.append({'id': f't{k + 1}', 'tu': t, 'nguon': r['ma'], 'vao': round(r['dai'] * .4, 1) if r['loai'] == 'clip' else 0,
-                     'chuyen': 'cat' if k == 0 else ('phong' if k % 3 == 1 else ('zoom_muot' if k % 3 == 2 else 'cat')),
-                     'chuyen_dong': 'zoom_vao' if k % 2 == 0 else 'lia_phai'})
-    t_cuoi = bars[-1] if bars else MO_MAN_DAI - 2.5
-    return {'dai': MO_MAN_DAI, 'nhac_tu': round(dau, 3), 'canh': canh,
-            'do_hoa': [{'id': 'tz1', 'loai': 'tieu_de', 'tu': round(t_cuoi, 2), 'den': round(MO_MAN_DAI - .25, 2),
-                        'dan': '<dẫn ngắn>', 'khoa': '<CHỮ KHOÁ TEASER>', 'viet_tay': '<1 dòng gợi cảm xúc>'}],
-            '_goi_y': 'TEASER: thay mọi cảnh bằng cảnh ĐẸP NHẤT của từng điểm đến (flycam, toàn cảnh, chuyển động mạnh), '
-                      'giờ cảnh = đầu ô nhịp (kiem-kh tự bắt phách); 2–4 chữ lớn đập đúng phách; không lặp đoạn clip với phần thân.'}
+    for k, r in enumerate(con[:11]):             # ba cột 4 phách + tên 2 + dồn 6 × ½ + trước đỉnh 2 = 11 + đỉnh 4 = 15 phách ≈ 9,4 s @ 96 BPM
+        c = {'nguon': r['ma'], **({'vao': round(r['dai'] * .4, 1)} if r['loai'] == 'clip' else {})}
+        if k < 4:
+            c.update({'chu': '<TÊN ĐIỂM ĐẾN>', 'nhan': '<1–2 chữ cảm xúc>'})
+        canh.append(c)
+    if dinh:
+        canh.append({'nguon': dinh['ma']})
+    return {'kieu': 'tong_hop', 'nhac_tu': round(dau, 3), 'canh': canh,
+            'dinh': {'dan': '<dẫn ngắn>', 'khoa': '<CHỮ KHOÁ ĐỈNH, vd "4 điểm đến">', 'viet_tay': '<1 dòng gợi cảm xúc>'},
+            '_goi_y': 'MONTAGE TỔNG HỢP ≤ 10 s: liệt kê cảnh THEO THỨ TỰ (không ghi tu — script tự đặt lên lưới phách): '
+                      '3 cảnh đầu = BA CỘT (3 điểm đến khác nhau, mỗi cảnh chu = tên + nhan = cảm xúc; khung 0 = ảnh xem trước YouTube); '
+                      'điểm đến còn lại mỗi cái 1 cảnh có chu (khung bung / hai nửa tự gán; cảnh thứ 2 CÙNG điểm đến thì không chu, '
+                      'cảnh KHÁC điểm đến không chu thì vai "nhanh"); sau tên cuối 4–8 cảnh DỒN hay nhất khắp video (người, trải nghiệm, '
+                      'món, cảnh lạ; cảnh dồn cuối = nền dải ảnh trượt); cảnh CUỐI = cảnh ĐỈNH ảnh to nét nhất + dinh.khoa (chữ từ lời). Không lặp đoạn clip với nhau; tránh đoạn mờ / tay / điện thoại.'}
 
 
 def nhap(ds, tu, cau, dur, nn, khop, nhac, nhip_d=None):

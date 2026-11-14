@@ -188,6 +188,61 @@ const CHAY_D = [0, 1, 2].map(() => mk('div', 'dom_chay', CHAY));
 const CHAY_DUONG = [[1.02, .28, .52, .46, .45, 1.95], [.82, 1.05, .34, .62, .35, 1.7], [1.12, .7, .72, .3, .3, 1.35]];
 const VONG = mk('div', '', stage); VONG.id = 'vong_iris'; show(VONG, false);
 
+// ---------------- 5 KỸ XẢO MẪU (người dùng gửi ảnh 14/11/2026: "có 1 vài kỹ xảo chuyển cảnh, hãy ghi nhớ và cho vào skill") ----------------
+// A ba_cot · C khung_bung · D dai_truot · E khop_hinh · F hai_nua / hai_nua_doc — chia màn TẠM THỜI, kết thúc luôn tràn màn.
+const VIEN = (s, a = 1) => a < .01 ? 'none' : `0 0 0 ${(5 / Math.max(.05, s)).toFixed(1)}px rgba(255,255,255,${(.95 * a).toFixed(3)}), ` +
+  `0 ${(16 / Math.max(.05, s)).toFixed(0)}px ${(48 / Math.max(.05, s)).toFixed(0)}px rgba(0,0,0,${(.55 * a).toFixed(3)})`;
+const COT_GAP = 10, COT_W = (W - 2 * COT_GAP) / 3, cotX = k => k * (COT_W + COT_GAP) + COT_W / 2;
+const COT_Y = 822;   // tâm tên dưới cột: trên dải đen điện ảnh 2.35:1 (mép dưới khung thấy được y ≈ 949)
+// A — nhóm BA CỘT: {ids, moc[3], bung, bung_dai, het, nhan[{chu, nhan}]} do ke_hoach._tong_hop lập
+const NHOM = (KH.canh || []).filter(c => c.nhom).map(c => {
+  const g = c.nhom, o = g.ids.map(id => SC.find(s => s.c.id === id));
+  const el = mk('div', 'nhom_cot', CL); show(el, false);
+  const toi = [0, 1, 2].map(k => { const d = mk('div', 'cot_toi', el); css(d, { left: f1(cotX(k) - COT_W / 2) + 'px', width: f1(COT_W) + 'px' }); return d; });
+  const giua = mk('div', 'cot_giua', el);
+  const lb = (g.nhan || []).map(n => {
+    const k = mk('div', 'cot_nhan', el);
+    if (n.nhan) mk('div', 'nhan_nho', k, esc(n.nhan));
+    mk('div', 'tit_i', k, esc(n.chu || ''));
+    if (n.chu) mk('div', 'vach_n', k);
+    return k;
+  });
+  return { ...g, o, el, toi, giua, lb };
+});
+function veNhom(g, t) {
+  const e = P(t, g.bung, g.bung_dai, E.ioC);
+  let rgb = 0;
+  g.o.forEach((o, k) => {
+    if (!o) return;
+    if (t < g.moc[k] - 1e-4 || (k < 2 && e >= 1)) { show(o.root, false); return; }
+    const p = P(t, g.moc[k], .2, E.outC), w = k === 2 ? lerp(COT_W, W, e) : COT_W, x = k === 2 ? lerp(cotX(2), W / 2, e) : cotX(k), l = (W - w) / 2;
+    apDung(o, { clip: l > .5 ? `inset(0px ${f1(l)}px 0px ${f1(l)}px)` : 'none', tf: `translate(${f1(x - W / 2)}px, ${f1((1 - p) * -70)}px)`,
+      f: p < 1 ? `brightness(${(1 + .9 * (1 - p)).toFixed(3)})` : 'none' });
+    o.root.style.zIndex = String(2 + k);
+    veCanh(o, t);
+    rgb = Math.max(rgb, 14 * (1 - P(t, g.moc[k], .16, E.lin)) * (t >= g.moc[k] ? 1 : 0));
+  });
+  if (t >= g.bung) rgb = Math.max(rgb, 16 * Math.sin(Math.PI * clamp((t - g.bung) / (g.bung_dai + .15))));
+  show(g.el, true);
+  g.lb.forEach((L, k) => {
+    const a = t >= g.moc[k] ? P(t, g.moc[k] + .04, .18, E.outC) : 0;
+    let op = a, x = cotX(k), y = COT_Y, s = 1;
+    if (k < 2) op *= 1 - P(t, g.bung, .14, E.lin);
+    else { x = lerp(x, W / 2, e); y = lerp(COT_Y, 540, e); s = lerp(1, 2.15, e); op *= 1 - P(t, g.het - .07, .07, E.lin); }
+    L.style.opacity = op.toFixed(3);
+    L.style.transform = `translate(${f1(x)}px, ${f1(y + (1 - a) * 34)}px) translate(-50%, -50%) scale(${s.toFixed(4)})`;
+    g.toi[k].style.opacity = (k < 2 ? op : a * (1 - e)).toFixed(3);
+  });
+  g.giua.style.opacity = (e * (1 - P(t, g.het - .07, .07, E.lin))).toFixed(3);
+  return rgb;
+}
+// D — dải ảnh trượt: mỗi cảnh `dai_truot` có dải ảnh tĩnh của các cảnh trong c.dai (khung đầu cảnh đó)
+const DAI = {};
+for (const o of SC) if (o.c.chuyen === 'dai_truot' && (o.c.dai || []).length) {
+  const el = mk('div', 'dai_anh', CL); show(el, false);
+  DAI[o.c.id] = { el, it: o.c.dai.map(id => SC.find(s => s.c.id === id)).filter(Boolean).map(x => ({ im: mk('img', '', el), x })) };
+}
+
 function rngSeed(s) {
   return () => { s |= 0; s = s + 0x6D2B79F5 | 0; let x = Math.imul(s ^ s >>> 15, 1 | s); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; };
 }
@@ -278,19 +333,25 @@ function veMau(t) {
 function apDung(o, s) {
   show(o.root, true);
   css(o.root, { opacity: (s.o ?? 1).toFixed ? (s.o ?? 1).toFixed(3) : String(s.o), transform: s.tf || 'none', filter: s.f || 'none',
-    clipPath: s.clip || 'none', transformOrigin: s.org || '50% 50%' });
+    clipPath: s.clip || 'none', transformOrigin: s.org || '50% 50%', boxShadow: s.shadow || 'none' });
 }
 function ghepCanh(t) {
-  const vis = SC.filter(o => t >= o.c.a - 1e-6 && t <= o.c.b + 1e-6);
-  for (const o of SC) if (!vis.includes(o)) show(o.root, false);
+  const gN = NHOM.find(g => t >= g.moc[0] - 1e-6 && t < g.het);       // A — nhóm ba cột đang chạy thì nó điều khiển cảnh
+  for (const g of NHOM) if (g !== gN) show(g.el, false);
+  const vis = gN ? [] : SC.filter(o => t >= o.c.a - 1e-6 && t <= o.c.b + 1e-6);
+  for (const o of SC) if (!vis.includes(o) && !(gN && gN.o.includes(o))) show(o.root, false);
   let loe = 0, trang = 0, man = null;
   let rgb = 0, clS = 1, clX = 0, rungFx = 0, chay = 0, chayU = 0, iris = null, fx = null, po = null;   // kỹ xảo cao trào
-  if (vis.length === 1) apDung(vis[0], {});
+  let dai = null;                                                   // D — dải ảnh trượt đang hiện
+  if (gN) rgb = veNhom(gN, t);
+  else if (vis.length === 1) apDung(vis[0], {});
   else if (vis.length >= 2) {
     const ra = vis[vis.length - 2], vao = vis[vis.length - 1];
     for (const o of vis.slice(0, -2)) show(o.root, false);
-    const c = vao.c, d = Math.max(.01, c.d_in), u = clamp((t - (c.tu - d / 2)) / d);
-    const gc = Math.max(0, 1 - Math.abs(t - c.tu) / (d / 2));       // 1 đúng cú cắt → 0 ở 2 mép cửa sổ
+    // cửa sổ chuyển LỆCH được (montage): dt trước cú cắt, ds sau cú cắt — u = 0,5 luôn đúng cú cắt
+    const c = vao.c, d = Math.max(.01, c.d_in), dt = Math.max(.005, c.d_t ?? d / 2), ds = Math.max(.005, c.d_s ?? d / 2);
+    const u = t < c.tu ? .5 * clamp((t - (c.tu - dt)) / dt) : .5 + .5 * clamp((t - c.tu) / ds);
+    const gc = Math.max(0, t < c.tu ? 1 - (c.tu - t) / dt : 1 - (t - c.tu) / ds);   // 1 đúng cú cắt → 0 ở 2 mép cửa sổ
     let A = {}, B = {};
     switch (c.chuyen) {
       case 'cat': if (t < c.tu) B = { o: 0 }; else A = { o: 0 }; break;
@@ -334,11 +395,11 @@ function ghepCanh(t) {
       // ---------- KỸ XẢO ĐIỆN ẢNH (đoạn cao trào) — tâm cửa sổ = cú cắt đúng phách ----------
       case 'vo_kinh': {
         if (t < c.tu) {                                             // nứt toả 0,16 s cuối
-          const k = P(t, c.tu - .16, .16, E.outC);
+          const kn = Math.min(.16, dt), k = P(t, c.tu - kn, kn, E.outC);
           A = { tf: `scale(${(1 + .025 * k).toFixed(4)})` }; B = { o: 0 };
           if (k > 0) fx = { loai: 'nut', id: c.id, k };
         } else {                                                    // vỡ: mảnh khung đứng của cảnh cũ bay ra, cảnh mới đập vào
-          const p = clamp((t - c.tu) / Math.max(.2, d / 2));
+          const p = clamp((t - c.tu) / Math.max(.2, ds));
           A = { o: 0 }; B = { tf: `scale(${(1.16 - .16 * E.outC(p)).toFixed(4)})` };
           setSrc(FX_ANH, partUrl(ra.c.lop[0], c.tu, ra.c.a));
           fx = { loai: 'vo', id: c.id, p, kb: kbOf(ra, c.tu) };
@@ -391,12 +452,99 @@ function ghepCanh(t) {
         B = { clip: `polygon(0 0, ${(bx + k).toFixed(1)}px 0, ${(bx - k).toFixed(1)}px ${H}px, 0 ${H}px)` };
         man = bx; loe = Math.pow(s, .8); trang = .22 * s ** 4; rgb = 8 * s; break;
       }
+      // ---------- CẮT NHANH (montage tổng hợp ≤ 10 s đầu) — cắt cứng đúng phách + lực ----------
+      case 'dap': {
+        if (t < c.tu) { A = { tf: `scale(${(1 + .05 * P(t, c.tu - dt, dt, E.inC)).toFixed(4)})` }; B = { o: 0 }; }
+        else { const k = 1 - P(t, c.tu, .2, E.outC); A = { o: 0 }; B = { tf: `scale(${(1 + .14 * k).toFixed(4)})` }; rgb = 20 * k; rungFx = .5 * k; trang = .06 * k; }
+        break;
+      }
+      case 'nhay_trang': {
+        if (t < c.tu) { B = { o: 0 }; trang = .25 * P(t, c.tu - dt, dt, E.inC); }
+        else { const k = 1 - P(t, c.tu, .1, E.outC); A = { o: 0 }; B = { tf: `scale(${(1 + .08 * (1 - P(t, c.tu, .25, E.outC))).toFixed(4)})` }; trang = .85 * k; rgb = 10 * k; }
+        break;
+      }
+      case 'nhay_den': {
+        if (t < c.tu) { const k = P(t, c.tu - Math.min(.08, dt), Math.min(.08, dt)); A = { f: `brightness(${(1 - .9 * k).toFixed(3)})` }; B = { o: 0 }; }
+        else { const k = 1 - P(t, c.tu, .13, E.outC); A = { o: 0 }; B = { f: `brightness(${(1 + .9 * k).toFixed(3)}) contrast(${(1 + .15 * k).toFixed(3)})`, tf: `scale(${(1 + .1 * k).toFixed(4)})` }; rgb = 14 * k; }
+        break;
+      }
+      // ---------- 5 KỸ XẢO MẪU người dùng gửi (C, D, E, F; A = nhóm ba cột ở trên) ----------
+      case 'khung_bung': {                                          // C — khung nhỏ viền trắng giữa cảnh cũ → lớn dần → tràn
+        if (t < c.tu) { B = { o: 0 }; break; }
+        const p = clamp((t - c.tu) / ds);
+        const s = p < .16 ? lerp(.12, .3, E.outB(p / .16)) : p < .6 ? lerp(.3, .78, E.ioS((p - .16) / .44)) : lerp(.78, 1, E.ioC((p - .6) / .4));
+        A = { f: `brightness(${(1 - .32 * Math.min(1, p * 4)).toFixed(3)})`, tf: `scale(${(1 + .07 * p).toFixed(4)})` };
+        B = { tf: `scale(${s.toFixed(4)})`, shadow: VIEN(s, 1 - clamp((p - .8) / .2)) };
+        rgb = 10 * (1 - clamp(p / .16)); break;
+      }
+      case 'hai_nua': case 'hai_nua_doc': {                         // F — cảnh mới chen vào thành dải → đường chia trượt theo nấc → tràn
+        if (t < c.tu) { B = { o: 0 }; break; }
+        const p = clamp((t - c.tu) / ds), doc = c.chuyen === 'hai_nua_doc', L = doc ? H : W, g = 10;
+        let x = L, nhay = 0;
+        for (const [p0, v] of (doc ? [[0, .5], [.5, 0]] : [[0, .7], [.36, .3], [.72, 0]])) {
+          const q = clamp((p - p0) / .22); if (q > 0) { x = lerp(x, v * L, E.outC(q)); nhay = Math.max(nhay, 1 - q); }
+        }
+        const wa = Math.max(0, x - g / 2), wb = Math.max(0, L - x - g / 2);
+        if (x <= .5) { A = { o: 0 }; B = {}; }
+        else if (!doc) {
+          A = { clip: `inset(0px ${f1((W - wa) / 2)}px 0px ${f1((W - wa) / 2)}px)`, tf: `translateX(${f1(wa / 2 - W / 2)}px)` };
+          B = { clip: `inset(0px ${f1((W - wb) / 2)}px 0px ${f1((W - wb) / 2)}px)`, tf: `translateX(${f1(W / 2 - wb / 2)}px)` };
+        } else {
+          A = { clip: `inset(${f1((H - wa) / 2)}px 0px ${f1((H - wa) / 2)}px 0px)`, tf: `translateY(${f1(wa / 2 - H / 2)}px)` };
+          B = { clip: `inset(${f1((H - wb) / 2)}px 0px ${f1((H - wb) / 2)}px 0px)`, tf: `translateY(${f1(H / 2 - wb / 2)}px)` };
+        }
+        rgb = 9 * nhay; break;
+      }
+      case 'dai_truot': {                                           // D — cảnh cũ tối, dải ảnh trượt ngang, ảnh cảnh mới dừng giữa → phóng tràn
+        const S_ = DAI[c.id], tw = W * .3, th = H * .3, st = tw + 22, n = S_ ? S_.it.length : 0;
+        if (t < c.tu) {
+          const q = clamp((t - (c.tu - dt)) / dt), cB = lerp(W / 2 + (n + 1.2) * st, W / 2, E.outC(q)), s0 = tw / W;
+          A = { f: `brightness(${(1 - .62 * Math.min(1, q * 3)).toFixed(3)})`, tf: `scale(${(1 + .06 * q).toFixed(4)})` };
+          B = { tf: `translateX(${f1(cB - W / 2)}px) scale(${s0.toFixed(4)})`, shadow: VIEN(s0, 1) };
+          dai = { S_, cB, xa: 0, op: Math.min(1, q * 6), tw, th, st, n };
+        } else {
+          const p = clamp((t - c.tu) / ds), e = E.ioC(p), s = lerp(tw / W, 1, e);
+          A = { f: 'brightness(.38)', tf: 'scale(1.06)' };                // cảnh cũ giữ tối phía sau tới khi cảnh mới phủ kín (không lộ mép đen)
+          B = { tf: `scale(${s.toFixed(4)})`, shadow: VIEN(s, 1 - e) };
+          dai = { S_, cB: W / 2, xa: e, op: 1, tw, th, st, n }; rgb = 8 * Math.sin(Math.PI * p);
+        }
+        break;
+      }
+      case 'khop_hinh': {                                           // E — hình giống nhau trùng CHỖ + CỠ lúc cắt, rồi cảnh mới về khung thường
+        const kp = c.khop || {}, ra_ = kp.ra || [.5, .5, .2], vo_ = kp.vao || [.5, .5, .2], ZA = 1.28;
+        const PA = [ra_[0] * W, ra_[1] * H], PB = [vo_[0] * W, vo_[1] * H];
+        if (t < c.tu) {
+          A = { org: `${f1(PA[0])}px ${f1(PA[1])}px`, tf: `scale(${(1 + (ZA - 1) * E.inC(clamp((t - (c.tu - dt)) / dt))).toFixed(4)})` }; B = { o: 0 };
+        } else {
+          const e = E.outC(clamp((t - c.tu) / ds));
+          let dx = PA[0] - PB[0], dy = PA[1] - PB[1];
+          const can = Math.max(dx > 0 ? dx / Math.max(1, PB[0]) : -dx / Math.max(1, W - PB[0]), dy > 0 ? dy / Math.max(1, PB[1]) : -dy / Math.max(1, H - PB[1]));
+          const k0 = Math.min(2.2, Math.max(1, ra_[2] * ZA / Math.max(.02, vo_[2]), 1 + can));
+          dx = Math.min((k0 - 1) * PB[0], Math.max(-(k0 - 1) * (W - PB[0]), dx));
+          dy = Math.min((k0 - 1) * PB[1], Math.max(-(k0 - 1) * (H - PB[1]), dy));
+          A = { o: 0 };
+          B = { org: `${f1(PB[0])}px ${f1(PB[1])}px`, tf: `translate(${f1(dx * (1 - e))}px, ${f1(dy * (1 - e))}px) scale(${lerp(k0, 1, e).toFixed(4)})` };
+          trang = .18 * (1 - P(t, c.tu, .1, E.lin));
+        }
+        break;
+      }
       default: B = { o: E.ioS(u) };
     }
-    ra.root.style.zIndex = '1'; vao.root.style.zIndex = '2';
+    ra.root.style.zIndex = '1'; vao.root.style.zIndex = c.chuyen === 'dai_truot' ? '4' : '2';
     apDung(ra, A); apDung(vao, B);
   }
   for (const o of vis) veCanh(o, t);
+  for (const k in DAI) if (!dai || DAI[k] !== dai.S_) show(DAI[k].el, false);
+  if (dai && dai.S_) {
+    show(dai.S_.el, true);
+    dai.S_.it.forEach((x, j) => {
+      const m = Math.ceil(dai.n / 2), off = (j < m ? j - m : j - m + 1) * dai.st;   // ảnh dải 2 bên ảnh cảnh mới (giữa dải)
+      const cx = dai.cB + off * (1 + 1.6 * dai.xa);
+      setSrc(x.im, partUrl(x.x.c.lop[0], x.x.c.tu + .1, x.x.c.a));
+      css(x.im, { width: f1(dai.tw) + 'px', height: f1(dai.th) + 'px', opacity: (dai.op * (1 - dai.xa)).toFixed(3),
+        transform: `translate(${f1(cx - dai.tw / 2)}px, ${f1(H / 2 - dai.th / 2)}px)` });
+    });
+  }
   if (CAO_TRAO) {
     if (CAO_TRAO.mo && t < .7) { const k = 1 - P(t, 0, .6, E.outC); clS *= 1 + .32 * k; rgb = Math.max(rgb, 26 * k); }   // khung 0: đập mở màn
     for (const h of CAO_TRAO.dap || []) if (t >= h.t - .02 && t < h.t + .4) {                 // đập theo PHÁCH giữa 2 cú cắt
@@ -752,6 +900,18 @@ LAM.hook_tu = d => {
     },
     ve(t) {
       const on = t >= d.tu - .02 && t < d.den; show(el, on); if (!on) return;
+      if (d.dap) {                              // MONTAGE: tên ĐẬP đúng cú cắt 1,6 → 1 trong 0,16 s + giật + đẩy chậm, tắt cứng ở cú cắt sau
+        const ngay0 = d.tu <= .01, e = ngay0 ? 1 : P(t, d.tu, .16, E.outC), k = 1 - e, r = P(t, d.den - .05, .05);
+        const giu = P(t, d.tu + .16, Math.max(.2, d.den - d.tu - .16), E.lin);
+        sc.style.opacity = ((ngay0 ? 1 : P(t, d.tu, .06)) * (1 - r)).toFixed(3);
+        chu.style.opacity = (ngay0 ? 1 : P(t, d.tu - .01, .03)).toFixed(3);
+        chu.style.letterSpacing = (.02 + .1 * k).toFixed(4) + 'em';
+        chu.style.transform = `translate(${(Math.sin(t * 131) * 9 * k).toFixed(1)}px, ${(Math.cos(t * 97) * 6 * k).toFixed(1)}px) scale(${(1 + .6 * k + .05 * giu).toFixed(4)})`;
+        if (vach) { const a = ngay0 ? 1 : P(t, d.tu + .04, .2, E.outE); vach.style.transform = `scaleX(${a.toFixed(3)})`; vach.style.transformOrigin = giua ? '50% 50%' : '0 50%'; }
+        if (nh) { const a = ngay0 ? 1 : P(t, d.tu + .05, .14, E.outC); nh.style.opacity = a.toFixed(3); nh.style.transform = `translateY(${((1 - a) * 18).toFixed(1)}px)`; }
+        b.style.opacity = (1 - r).toFixed(3);
+        return;
+      }
       const r = P(t, d.den - .12, .12, E.inC);
       const ngay = d.tu <= .01;                 // chữ ở khung 0 (ảnh xem trước YouTube) phải ĐỦ ngay
       sc.style.opacity = ((ngay ? 1 : P(t, d.tu, .12)) * (1 - r)).toFixed(3);
@@ -905,6 +1065,20 @@ LAM.tieu_de = d => {
       HOP.push({ el: khoa, d }); if (tay) HOP.push({ el: tay, d });
     },
     ve(t) {
+      if (d.dap) {                              // MONTAGE: tít ĐỈNH đập cùng cú vỡ kính 1,5 → 1 trong 0,2 s, đẩy chậm tới lúc giọng vào
+        const v = vaoRa(t, d, .2); show(el, v.on); if (!v.on) return;
+        const e = P(t, d.tu, .2, E.outC), k = 1 - e, giu = P(t, d.tu + .2, Math.max(.3, d.den - d.tu - .2), E.lin);
+        sc.style.opacity = (P(t, d.tu, .1) * (1 - v.r)).toFixed(3);
+        if (dan) { const a = P(t, d.tu + .08, .22, E.outE); dan.tx.style.opacity = a.toFixed(3); dan.tx.style.letterSpacing = (.6 - .34 * a).toFixed(3) + 'em';
+          dan.g1.style.transform = `scaleX(${a.toFixed(3)})`; dan.g1.style.transformOrigin = '0 50%'; if (dan.g2) dan.g2.style.transform = `scaleX(${a.toFixed(3)})`; }
+        dong.forEach(x => { x.style.transform = 'none'; });
+        khoa.style.opacity = P(t, d.tu - .01, .04).toFixed(3);
+        khoa.style.letterSpacing = (.01 + .08 * k).toFixed(4) + 'em';
+        if (tay) { const a = P(t, d.tu + .2, .32, E.outC); tay.style.clipPath = `inset(-30% ${((1 - a) * 100).toFixed(1)}% -30% -5%)`; }
+        b.style.opacity = (1 - v.r).toFixed(3);
+        b.style.transform = `translate(${(Math.sin(t * 127) * 10 * k).toFixed(1)}px, ${(Math.cos(t * 89) * 7 * k).toFixed(1)}px) scale(${(1 + .5 * k + .045 * giu + .04 * v.r).toFixed(4)})`;
+        return;
+      }
       const v = vaoRa(t, d, .45); show(el, v.on); if (!v.on) return;
       sc.style.opacity = (P(t, d.tu, .5) * (1 - v.r)).toFixed(3);
       if (dan) { const e = P(t, d.tu, .35, E.outE); dan.tx.style.opacity = e.toFixed(3); dan.tx.style.letterSpacing = (.6 - .34 * e).toFixed(3) + 'em';
