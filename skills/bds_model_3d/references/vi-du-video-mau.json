@@ -1,0 +1,101 @@
+{
+ "_ghi_chu": "Kế hoạch DỰNG LẠI video mẫu Khánh Nguyễn (Video_Mẫu.mp4, 35,8 s) — bản chuẩn để học cách điền. Footage 'ket_qua_ban_do' = video kết quả (map) đưa qua --res. Mọi giây là giây TUYỆT ĐỐI của video ra. Chữ 'luc' không ghi thì tự khớp theo lời (hiện trước tiếng 0,22 s).",
+ "CAN_CLAUDE_SUA": false,
+ "thoi_luong": 35.82,
+ "doan": [],
+ "canh": [
+  {"id": "hook", "loai": "the_noi", "tu": 0.0, "den": 6.2,
+   "footage": {"nguon": "ket_qua_ban_do", "tu_giay": 0.0}},
+  {"id": "khoe", "loai": "tran_man", "tu": 6.2, "den": 9.55},
+  {"id": "tom_tat", "loai": "nen_nhoe", "tu": 9.55, "den": 13.0},
+  {"id": "buoc1", "loai": "giao_dien", "mau": "ban_do", "tu": 13.0, "den": 16.6,
+   "ban_do": {
+    "goi_y": "Tìm kiếm tại đây",
+    "avatar": "V",
+    "o_tim": {"chu": "Dự án JDI Land", "luc": 13.5, "den": 14.4},
+    "nhan_ban_do": ["Hồ Đống Đa", "Thanh Xuân", "Royal City", "Láng Hạ"],
+    "ghim": {"ten": "Dự án JDI Land", "luc": 14.95},
+    "bang": {"luc": 15.4, "ten": "Dự án JDI Land", "phu": "5,0 ★★★★★ (126) · Khu căn hộ", "dia_chi": "37 Lê Văn Lương, Thanh Xuân, Hà Nội"},
+    "cham": {"luc": 15.9},
+    "thong_bao": {"luc": 16.15, "chu": "Đã sao chép địa chỉ"}
+   }},
+  {"id": "buoc23", "loai": "giao_dien", "mau": "chat_ai", "tu": 16.6, "den": 25.5,
+   "chat_ai": {
+    "ten_app": "Claude", "mo_hinh": "Opus 5.5",
+    "loi_chao": "Hôm nay mình\nlàm gì nhỉ?",
+    "viec": [
+     {"lam": "dan", "luc": 17.45, "nhan": "ĐÃ DÁN", "chu": "37 Lê Văn Lương, Thanh Xuân, Hà Nội"},
+     {"lam": "tep", "luc": 18.4, "ten": "Tong-hop-du-an.pdf", "phu": "PDF · 4,2 MB"},
+     {"lam": "go", "luc": 19.7, "den": 20.4, "chu": "Dựng video map 3D giới thiệu dự án tại địa chỉ này, dùng số liệu trong file tổng hợp."},
+     {"lam": "gui", "luc": 20.5, "the_nho": ["37 Lê Văn Lương…", "Tong-hop-du-an.pdf"]},
+     {"lam": "dang_lam", "luc": 20.8, "chu": "Đang dựng video map 3D…", "buoc": ["Đọc file tổng hợp", "Định vị dự án"]},
+     {"lam": "xoa", "luc": 21.25},
+     {"lam": "video", "luc": 22.4, "nhan": "Video mẫu", "anh": {"nguon": "ket_qua_ban_do", "tu_giay": 9.7}},
+     {"lam": "video_vao_o", "luc": 23.3},
+     {"lam": "go", "luc": 23.9, "den": 24.6, "chu": "Làm lại theo phong cách video mẫu này nhé!"},
+     {"lam": "gui", "luc": 24.95}
+    ]
+   }},
+  {"id": "ket_qua", "loai": "tran_man", "tu": 25.5, "den": 28.9,
+   "footage": {"nguon": "ket_qua_ban_do", "tu_giay": 14.0}},
+  {"id": "cta", "loai": "dien_thoai", "tu": 28.9, "den": 35.82,
+   "dien_thoai": {
+    "ten": "Khách hàng", "trang_thai": "Vừa mới truy cập", "ngay": "Hôm nay", "gio_may": "9:41",
+    "tin": [
+     {"luc": 30.0, "ben": "khach", "chu": "prompt map", "gio": "21:14"},
+     {"luc": 30.55, "den": 31.3, "lam": "dang_go"},
+     {"luc": 31.35, "ben": "toi", "loai": "tai_lieu", "tieu_de": "Hướng dẫn làm video map BĐS bằng Claude", "phu": "Google Tài liệu · docs.google.com", "gio": "21:15"},
+     {"luc": 33.0, "ben": "toi", "chu": "Hướng dẫn **chi tiết** đây nhé!", "gio": "21:15"}
+    ]
+   }}
+ ],
+ "chu": [
+  {"tu": 0.5, "den": 2.75, "dong": [
+    [{"t": "Video này hoàn toàn", "k": "dan"}],
+    [{"t": "được làm từ", "k": "dan"}, {"t": "Claude AI", "k": "vang"}]]},
+  {"tu": 6.3, "den": 8.2, "dong": [
+    [{"t": "giới thiệu dự án", "k": "dan"}],
+    [{"t": "trực quan", "k": "vang"}]]},
+  {"tu": 8.2, "den": 9.45, "dong": [
+    [{"t": "và", "k": "dan"}, {"t": "cực kỳ thu hút", "k": "trang"}]]},
+  {"tu": 9.8, "den": 11.35, "vi_tri": "giua", "dong": [
+    [{"t": "cực kỳ", "k": "dan"}],
+    [{"t": "đơn giản", "k": "trang"}]]},
+  {"tu": 11.35, "den": 12.95, "vi_tri": "giua", "dong": [
+    [{"t": "chỉ với", "k": "dan"}],
+    [{"t": "3 bước", "k": "vang"}]]},
+  {"tu": 12.95, "den": 16.55, "dong": [
+    [{"t": "Bước 1", "k": "buoc"}],
+    [{"t": "Tìm vị trí trên Google Maps", "k": "tit", "luc": 13.1}]]},
+  {"tu": 16.6, "den": 21.2, "dong": [
+    [{"t": "Bước 2", "k": "buoc"}],
+    [{"t": "Dán địa chỉ", "k": "tit", "luc": 16.75}, {"t": "+", "k": "noi"}, {"t": "file vào Claude", "k": "tit", "luc": 17.6}]]},
+  {"tu": 21.25, "den": 25.45, "dong": [
+    [{"t": "Bước 3", "k": "buoc"}],
+    [{"t": "Đưa video mẫu", "k": "tit", "luc": 21.6}, {"t": "cho", "k": "noi"}, {"t": "Claude", "k": "tit", "luc": 23.3}]]},
+  {"tu": 25.5, "den": 28.6, "dong": [
+    [{"t": "Và đây chính là", "k": "dan"}],
+    [{"t": "kết quả", "k": "vang"}]]},
+  {"tu": 28.9, "den": 30.95, "dong": [
+    [{"t": "Hãy comment", "k": "dan"}],
+    [{"t": "prompt map", "k": "trich"}]]},
+  {"tu": 31.0, "den": 32.3, "dong": [
+    [{"t": "mình gửi", "k": "dan"}],
+    [{"t": "hướng dẫn chi tiết", "k": "trang"}]]},
+  {"tu": 32.3, "den": 35.55, "dong": [
+    [{"t": "video bất động sản", "k": "dan"}],
+    [{"t": "cực xịn xò", "k": "vang"}]]}
+ ],
+ "vien_kinh": [
+  {"tu": 2.9, "den": 4.3, "dan": "không cần", "icon": "ae", "chu": "After Effects", "gach": 3.75},
+  {"tu": 4.35, "den": 6.05, "dan": "không mất", "icon": "dong_ho", "chu": "Cả ngày làm GeoLayers", "gach": 5.45}
+ ],
+ "o_kinh": [
+  {"tu": 10.65, "den": 12.95, "muc": [
+    {"icon": "google_maps", "nhan": "Google Maps"},
+    {"icon": "claude", "nhan": "Claude"},
+    {"icon": "video", "nhan": "Video mẫu"}]}
+ ],
+ "nhac": {"file": null, "muc": -23, "dang": 16},
+ "sfx": {"tat": false, "bo": [], "them": []}
+}

@@ -12,7 +12,9 @@
 - skills/bds-sale-viral               : video nguoi noi (sale BDS, 9:16) + Resources tuy chon -> edit kieu "Het Hon Real"
                                         (tieu de 3 tang SAU DAU nguoi, sub nguc day ngang, icon 3D moc tu ban tay, SFX)
 - skills/TuấnJp_Dulich_ManDoc         : link bai bao du lich + audio giong doc + Resources clip/anh (+ nhac nen) -> video quang ba
-                                        du lich 9:16 (do hoa chu, hanh trinh A->B tu ve / de len clip, sub karaoke, CTA theo doi)
+                                        du lich 9:16 (do hoa chu, hanh trinh A->B tren BAN DO VE TINH THAT, sub karaoke, CTA theo doi)
+- skills/bds_model_3d                  : 1 video co giong (hoac giong + clip/anh; hoac giong + anh phoi canh -> canh 3D cong trinh
+                                        tren ve tinh) -> video motion graphic the noi 3D 9:16 kieu Khanh Nguyen
 - skills/TuanJp_DuLich_ManNgang       : audio giong doc + Resources clip/anh (doc hay ngang, + nhac nen neu co) -> video du lich
                                         NGANG 16:9 cho YouTube (clip doc thanh the / ghep o, chuong 01-04 + ban do VN, sub karaoke,
                                         man ket Dang ky). Doc muc "TRANG THAI / VIEC TIEP THEO" trong SKILL.md truoc khi train tiep
@@ -30,6 +32,7 @@
     New-Item -ItemType Junction -Path .claude\skills\bds-sale-viral -Target SON_VIDEO_AI\skills\bds-sale-viral
     New-Item -ItemType Junction -Path .claude\skills\TuấnJp_Dulich_ManDoc -Target SON_VIDEO_AI\skills\TuấnJp_Dulich_ManDoc
     New-Item -ItemType Junction -Path .claude\skills\TuanJp_DuLich_ManNgang -Target SON_VIDEO_AI\skills\TuanJp_DuLich_ManNgang
+    New-Item -ItemType Junction -Path .claude\skills\bds_model_3d -Target SON_VIDEO_AI\skills\bds_model_3d
     python -I -m pip install -r SON_VIDEO_AI\requirements.txt
     python -I -X utf8 .claude\skills\skill-bando-tintuc-chinhtri\scripts\run.py chuan-bi   (tai ~200 MB cache, lan dau)
 Cap nhat: git pull trong SON_VIDEO_AI. Skill co repo rieng (ban-do-tien-ich-nha-dat, nns-ha-tang-quy-hoach-tien-ich): git pull / git push ngay trong thu muc skill do. Thu muc cache/ khong len git (tu tai lai).
@@ -57,6 +60,8 @@ Cap nhat: git pull trong SON_VIDEO_AI. Skill co repo rieng (ban-do-tien-ich-nha-
 - Whisper large-v3 (~3 GB) tu tai lan dau, chay CPU. Anh HEIC iPhone: cai them pillow-heif (khong co thi tu doi qua ffmpeg).
 - SFX hanh trinh (jet-flyby / xe-chay / song-nuoc .wav) tu tong hop bang scripts\tao_sfx_ht.py, da len git.
 - Lenh: python -I -X utf8 .claude\skills\TuấnJp_Dulich_ManDoc\scripts\run.py quet --audio <giong> --link <bai bao> --res <Resources>
+- Kiem may moi: run.py cai-dat. Dong goi zip gui khach: run.py dong-goi -> Goi_khach\TuanJp_Dulich_ManDoc_<ngay>.zip
+- Ban do that: anh ve tinh Esri cache o <du an>\_cache_tiles\esri (dung chung voi nns-ban-do-ha-tang), duong di OSRM.
 
 ## TuanJp_DuLich_ManNgang - ghi chu
 - Can ffmpeg/ffprobe trong PATH, Node.js >= 22 + Chrome hoac Edge (Chrome cho la -> bien DLN_CHROME). Kiem may: run.py cai-dat
@@ -64,3 +69,9 @@ Cap nhat: git pull trong SON_VIDEO_AI. Skill co repo rieng (ban-do-tien-ich-nha-
 - boom.wav (cu drop ten chu de) tu tong hop bang scripts\tao_sfx.py, da len git. Ban do VN: assets\khung\vn_ban_do.js (co Hoang Sa, Truong Sa).
 - Lenh: python -I -X utf8 .claude\skills\TuanJp_DuLich_ManNgang\scripts\run.py quet --audio <giong> --res <Resources>
   -> Claude viet ke_hoach.json theo nghia (mau references\vi-du-4-diem-den.json) -> kiem-kh -> duyet -> dung
+
+## bds_model_3d - ghi chu
+- Can ffmpeg/ffprobe trong PATH, Node.js >= 22 + Chrome hoac Edge (dung khung bang Chrome headless).
+- Whisper large-v3 (~3 GB) tu tai lan dau. three.min.js (canh 3D) da kem trong assets\khung\lib.
+- Lenh: python -I -X utf8 .claude\skills\bds_model_3d\scripts\run.py quet --video <file>  (hoac --audio <giong> --res <thu muc>)
+  -> Claude viet ke_hoach.json theo nghia -> kiem-kh -> duyet -> dung. Canh 3D: them --3d --vi-tri "lat,lon" (xem SKILL.md)
