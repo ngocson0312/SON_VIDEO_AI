@@ -210,7 +210,7 @@ const NHOM = (KH.canh || []).filter(c => c.nhom).map(c => {
   return { ...g, o, el, toi, giua, lb };
 });
 function veNhom(g, t) {
-  const e = P(t, g.bung, g.bung_dai, E.ioC);
+  const e = P(t, g.bung, g.bung_dai, E.outE);                      // cột 3 BUNG đúng phách (outExpo: phần lớn trong 0,1 s đầu)
   let rgb = 0;
   g.o.forEach((o, k) => {
     if (!o) return;
@@ -241,6 +241,44 @@ const DAI = {};
 for (const o of SC) if (o.c.chuyen === 'dai_truot' && (o.c.dai || []).length) {
   const el = mk('div', 'dai_anh', CL); show(el, false);
   DAI[o.c.id] = { el, it: o.c.dai.map(id => SC.find(s => s.c.id === id)).filter(Boolean).map(x => ({ im: mk('img', '', el), x })) };
+}
+// F — cú ĐẨY hai nửa (vòng 4): cảnh cũ BỊ ĐẨY sang trái, cảnh mới lộ ra sau mép sáng; mép dừng 3 nấc đúng phách (nấc 1 cắt ngang
+// NGƯỜI trong cảnh mới → người tách nền nhô qua mép như đang đẩy); CHỮ (day_chu) chạy theo mép rồi đứng giữa, bị đẩy ra cùng cảnh khi cắt tiếp
+const xMan = (u, k) => W / 2 + k.x * W + k.s * (u * W - W / 2);   // toạ độ ảnh 0–1 → x màn (ảnh 16:9 tràn khung + Ken Burns k)
+for (const o of SC) if (o.c.chuyen === 'hai_nua') {
+  let s1 = .66 * W;
+  const hop = o.c.nv && o.c.nv.hop;
+  if (hop) { const k = kbOf(o, o.c.tu), xl = xMan(hop[0], k), xr = xMan(hop[2], k); s1 = clamp(xl + .25 * (xr - xl), .45 * W, .8 * W); }
+  o.s1 = s1;
+}
+const VACH = mk('div', '', CL); VACH.id = 'vach_day'; show(VACH, false);
+const NV = SC.filter(o => o.c.nv && o.c.nv.src).map(o => { const el = mk('div', 'nv_lop', CL); show(el, false); return { o, el, im: mk('img', '', el) }; });
+const DC = SC.filter(o => o.c.day_chu && o.c.day_chu.chu).map(o => {
+  const el = mk('div', 'day_chu', CL); show(el, false);
+  const t1 = mk('div', 'tit_i', el, esc(o.c.day_chu.chu));
+  if (o.c.day_chu.nhan) mk('div', 'nhan_nho', el, esc(o.c.day_chu.nhan));
+  mk('div', 'vach_n', el);
+  return { o, el, t1, w: 0, h: 0, y0: 0, cd: false };
+});
+function veDayChu(D, st) {
+  if (!st) { show(D.el, false); return; }
+  show(D.el, true);
+  const doc = D.o.c.chuyen === 'hai_nua_doc';
+  if (!D.cd) {                                                      // đo 1 lần: chữ vừa phần mép mới ở nấc 1, chọn dải trên / dưới né người
+    vua(D.t1, 150, doc ? 1300 : Math.max(420, W - (D.o.s1 || .66 * W) - 110));
+    D.w = D.el.offsetWidth; D.h = D.el.offsetHeight; D.cd = true;
+    const hop = D.o.c.nv && D.o.c.nv.hop;
+    if (hop && !doc) {
+      const pt = hop[1] * H, pb = hop[3] * H, tr = [170, 170 + D.h], du = [930 - D.h, 930];
+      const ch = (a, b) => Math.max(0, Math.min(b, pb) - Math.max(a, pt));
+      D.y0 = ch(...tr) <= ch(...du) ? tr[0] : du[0];
+    } else D.y0 = 540 - D.h / 2;
+  }
+  let left, top;
+  if (doc) { left = W / 2 - D.w / 2; top = Math.max(D.y0, st.x + 30); }
+  else { left = Math.max(W / 2 - D.w / 2, st.x + 44); top = D.y0; }
+  const op = st.op * clamp(((doc ? H : W) - st.x) / 140);
+  css(D.el, { opacity: op.toFixed(3), transform: `translate(${f1(left + st.dx)}px, ${f1(top)}px)` });
 }
 
 function rngSeed(s) {
@@ -343,6 +381,7 @@ function ghepCanh(t) {
   let loe = 0, trang = 0, man = null;
   let rgb = 0, clS = 1, clX = 0, rungFx = 0, chay = 0, chayU = 0, iris = null, fx = null, po = null;   // kỹ xảo cao trào
   let dai = null;                                                   // D — dải ảnh trượt đang hiện
+  let vach = null, dayX = null, raDx = null, nvO = null, raDxV = 0;  // F — mép đẩy (x), chữ theo mép, chữ bị đẩy ra, người nhô qua mép
   if (gN) rgb = veNhom(gN, t);
   else if (vis.length === 1) apDung(vis[0], {});
   else if (vis.length >= 2) {
@@ -468,42 +507,83 @@ function ghepCanh(t) {
         else { const k = 1 - P(t, c.tu, .13, E.outC); A = { o: 0 }; B = { f: `brightness(${(1 + .9 * k).toFixed(3)}) contrast(${(1 + .15 * k).toFixed(3)})`, tf: `scale(${(1 + .1 * k).toFixed(4)})` }; rgb = 14 * k; }
         break;
       }
+      case 'day_nhanh': {                                           // ĐẨY NHANH phải → trái, khựng đúng nửa phách (đoạn dồn 1 hướng = nối mạch)
+        if (t < c.tu) { B = { o: 0 }; break; }
+        const q = clamp((t - c.tu) / Math.min(.2, ds)), e = E.outE(q);
+        A = { tf: `translateX(${f1(-W * e)}px)`, f: `brightness(${(1 - .3 * e).toFixed(3)})` };
+        B = { tf: `translateX(${f1(W * (1 - e))}px)` };
+        raDxV = -W * e;
+        if (e < .995) vach = W * (1 - e);
+        rgb = 12 * (1 - q); break;
+      }
       // ---------- 5 KỸ XẢO MẪU người dùng gửi (C, D, E, F; A = nhóm ba cột ở trên) ----------
       case 'khung_bung': {                                          // C — khung nhỏ viền trắng giữa cảnh cũ → lớn dần → tràn
         if (t < c.tu) { B = { o: 0 }; break; }
-        const p = clamp((t - c.tu) / ds);
-        const s = p < .16 ? lerp(.12, .3, E.outB(p / .16)) : p < .6 ? lerp(.3, .78, E.ioS((p - .16) / .44)) : lerp(.78, 1, E.ioC((p - .6) / .4));
+        const tt = t - c.tu, p = clamp(tt / ds), p_ = c.p || 0;
+        let s, nhay, vien;
+        if (p_) {                                                   // montage: BẬT nhỏ (phách) → vừa (½ phách) → TRÀN (phách sau) — mỗi nấc 1 cú nảy
+          const n1 = clamp(tt / .2), n2 = clamp((tt - .5 * p_) / .2), n3 = clamp((tt - p_) / .17);
+          s = lerp(.12, .36, E.outB(n1));
+          if (n2 > 0) s = lerp(s, .64, E.outB(n2));
+          if (n3 > 0) s = lerp(s, 1, E.outE(n3));
+          nhay = Math.max(1 - n1, n2 > 0 ? 1 - n2 : 0, n3 > 0 ? 1 - n3 : 0); vien = 1 - n3;
+        } else {
+          s = p < .16 ? lerp(.12, .3, E.outB(p / .16)) : p < .6 ? lerp(.3, .78, E.ioS((p - .16) / .44)) : lerp(.78, 1, E.ioC((p - .6) / .4));
+          nhay = 1 - clamp(p / .16); vien = 1 - clamp((p - .8) / .2);
+        }
         A = { f: `brightness(${(1 - .32 * Math.min(1, p * 4)).toFixed(3)})`, tf: `scale(${(1 + .07 * p).toFixed(4)})` };
-        B = { tf: `scale(${s.toFixed(4)})`, shadow: VIEN(s, 1 - clamp((p - .8) / .2)) };
-        rgb = 10 * (1 - clamp(p / .16)); break;
+        B = { tf: `scale(${s.toFixed(4)})`, shadow: VIEN(s, vien) };
+        rgb = 10 * nhay; break;
       }
-      case 'hai_nua': case 'hai_nua_doc': {                         // F — cảnh mới chen vào thành dải → đường chia trượt theo nấc → tràn
+      case 'hai_nua': {                                             // F — ĐẨY: cảnh cũ bị đẩy sang trái, cảnh mới lộ sau mép sáng; 3 nấc đúng phách
         if (t < c.tu) { B = { o: 0 }; break; }
-        const p = clamp((t - c.tu) / ds), doc = c.chuyen === 'hai_nua_doc', L = doc ? H : W, g = 10;
+        const tt = t - c.tu, p_ = c.p || 0, s1 = vao.s1 || .66 * W, s2 = Math.min(.33 * W, .55 * s1);
+        const nac = p_ ? [[0, s1], [.5 * p_, s2], [p_, 0]] : [[0, s1], [.36 * ds, s2], [.72 * ds, 0]], dn = p_ ? .17 : .22 * ds;
+        let x = W, nhay = 0;
+        for (const [t0, v] of nac) { const q = clamp((tt - t0) / dn); if (q > 0) { x = lerp(x, v, E.outE(q)); nhay = Math.max(nhay, 1 - q); } }
+        if (x <= .5) { A = { o: 0 }; B = {}; }
+        else {
+          A = { tf: `translateX(${f1(x - W)}px)`, f: `brightness(${(1 - .28 * (1 - x / W)).toFixed(3)})` };
+          B = { clip: `inset(0px 0px 0px ${f1(x)}px)` };
+          vach = x < W - 1 ? x : null;
+        }
+        dayX = { o: vao, x };
+        if (vao.c.nv && vao.c.nv.src) {                             // người nhô qua mép ở nấc 1, về đúng chỗ khi mép qua hết người
+          const t2 = nac[1][0], op = 1 - clamp((tt - t2 - dn) / .12);
+          if (op > 0) nvO = { o: vao, op, pop: 1 - E.outC(clamp((tt - t2) / dn)) };
+        }
+        rgb = 9 * nhay; break;
+      }
+      case 'hai_nua_doc': {                                         // F' — chia TRÊN / DƯỚI: cảnh mới dâng từ nửa dưới lên
+        if (t < c.tu) { B = { o: 0 }; break; }
+        const p = clamp((t - c.tu) / ds), p_ = c.p || 0, tt = t - c.tu, L = H, g = 10;
         let x = L, nhay = 0;
-        for (const [p0, v] of (doc ? [[0, .5], [.5, 0]] : [[0, .7], [.36, .3], [.72, 0]])) {
-          const q = clamp((p - p0) / .22); if (q > 0) { x = lerp(x, v * L, E.outC(q)); nhay = Math.max(nhay, 1 - q); }
+        for (const [t0, v] of (p_ ? [[0, .5], [p_, 0]] : [[0, .5], [.5 * ds, 0]])) {
+          const q = clamp((tt - t0) / (p_ ? .17 : .22 * ds)); if (q > 0) { x = lerp(x, v * L, E.outE(q)); nhay = Math.max(nhay, 1 - q); }
         }
         const wa = Math.max(0, x - g / 2), wb = Math.max(0, L - x - g / 2);
         if (x <= .5) { A = { o: 0 }; B = {}; }
-        else if (!doc) {
-          A = { clip: `inset(0px ${f1((W - wa) / 2)}px 0px ${f1((W - wa) / 2)}px)`, tf: `translateX(${f1(wa / 2 - W / 2)}px)` };
-          B = { clip: `inset(0px ${f1((W - wb) / 2)}px 0px ${f1((W - wb) / 2)}px)`, tf: `translateX(${f1(W / 2 - wb / 2)}px)` };
-        } else {
+        else {
           A = { clip: `inset(${f1((H - wa) / 2)}px 0px ${f1((H - wa) / 2)}px 0px)`, tf: `translateY(${f1(wa / 2 - H / 2)}px)` };
           B = { clip: `inset(${f1((H - wb) / 2)}px 0px ${f1((H - wb) / 2)}px 0px)`, tf: `translateY(${f1(H / 2 - wb / 2)}px)` };
         }
+        dayX = { o: vao, x }; void p;
         rgb = 9 * nhay; break;
       }
       case 'dai_truot': {                                           // D — cảnh cũ tối, dải ảnh trượt ngang, ảnh cảnh mới dừng giữa → phóng tràn
         const S_ = DAI[c.id], tw = W * .3, th = H * .3, st = tw + 22, n = S_ ? S_.it.length : 0;
         if (t < c.tu) {
-          const q = clamp((t - (c.tu - dt)) / dt), cB = lerp(W / 2 + (n + 1.2) * st, W / 2, E.outC(q)), s0 = tw / W;
+          const q = clamp((t - (c.tu - dt)) / dt), s0 = tw / W, p_ = c.p || 0;
+          let cB;
+          if (p_ && dt >= .9 * p_) {                                // montage: dải VÀO đúng phách → KHỰNG ½ phách (ảnh đỉnh vào giữa) → phóng đúng phách
+            const a1 = E.outE(clamp((t - (c.tu - dt)) / .2)), a2 = E.outE(clamp((t - (c.tu - .5 * p_)) / .18));
+            cB = lerp(lerp(W / 2 + (n + 1.2) * st, W / 2 + st, a1), W / 2, a2);
+          } else cB = lerp(W / 2 + (n + 1.2) * st, W / 2, E.outC(q));
           A = { f: `brightness(${(1 - .62 * Math.min(1, q * 3)).toFixed(3)})`, tf: `scale(${(1 + .06 * q).toFixed(4)})` };
           B = { tf: `translateX(${f1(cB - W / 2)}px) scale(${s0.toFixed(4)})`, shadow: VIEN(s0, 1) };
           dai = { S_, cB, xa: 0, op: Math.min(1, q * 6), tw, th, st, n };
         } else {
-          const p = clamp((t - c.tu) / ds), e = E.ioC(p), s = lerp(tw / W, 1, e);
+          const p = clamp((t - c.tu) / ds), e = (c.p ? E.outE : E.ioC)(p), s = lerp(tw / W, 1, e);   // montage: phóng BẬT đúng phách
           A = { f: 'brightness(.38)', tf: 'scale(1.06)' };                // cảnh cũ giữ tối phía sau tới khi cảnh mới phủ kín (không lộ mép đen)
           B = { tf: `scale(${s.toFixed(4)})`, shadow: VIEN(s, 1 - e) };
           dai = { S_, cB: W / 2, xa: e, op: 1, tw, th, st, n }; rgb = 8 * Math.sin(Math.PI * p);
@@ -532,8 +612,28 @@ function ghepCanh(t) {
     }
     ra.root.style.zIndex = '1'; vao.root.style.zIndex = c.chuyen === 'dai_truot' ? '4' : '2';
     apDung(ra, A); apDung(vao, B);
+    if (ra.c.day_chu) raDx = { o: ra, dx: raDxV, op: c.chuyen === 'day_nhanh' ? 1 : 1 - clamp(u * 2) };   // chữ đẩy đi cùng cảnh cũ
   }
   for (const o of vis) veCanh(o, t);
+  // F — chữ chạy theo mép đẩy / đứng giữa / bị đẩy ra; người nhô qua mép; vạch sáng ở mép
+  for (const D of DC) {
+    let st = null;
+    if (dayX && dayX.o === D.o) st = { x: dayX.x, dx: 0, op: 1 };
+    else if (raDx && raDx.o === D.o) st = { x: 0, dx: raDx.dx, op: raDx.op };
+    else if (!gN && vis.length && vis[vis.length - 1] === D.o && t >= D.o.c.tu) st = { x: 0, dx: 0, op: 1 };
+    veDayChu(D, st);
+  }
+  for (const N of NV) {
+    if (!nvO || nvO.o !== N.o) { show(N.el, false); continue; }
+    show(N.el, true);
+    setSrc(N.im, N.o.c.nv.src);
+    const k = kbOf(N.o, t), hop = N.o.c.nv.hop, cx = xMan((hop[0] + hop[2]) / 2, k), cy = H / 2 + k.y * H + k.s * ((hop[1] + hop[3]) / 2 * H - H / 2);
+    N.im.style.transform = tfKB(k, W, H);
+    const pp = nvO.pop;
+    css(N.el, { opacity: nvO.op.toFixed(3), transformOrigin: `${f1(cx)}px ${f1(cy)}px`, transform: pp > .002 ? `scale(${(1 + .06 * pp).toFixed(4)})` : 'none',
+      filter: pp > .02 ? `drop-shadow(0 0 4px rgba(255,255,255,${(.95 * pp).toFixed(3)})) drop-shadow(0 14px 26px rgba(0,0,0,${(.5 * pp).toFixed(3)}))` : 'none' });
+  }
+  if (vach != null) { show(VACH, true); VACH.style.transform = `translateX(${f1(vach)}px)`; } else show(VACH, false);
   for (const k in DAI) if (!dai || DAI[k] !== dai.S_) show(DAI[k].el, false);
   if (dai && dai.S_) {
     show(dai.S_.el, true);

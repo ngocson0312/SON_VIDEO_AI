@@ -8,7 +8,8 @@ from pathlib import Path
 
 from chung import SKILL, loi, tim_chrome
 
-MOD = {'PIL': 'pillow', 'numpy': 'numpy', 'scipy': 'scipy', 'requests': 'requests', 'faster_whisper': 'faster-whisper'}
+MOD = {'PIL': 'pillow', 'numpy': 'numpy', 'scipy': 'scipy', 'requests': 'requests', 'faster_whisper': 'faster-whisper',
+       'onnxruntime': 'onnxruntime', 'cv2': 'opencv-python-headless'}
 
 
 def cai_dat():
@@ -37,5 +38,9 @@ def cai_dat():
     ok &= bool(c)
     hub = Path.home() / '.cache' / 'huggingface' / 'hub' / 'models--Systran--faster-whisper-large-v3'
     loi(f"{'✅' if hub.exists() else 'ℹ'} Whisper large-v3 {'đã tải' if hub.exists() else 'chưa tải — lần quét đầu tự tải ~3 GB'}")
+    u2 = [SKILL / 'assets' / 'models' / 'u2net_human_seg.onnx', Path.home() / '.u2net' / 'u2net_human_seg.onnx',
+          SKILL.parent / 'bds-sale-viral' / 'assets' / 'models' / 'u2net_human_seg.onnx']
+    co = next((x for x in u2 if x.exists()), None)
+    loi(f"{'✅' if co else 'ℹ'} Tách người u2net_human_seg.onnx {co or 'chưa có — cú ĐẨY montage chỉ có chữ + vạch sáng; chép file (~170 MB) vào ~/.u2net'}")
     loi('CÀI ĐẶT: ' + ('SẴN SÀNG' if ok else 'CHƯA ĐỦ — xem dòng ⛔'))
     return ok

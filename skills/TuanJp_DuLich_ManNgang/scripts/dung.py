@@ -200,6 +200,26 @@ def _tu_do_khop(KH, bao=loi):
         bao(f"  khớp hình {c.get('id')}: {c['khop']['ra']} → {c['khop']['vao']}")
 
 
+def _tach_nguoi(work, KH, bao=loi):
+    """F — cú ĐẨY hai nửa (montage, vòng 4): tách NGƯỜI ở khung đầu cảnh mới → PNG nền trong (cùng cỡ khung) + hộp người;
+    ngang.js cho mép nấc 1 cắt ngang người → người nhô qua mép như đang đẩy. Không có model / không thấy người → chỉ chữ + vạch sáng."""
+    for c in KH.get('canh') or []:
+        if c.get('nv') is not True:
+            c['nv'] = c.get('nv') if isinstance(c.get('nv'), dict) else None
+            continue
+        f = _tep_khung(KH['part'], (c.get('lop') or [None])[0], c['tu'] + .05, c['a'])
+        r = None
+        if f and Path(f).exists():
+            try:
+                import nguoi
+                r = nguoi.cat_nguoi(f, Path(work) / 'footage', bao)
+            except Exception as e:                      # thiếu onnxruntime / cv2 → bỏ người nhô, giữ chữ đẩy
+                bao(f'  ⚠ {c.get("id")}: không tách được người ({e})')
+        c['nv'] = {'src': url(Path(r['png'])), 'hop': r['hop']} if r else None
+        if r:
+            bao(f"  người nhô qua mép đẩy {c.get('id')}: hộp {r['hop']} ({100 * r['dt']:.0f}% khung)")
+
+
 def viet_trang(work, KH):
     work = Path(work)
     F = {'PF': [('PlayfairDisplay-VF.ttf', '400 900', 'normal')], 'PFI': [('PlayfairDisplay-Italic.ttf', '400 900', 'normal')],
@@ -253,6 +273,7 @@ def _chuan_bi_trang(work, bao=loi, cho_phep_loi=False):
     tn = doc_json(Path(work) / 'tai_nguyen.json')
     KH['part'] = chuan_bi(work, CB, bao)
     _tu_do_khop(KH, bao)
+    _tach_nguoi(work, KH, bao)
     bds = [d for d in KH['do_hoa'] if d.get('diem_den') and d.get('xuat_phat') and (d['loai'] == 'hanh_trinh' or d['loai'] == 'chuong')]
     if bds:
         import ban_do_that as BDT

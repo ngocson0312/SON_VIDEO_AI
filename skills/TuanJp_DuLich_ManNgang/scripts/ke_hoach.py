@@ -9,7 +9,7 @@ from chung import (BAN_DO_MIN, BINH_LUAN_CACH, BINH_LUAN_DUNG, BO_CUC, BO_CUC_CH
                    CHUYEN, CHUYEN_DONG, KY_XAO, KY_XAO_DROP,
                    CTA_MIN, DUOI, FPS, GHEP_KHE, H, HIEN_ANH, HIEN_MIN, ICON, KHONG_CACH, LOAI_DH, MO_MAN_DAI, MO_MAN_MAX, MO_MAN_MIN, NGON_NGU, NHO,
                    SFX, SFX_TREN, SUB_MAX_KY_TU, SUB_MAX_TU, SUB_NGAT, THE_DOC_CAO, THE_DOC_X, W, XUAT_PHAT_MAC_DINH, ASSETS, doc_json, gio_phut, loi,
-                   so_km, TONG_HOP_CAT, TONG_HOP_NHIP, TONG_HOP_TOC, CHUYEN_LECH, CHUYEN_DAI)
+                   so_km, TONG_HOP_CAT, TONG_HOP_NHIP, TONG_HOP_TOC, CHUYEN_LECH, CHUYEN_DAI, CHUYEN_NHIP, NAC_XONG, TONG_HOP_CD)
 
 BAT_BUOC = {'mo_dau': ('chinh',), 'hook_tu': ('chu',), 'chuong': ('ten',), 'dia_danh': ('ten',), 'tu_khoa': ('muc',), 'tieu_de': ('khoa',), 'chip': ('muc',),
             'so_lon': ('so',), 'liet_ke': ('muc',), 'trich': ('noi',), 'ban_do': ('diem',), 'hanh_trinh': ('xuat_phat', 'diem_den'), 'binh_luan': ()}
@@ -33,6 +33,8 @@ def _tong_hop(mm, phach, N, by, E, Wn, TS):
         return [], []
     if any('tu' in c for c in sh):
         TS('mo_man tong_hop: bỏ qua `tu` của cảnh — giờ cảnh do lưới phách tính')
+    dd = sorted(b - a for a, b in zip(phach, phach[1:]) if b - a > .2)
+    P = dd[len(dd) // 2] if dd else .6                 # 1 phách (giây) — mọi nấc kỹ xảo montage bám bội số ½ phách
     cuoi_chu = max([i for i, c in enumerate(sh) if c.get('chu')] or [-1])
     for i, c in enumerate(sh):
         c['_vai'] = c.get('vai') or ('mo' if i == 0 else 'dinh' if i == len(sh) - 1 else 'ten' if i <= cuoi_chu else 'nhanh')
@@ -111,11 +113,17 @@ def _tong_hop(mm, phach, N, by, E, Wn, TS):
         r = by.get(c['nguon']) or {}
         if r.get('loai') == 'clip' and v in TONG_HOP_TOC:
             c.setdefault('toc_do', TONG_HOP_TOC[v])
-        c.setdefault('chuyen_dong', 'zoom_ra' if v == 'dinh' else ('zoom_vao' if i % 2 == 0 else 'lia_phai'))
+        c['_p'] = round(P, 4)
+        c.setdefault('chuyen_dong', TONG_HOP_CD.get(v) or ('zoom_vao' if i % 2 == 0 else 'lia_phai'))
     for i in range(1, len(sh)):                     # cửa sổ chuyển: trước / sau cú cắt (CHUYEN_LECH), không nuốt quá nửa cảnh kề
         c, dt0, dt1 = sh[i], sh[i]['tu'] - sh[i - 1]['tu'], sh[i]['_den_tm'] - sh[i]['tu']
         if c['_vai'] == 'cot':
             c['_vt'] = c['_vs'] = 0.0
+            continue
+        if c['chuyen'] in CHUYEN_NHIP:              # nấc theo PHÁCH (vòng 4): cửa sổ = bội số phách, nấc cuối + 0,18 s chạy
+            b0, b1 = CHUYEN_NHIP[c['chuyen']]
+            c['_vt'] = round(min(b0 * P, .95 * dt0), 3)
+            c['_vs'] = round(min(b1 * P + (NAC_XONG if b1 >= 1 else 0), dt1 - .02), 3)
             continue
         d = CHUYEN.get(c['chuyen'], (0,))[0]
         f0, f1 = CHUYEN_LECH.get(c['chuyen'], (.5, .5))
@@ -125,9 +133,9 @@ def _tong_hop(mm, phach, N, by, E, Wn, TS):
     # ---- A: nhóm BA CỘT — cột bật đúng phách, cột 3 bung tràn sau 1 phách, tên nhỏ dưới mỗi cột (tên cột 3 lớn dần ra giữa) ----
     if sh[0]['_vai'] == 'cot':
         c0, c1, c2 = sh[:3]
-        bung = round(c2['tu'] + max(.3, .5 * (c2['_den_tm'] - c2['tu'])), 3)      # cột 3 đứng 1 phách rồi bung
+        bung = round(c2['tu'] + (P if c2['_den_tm'] - c2['tu'] >= 1.4 * P else max(.3, .5 * (c2['_den_tm'] - c2['tu']))), 3)  # cột 3 đứng 1 phách rồi bung ĐÚNG phách
         het = round(c2['_den_tm'] - (sh[3]['_vt'] if len(sh) > 3 else 0), 3)
-        bung_dai = round(max(.2, min(.38, het - bung - .04)), 3)                  # bung xong TRƯỚC khi kỹ xảo kế bắt đầu
+        bung_dai = round(max(.2, min(.5 * P, .38, het - bung - .04)), 3)          # bung (outExpo) xong trong ½ phách, TRƯỚC kỹ xảo kế
         c0['_nhom'] = {'kieu': 'ba_cot', 'ids': [c0['id'], c1['id'], c2['id']], 'moc': [c0['tu'], c1['tu'], c2['tu']],
                        'bung': bung, 'bung_dai': bung_dai, 'het': het,
                        'nhan': [{'chu': x.get('chu') or '', 'nhan': x.get('nhan') or ''} for x in (c0, c1, c2)]}
@@ -144,11 +152,16 @@ def _tong_hop(mm, phach, N, by, E, Wn, TS):
     for i, c in enumerate(sh):
         if not c.get('chu') or c['_vai'] == 'cot':
             continue
+        if c['chuyen'] in ('hai_nua', 'hai_nua_doc'):   # F — cú ĐẨY: chữ chạy theo mép chia (không đập giữa) + người tách nền nhô qua mép
+            c['_day_chu'] = {'chu': c['chu'], 'nhan': c.get('nhan') or ''}
+            c['_nv'] = c['chuyen'] == 'hai_nua' and c.get('nhan_vat', True) is not False   # người tách nền: chỉ chia trái / phải
+            continue
         j = i + 1
         while j < len(sh) and not sh[j].get('chu') and sh[j]['_vai'] in ('ten', 'mo'):
             j += 1
         den = sh[j]['tu'] - (sh[j].get('_vt') or 0) if j < len(sh) else sh[-1]['_den_tm']
-        tu = c['tu'] + (.62 * c['_vs'] if c['chuyen'] in CHUYEN_DAI else 0)   # khung bung / hai nửa: tên đập khi khung đã ~80 % màn
+        tu = c['tu'] + (P if c['chuyen'] in CHUYEN_NHIP and CHUYEN_NHIP[c['chuyen']][1] >= 1 else
+                        .62 * c['_vs'] if c['chuyen'] in CHUYEN_DAI else 0)   # khung bung: tên đập đúng NẤC CHỐT (tràn màn, phách sau)
         if den - .02 - tu < .62:
             tu = max(c['tu'], den - .64)
         dh.append({'id': f'tn{len(dh) + 1}', 'loai': 'hook_tu', 'chu': c['chu'], 'tu': round(tu, 3), 'den': round(den - .02, 3),
@@ -157,7 +170,8 @@ def _tong_hop(mm, phach, N, by, E, Wn, TS):
     dn = mm.get('dinh') or {}
     if dn.get('khoa'):
         h = sh[-1]
-        dh.append({'id': 'tn_dinh', 'loai': 'tieu_de', 'tu': round(h['tu'] + (.7 * h['_vs'] if h['chuyen'] in CHUYEN_DAI else .06), 3), 'den': round(h['_den_tm'] - .04, 3),
+        tu_d = h['tu'] + (P if h['chuyen'] == 'dai_truot' and h['_den_tm'] - h['tu'] >= 2.2 * P else .7 * h['_vs'] if h['chuyen'] in CHUYEN_DAI else .06)
+        dh.append({'id': 'tn_dinh', 'loai': 'tieu_de', 'tu': round(tu_d, 3), 'den': round(h['_den_tm'] - .04, 3),   # tít đập PHÁCH sau ảnh đỉnh dừng
                    'vi_tri': dn.get('vi_tri', 'giua'), 'dap': True, 'sfx': False, '_teaser': True, '_tong_hop': True,
                    'co': dn.get('co', 210), **{k: dn[k] for k in ('dan', 'khoa', 'viet_tay', 'y', 'mau') if dn.get(k)}})
     else:
@@ -463,6 +477,8 @@ def giai(work, bao=loi):
                     if b0 is not None and b0.get('chuyen') not in KY_XAO:
                         b0['chuyen'] = TONG_HOP_CAT['giong']
                         b0['giu_chuyen'] = True
+                    if b0 is not None:
+                        b0['_giong'] = True           # cú CHỐT vào lời: riser dồn + kỹ xảo + boom (khách vòng 4: "như đổ vỡ ở demo 3")
             else:
                 # cảnh teaser kiểu cũ: giờ riêng 0…dai, bắt về phách gần nhất
                 tc = sorted([dict(c) for c in mm['canh']], key=lambda c: float(c['tu']))
@@ -699,7 +715,8 @@ def giai(work, bao=loi):
                    'nen': f'{cid}_nen' if bc in ('the_doc', 'the_anh') else None, 'nghieng': float(c.get('nghieng', 0)),
                    'loai_nguon': [r['loai'] for r in rs], 'nhan': c.get('nhan'), 'luc_o': c.get('luc_o'), 'pw': 0,
                    'teaser': bool(c.get('_teaser')), 'vai': c.get('_vai'), 'nhom': c.get('_nhom'), 'dai': c.get('_dai'),
-                   'khop': c.get('khop')})
+                   'khop': c.get('khop'), 'p': c.get('_p'), 'day_chu': c.get('_day_chu'), 'nv': bool(c.get('_nv')),
+                   'giong': bool(c.get('_giong'))})
     # ---- đồ hoạ ----
     DH = []
     for k, d in enumerate(kh.get('do_hoa') or []):
@@ -947,17 +964,33 @@ def giai(work, bao=loi):
         if i == 0:
             continue
         sf = CHUYEN[c['chuyen']][1]
-        if c.get('vai'):                         # montage tổng hợp: nhạc là xương sống — chỉ cảnh ĐỈNH + kỹ xảo dài có tiếng
-            if c['vai'] == 'dinh':
-                S('riser', c['tu'] - 1.85)
+        if c.get('vai'):                         # montage tổng hợp: nhạc là xương sống — tiếng THEO NẤC kỹ xảo, nấc nào cũng đúng phách
+            p_ = c.get('p') or 0
+            if c['chuyen'] == 'dai_truot':       # dải vào (1 phách trước) → khựng ½ phách → ảnh đỉnh dừng + phóng: thịch
+                S('fx_buoc', c['tu'] - c['d_t'])
+                if p_ and c['d_t'] >= .9 * p_:
+                    S('fx_buoc', c['tu'] - .5 * p_)
+                S('fx_cham', c['tu'])
+            elif c['chuyen'] in CHUYEN_NHIP and p_ and CHUYEN_NHIP[c['chuyen']][1] >= 1:
+                S('fx_buoc', c['tu'])            # khung bung / hai nửa: bật (phách) → nấc giữa (½) → CHỐT tràn màn (phách sau)
+                S('fx_buoc', c['tu'] + .5 * p_)
+                S('fx_cham', c['tu'] + p_)
+            elif c['vai'] == 'dinh':
                 if sf:
                     S(sf, c['tu'])
-                S('boom', c['tu'])
-            elif c['chuyen'] in CHUYEN_DAI and sf:
-                S(sf, c['tu'])                   # khung bung / hai nửa: tiếng lúc cảnh mới bắt đầu lộ (tên đập sau đó bỏ whoosh)
+                S('fx_cham', c['tu'])
+            elif sf and (c['chuyen'] in CHUYEN_DAI or c['chuyen'] == 'day_nhanh'):
+                S(sf, c['tu'])
             continue
         if c['chuyen'] in KY_XAO:                # kỹ xảo cao trào: đỉnh tiếng đúng CÚ CẮT (cả trong teaser)
-            S(sf, c['tu'])
+            if c.get('giong'):                   # GIỌNG VÀO: riser dồn từ cảnh đỉnh → vỡ / kỹ xảo + boom CHỐT đúng phách
+                S('riser', c['tu'] - 1.85)
+                S(sf, c['tu'])
+                S('boom', c['tu'])
+            elif c['chuyen'] == 'dai_truot':
+                S(sf, c['tu'] - c['d_t'])
+            else:
+                S(sf, c['tu'])
             continue
         if c.get('teaser'):                      # teaser: nhạc là xương sống — cắt thường không kèm whoosh
             continue

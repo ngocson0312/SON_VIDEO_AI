@@ -28,7 +28,7 @@
   "Sapa": "Sa Pa"
  },
  "mo_man": {
-  "_y": "MONTAGE TỔNG HỢP 15 phách (9,42 s): Claude chỉ xếp THỨ TỰ — 3 cảnh BA CỘT có tên (Sa Pa · Hạ Long · Ninh Bình) → Bản Giốc (khung bung, tự gán) → mây Sa Pa KHÁC điểm đến nên vai nhanh + hai_nua ghi tay (vai ten không chữ thì tên trước còn đứng) → 4 cảnh dồn hay nhất khắp video → ruộng bậc thang (dải ảnh trượt chạy trên cảnh này) → đỉnh thác Bản Giốc + tít (chữ lấy từ lời 97,7–103,3 s)",
+  "_y": "MONTAGE TỔNG HỢP 15 phách (9,47 s), vòng 4 — mọi nấc đúng phách: BA CỘT Sa Pa · Hạ Long · Ninh Bình (phách 0-1-2, bung phách 3) → Bản Giốc KHUNG BUNG (phách 4 bật, 4½, phách 5 tràn + tên) → CÁP TREO đẩy HAI NỬA phải → trái có chữ + cô gái tách nền nhô qua mép (phách 6, 6½, 7; chữ từ lời 31,4 s) → dồn ĐẨY NHANH mỗi ½ phách cùng hướng (mây Sa Pa, đầm sen, Fansipan, thuyền Hạ Long, đồng lúa) → dải ảnh trượt (phách 11) → đỉnh Bản Giốc (phách 12) + tít (phách 13) → riser → VỠ KÍNH + boom vào giọng (phách 15) — chữ đỉnh lấy từ lời 97,7–103,3 s",
   "kieu": "tong_hop",
   "canh": [
    {
@@ -70,13 +70,16 @@
     "loi": "Bản Giốc — dải thác"
    },
    {
+    "nguon": "res_04",
+    "loi": "cáp treo — cô gái ngắm biển mây (lời 31,4 s)",
+    "chu": "Cáp treo",
+    "nhan": "Biển mây"
+   },
+   {
     "nguon": "clip_09",
     "vao": 9.0,
     "cat_y": 0.36,
-    "loi": "Sa Pa — mây cuộn qua núi",
-    "vai": "nhanh",
-    "nhip": 2,
-    "chuyen": "hai_nua"
+    "loi": "Sa Pa — mây cuộn qua núi"
    },
    {
     "nguon": "clip_16",
@@ -93,10 +96,6 @@
     "vao": 3.5,
     "cat_y": 0.4,
     "loi": "đi thuyền Hạ Long"
-   },
-   {
-    "nguon": "res_04",
-    "loi": "cabin cáp treo"
    },
    {
     "nguon": "clip_06",
