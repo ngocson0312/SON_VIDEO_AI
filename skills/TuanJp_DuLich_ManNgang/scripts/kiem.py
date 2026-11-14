@@ -3,13 +3,14 @@
 không khung đen giữa video · sub không đè chữ đồ hoạ · có màn kết → soat.jpg (24 khung) để mở soi."""
 import io
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from chung import FONT_DIR, FPS, H, LUFS, TP, W, doc_json, loi, probe, run
+from chung import CAT_MIN_S, CAT_MIN_THAN, DUNG_RO_MIN, FONT_DIR, FPS, H, LUFS, TP, W, doc_json, loi, probe, run
 
 
 def _do_to(f):
@@ -46,7 +47,7 @@ def _de_nhau(work):
     if not KH:
         return None
     ts = [round(x * .5, 2) for x in range(1, int(KH['dur'] / .5))]
-    rp = Path(work) / '_hop.json'
+    rp = Path(work) / f'_hop_{os.getpid()}.json'      # tên riêng: dung tự kiểm + kiem chạy tay cùng lúc không giẫm nhau
     _render(['--html', trang, '--report', rp, '--times', ','.join(map(str, ts))], bao=lambda m: None)
     bc = json.loads(rp.read_text(encoding='utf-8'))
     rp.unlink()
@@ -106,6 +107,16 @@ def kiem(work, file=None, bao=loi):
         # góp ý khách 14/11/2026 thành luật kiểm trên mọi video
         kc = [c for c in KH.get('canh', []) if c.get('bo_cuc') != 'tran']
         M(not kc, 'luôn tràn màn', 'mọi cảnh tràn khung' if not kc else ', '.join(c['id'] for c in kc[:6]) + ' không tràn')
+        # LUẬT NHỊP CẮT (khách vòng 5: "không được chuyển cảnh nhanh như vậy dù là ở đâu trong video")
+        cs, xau, gmin, rmin = KH.get('canh', []), [], 99.0, 99.0
+        for a, b in zip(cs, cs[1:]):
+            gap, ro = b['tu'] - a['tu'], (b['tu'] - b.get('d_t', 0)) - (a['tu'] + a.get('d_s', 0))
+            gmin, rmin = min(gmin, gap), min(rmin, ro)
+            if gap < (CAT_MIN_S if a.get('p') else CAT_MIN_THAN) - .01 or ro < DUNG_RO_MIN - .01:
+                xau.append(f"{a['id']} @{a['tu']:.1f}s đứng {gap:.2f}s (rõ {max(0, ro):.2f}s)")
+        if len(cs) > 1:
+            M(not xau, 'nhịp cắt', f'cảnh ngắn nhất {gmin:.2f}s, đứng rõ ≥ {rmin:.2f}s — không cắt dồn dập' if not xau
+              else '; '.join(xau[:5]) + ' — cắt quá nhanh')
         dh = KH.get('do_hoa', [])
         ch = [d for d in dh if d['loai'] == 'chuong']
         bd = [d for d in dh if d.get('bd')]

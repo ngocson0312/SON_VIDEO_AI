@@ -9,7 +9,8 @@ from chung import (BAN_DO_MIN, BINH_LUAN_CACH, BINH_LUAN_DUNG, BO_CUC, BO_CUC_CH
                    CHUYEN, CHUYEN_DONG, KY_XAO, KY_XAO_DROP,
                    CTA_MIN, DUOI, FPS, GHEP_KHE, H, HIEN_ANH, HIEN_MIN, ICON, KHONG_CACH, LOAI_DH, MO_MAN_DAI, MO_MAN_MAX, MO_MAN_MIN, NGON_NGU, NHO,
                    SFX, SFX_TREN, SUB_MAX_KY_TU, SUB_MAX_TU, SUB_NGAT, THE_DOC_CAO, THE_DOC_X, W, XUAT_PHAT_MAC_DINH, ASSETS, doc_json, gio_phut, loi,
-                   so_km, TONG_HOP_CAT, TONG_HOP_NHIP, TONG_HOP_TOC, CHUYEN_LECH, CHUYEN_DAI, CHUYEN_NHIP, NAC_XONG, TONG_HOP_CD)
+                   so_km, TONG_HOP_CAT, TONG_HOP_NHIP, TONG_HOP_TOC, CHUYEN_LECH, CHUYEN_DAI, CHUYEN_NHIP, NAC_XONG, TONG_HOP_CD,
+                   CAT_MIN_PHACH, CAT_MIN_S, CAT_MIN_THAN, DUNG_RO_MIN, DAY_S)
 
 BAT_BUOC = {'mo_dau': ('chinh',), 'hook_tu': ('chu',), 'chuong': ('ten',), 'dia_danh': ('ten',), 'tu_khoa': ('muc',), 'tieu_de': ('khoa',), 'chip': ('muc',),
             'so_lon': ('so',), 'liet_ke': ('muc',), 'trich': ('noi',), 'ban_do': ('diem',), 'hanh_trinh': ('xuat_phat', 'diem_den'), 'binh_luan': ()}
@@ -70,6 +71,12 @@ def _tong_hop(mm, phach, N, by, E, Wn, TS):
         v = c['_vai']
         mac = (2.0 if i == 2 else 1.0) if v == 'cot' else (2.0 if v == 'ten' and c['chuyen'] in CHUYEN_DAI else TONG_HOP_NHIP[v if v in TONG_HOP_NHIP else 'ten'])
         nb.append(round(float(c.get('nhip', mac)) * 2) / 2)
+    nb_min = max(CAT_MIN_PHACH, math.ceil(CAT_MIN_S / P * 2 - 1e-6) / 2)   # LUẬT NHỊP CẮT: không cảnh nào < 1 phách / 0,55 s
+    for i, c in enumerate(sh):
+        if nb[i] < nb_min:
+            if 'nhip' in c:
+                TS(f"mo_man: cảnh {c.get('nguon')} nhip {nb[i]:g} → {nb_min:g} phách (luật nhịp cắt: cảnh ≥ {nb_min:g} phách / {CAT_MIN_S} s ở mọi chỗ)")
+            nb[i] = nb_min
     if sh[-1]['chuyen'] == 'dai_truot' and len(sh) > 1 and nb[-2] < 1.5:   # dải trượt chạy trên cảnh trước đỉnh → cần ≥ 1,5 phách
         if 'nhip' in sh[-2]:
             sh[-1]['chuyen'] = TONG_HOP_CAT['dinh_ngan']
@@ -126,6 +133,8 @@ def _tong_hop(mm, phach, N, by, E, Wn, TS):
             b0, b1 = CHUYEN_NHIP[c['chuyen']]
             c['_vt'] = round(min(b0 * P, .95 * dt0), 3)
             c['_vs'] = round(min(b1 * P + (NAC_XONG if b1 >= 1 else 0), dt1 - .02), 3)
+            if c['chuyen'] == 'day_nhanh':          # cú đẩy cả khung ≥ 0,34 s (êm) nhưng chừa cảnh đứng rõ ≥ 0,25 s
+                c['_vs'] = round(max(c['_vs'], min(DAY_S, dt1 - DUNG_RO_MIN)), 3)
             continue
         d = CHUYEN.get(c['chuyen'], (0,))[0]
         f0, f1 = CHUYEN_LECH.get(c['chuyen'], (.5, .5))
@@ -622,10 +631,10 @@ def giai(work, bao=loi):
         montage = bool(truoc and c.get('bo_cuc') == 'the_doc' and truoc.get('bo_cuc') == 'the_doc'
                        and c.get('vi_tri', 'giua') == truoc.get('vi_tri', 'giua') and ch in ('hoa_tan', 'nhoe'))
         dai_c = den - tu0
-        if c.get('_tong_hop'):                     # montage tổng hợp: cắt theo phách / nửa phách là CỐ Ý (khách đòi cao trào)
-            if dai_c < .24:
-                E(f'{cid} @ {tu0:.2f}s chỉ {dai_c:.2f}s — montage tối thiểu nửa phách ≥ 0,24 s')
-        elif ch == 'phong' and dai_c < .8 or ch != 'phong' and dai_c < 1.5:
+        if c.get('_tong_hop'):                     # montage tổng hợp: cắt theo phách là CỐ Ý, nhưng LUẬT NHỊP CẮT: ≥ 1 phách / 0,55 s
+            if dai_c < CAT_MIN_S - .01:
+                E(f'{cid} @ {tu0:.2f}s chỉ {dai_c:.2f}s — cắt dồn dập (luật nhịp cắt: mọi cảnh ≥ 1 phách / {CAT_MIN_S} s, ở MỌI chỗ trong video)')
+        elif ch == 'phong' and dai_c < .8 or ch != 'phong' and dai_c < CAT_MIN_THAN:
             E(f'{cid} @ {tu0:.2f}s chỉ {dai_c:.2f}s — quá gấp, người xem chưa kịp nhìn')
         else:
             nguong = CANH_TEASER_MIN if c.get('_teaser') else (1.8 if tu0 < moc_hook else (2.0 if montage else CANH_MIN))
@@ -719,6 +728,11 @@ def giai(work, bao=loi):
                    'teaser': bool(c.get('_teaser')), 'vai': c.get('_vai'), 'nhom': c.get('_nhom'), 'dai': c.get('_dai'),
                    'khop': c.get('khop'), 'p': c.get('_p'), 'day_chu': c.get('_day_chu'), 'nv': bool(c.get('_nv')),
                    'giong': bool(c.get('_giong'))})
+    for a_, b_ in zip(CS, CS[1:]):                  # LUẬT NHỊP CẮT: mỗi cảnh ĐỨNG YÊN RÕ ≥ 0,25 s giữa 2 cú chuyển (mọi chỗ trong video)
+        ro = (b_['tu'] - b_['d_t']) - (a_['tu'] + a_['d_s'])
+        if ro < DUNG_RO_MIN - .01:
+            E(f"{a_['id']} @ {a_['tu']:.2f}s chỉ đứng rõ {max(0, ro):.2f}s giữa 2 cú chuyển (< {DUNG_RO_MIN} s) — cảnh lướt qua, "
+              f"khó chịu: kéo dài cảnh / bỏ bớt cảnh / chuyển ngắn hơn")
     # ---- đồ hoạ ----
     DH = []
     for k, d in enumerate(kh.get('do_hoa') or []):

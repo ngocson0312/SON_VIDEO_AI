@@ -29,11 +29,44 @@ thôi"). Skill này đứng riêng: code, phông, SFX, khung trang dựng đều
 - Bản giao 14/11/2026: `D:\____TTT_____\KH_Test\Tuấn_jp\Màn Ngang\Audio_DLN.mp4` (người dùng duyệt D1–D8 mặc định); người dùng chê
   "những cảnh đầu chưa xịn" → `Audio_DLN_ban2.mp4` (30 s đầu kỹ xảo, ĐÃ CHỐT 16); chê "tuần tự, chưa wao, chỉ 5–10 s" → `Audio_DLN_ban3.mp4`
   (montage tổng hợp 9,42 s, ĐÃ CHỐT 15) → `Audio_DLN_ban4.mp4` (+ 5 kỹ xảo mẫu, ĐÃ CHỐT 17); chê "nhịp loạn, không liên kết, chỉ hình
-  đẩy, vào lời chưa có tiếng chốt" → **`Audio_DLN_ban5.mp4`** (= demo 4 làm lại: lưới phách bám trống thật, mọi nấc kỹ xảo đúng phách,
-  cú đẩy có chữ + người tách nền, dồn = đẩy nhanh 1 hướng, vào giọng vỡ kính + boom — vòng 4); chê "giây 5–7 nhanh quá, khó chịu" →
-  **`Audio_DLN_ban6.mp4`** (dồn mỗi cảnh 1 phách, đẩy 0,34 s êm — vòng 5) — chờ người dùng xem.
+  đẩy, vào lời chưa có tiếng chốt" → `Audio_DLN_ban5.mp4` (= demo 4 làm lại: lưới phách bám trống thật, mọi nấc kỹ xảo đúng phách,
+  cú đẩy có chữ + người tách nền, dồn = đẩy nhanh 1 hướng, vào giọng vỡ kính + boom — vòng 4); chê "chuyển cảnh nhanh quá, khó chịu" →
+  **`Audio_DLN_ban6.mp4`** (người dùng đã đổi tên thành `demo2_ManNgang.mp4`; dồn mỗi cảnh 1 phách, đẩy 0,34 s êm — vòng 5) + LUẬT NHỊP
+  CẮT cho cả video (ĐÃ CHỐT 18) + mục "CHUẨN XỊN" ở dưới — chờ người dùng xem. Người dùng hay đổi tên / dọn video cũ: `lan_dung.json` trỏ
+  file không còn → `run.py kiem --work … --file "<file mới>"`.
 - Còn mở: D1 tên kênh / avatar màn kết đang TRỐNG; clip DỌC 720 px tràn khung ngang phóng 2,7× (mềm — đã làm nét `cas`); khách gửi clip
   ngang / 4K thì nét hẳn. Chưa có: đóng gói zip gửi khách (`dong-goi` như bản dọc).
+
+## CHUẨN XỊN — TÓM TẮT MỌI ĐIỀU KHÁCH ĐÃ DUYỆT (đọc TRƯỚC khi viết kế hoạch; áp cho MỌI video, MỌI chỗ trong video)
+
+Gọi skill là ra video đạt các điều dưới đây — phần lớn script TỰ LÀM (✔ = tự động, ✍ = Claude phải chọn đúng khi viết kế hoạch).
+Góp ý của khách có kèm giây ("giây 5, 6, 7…") chỉ là CHỖ HỌ THẤY lỗi → sửa thành LUẬT CHO CẢ VIDEO, không viết cứng theo giây.
+
+**Nhịp & cắt**
+- ✔ Lưới phách bám tiếng TRỐNG THẬT của bài (khớp cục bộ từng phách, lệch ~1 ms), đầu ô nhịp = cú DROP; mọi cú cắt / nấc kỹ xảo montage rơi
+  đúng phách hoặc ½ phách (`CHUYEN_NHIP`). Nấc trong 1 kỹ xảo được ½ phách, nhưng ĐỔI CẢNH thì không.
+- ✔ **KHÔNG CẮT DỒN DẬP Ở BẤT KỲ ĐÂU** (ĐÃ CHỐT 18): montage mỗi cảnh ≥ 1 phách và ≥ 0,55 s (nhạc nhanh tự lên 1,5 / 2 phách), thân video
+  ≥ 1,5 s (nên ≥ 2,5 s), mỗi cảnh ĐỨNG YÊN RÕ ≥ 0,25 s giữa 2 cú chuyển; cú di chuyển cả khung (đẩy) ≥ 0,34 s chậm dần đều.
+  `kiem-kh` ⛔ / tự sửa 🔧 `nhip` quá nhỏ, tự kiểm cuối có mục "nhịp cắt".
+- ✔ Liền mạch: đoạn dồn chỉ 1 kiểu ĐẨY cùng 1 hướng (phải → trái) + Ken Burns trôi cùng hướng; không trộn chớp / đập / glitch liên tiếp.
+- ✔ Teaser ≤ 10 s chỉ nhạc (đoạn cao trào của bài), giọng vào trước giây 10 bằng cao trào DUY NHẤT: VỠ KÍNH + riser + boom chốt.
+
+**Kỹ xảo phải "có hồn"**
+- ✔ 5 kỹ xảo mẫu khách gửi (ba cột, khung bung, dải trượt, khớp hình, hai nửa) tự gán trong montage / 30 s đầu; kết thúc LUÔN tràn màn.
+- ✔✍ Cú ĐẨY không bao giờ chỉ là hình trơn: cảnh có `chu` / `nhan` → chữ chạy theo mép đẩy; cảnh CÓ NGƯỜI → người tách nền nhô qua mép.
+  Claude chọn cho cú đẩy (`hai_nua`) 1 cảnh có người rõ (2–50 % khung) + chữ lấy TỪ LỜI.
+- ✔ SFX theo nấc: mỗi nấc 1 tiếng nhẹ, nấc cuối 1 tiếng CHỐT; cú cắt thường sau 30 s không SFX.
+
+**Chọn cảnh (✍)**
+- Montage: 3 cột = 3 điểm đến khác nhau; cảnh dồn 3–4 cảnh, mỗi cảnh 1 điểm đến / trải nghiệm khác, màu sáng rõ, có người / hành động;
+  tránh cảnh xám nhạt, đông người lộn xộn, mờ, rung. Thừa thì script tự bỏ cảnh dồn cuối cho cảnh đỉnh đủ 3 phách.
+- Cảnh đỉnh = ảnh to nét đẹp nhất; tít đỉnh lấy từ lời ("4 điểm đến, 4 vẻ đẹp").
+- Luôn tràn màn; clip dọc / ảnh nhỏ chỉ khi không có nguồn tốt hơn (⚠ mềm — báo ở cổng duyệt).
+
+**Không bịa** — mọi chữ, số, tên trên hình lấy từ lời; số km / giờ bản đồ ghi "≈ ước tính" và hỏi D7.
+
+**Tự kiểm trước khi giao** — tự kiểm ĐẠT hết; MỞ `soat.jpg` + cắt khung quanh MỌI cú cắt trong 10–30 s đầu (ffmpeg `-ss`) soi bằng mắt:
+chữ không đè mặt, người nhô không thành 2 người, kỹ xảo không lộ khung đen, nhịp đều.
 
 ## Skill này được bồi thêm sau mỗi lần chạy thật
 
@@ -46,7 +79,7 @@ thôi"). Skill này đứng riêng: code, phông, SFX, khung trang dựng đều
 | 14/11/2026 | cùng video, vòng 2 — người dùng: **"những cảnh đầu làm xịn xò, hiệu ứng chuyển cảnh xịn xò liên tục, kỹ xảo điện ảnh chuyển cảnh… edit vịn vào, h chưa oki… chỉ cần 5 s đầu kỹ xảo chuyển xịn vào (đầu video để đoạn cao trào giật gân ~30 s), những cái hay tinh tuý ở 30 s đầu, sau 30 giây đầu như bình thường"** | Bản 1 teaser chỉ `cat` / `phong` / `zoom` + hook chuyển êm → như trình chiếu. → **LUẬT CAO TRÀO** (ĐÃ CHỐT 16), tự động trong `ke_hoach.py` cho mọi kịch bản: mọi cú cắt 0 → cú DROP = 1 trong 8 kỹ xảo mới vẽ trong `ngang.js` (`vo_kinh` mảnh kính canvas ~60 mảnh, `xoay`, `glitch` dải canvas, `lat_3d` khối hộp CSS 3D, `chay_phim` đốm lửa, `xuyen`, `iris`, `tia_sang`), xoay vòng không lặp liền, vỡ kính luôn ở 5 s đầu, cú DROP = xuyên cảnh; khung 0 đập mở màn + đập theo phách giữa 2 cú cắt; tách màu RGB sắc nét (SVG filter); cửa sổ kỹ xảo tự co ≤ nửa cảnh kề; tên điểm đến teaser đập vào đúng phách sau kỹ xảo; 1 tiếng mỗi kỹ xảo đúng cú cắt (`tao_sfx.py` tổng hợp thêm vỡ kính / whoosh xoay / glitch), bỏ whoosh chữ trùng. Lỗi bắt khi soi khung: khối 3D lộ mặt trong + hở nền đen → điểm nhìn bám cạnh khối + phóng 1,28. Kế hoạch KHÔNG phải sửa (tự gán: t2 vỡ kính, t3 xoay, t4 glitch, t5 khối 3D, t6 cháy phim, t7 xuyên, t8 mở tròn, h1 tia sáng lúc giọng vào, h3 xoay, h4 glitch, h6 khối 3D, h8 xuyên + DROP; 8 cú đập phách). Kết quả `Audio_DLN_ban2.mp4` 137,8 s: tự kiểm ĐẠT 17/17 — −14,1 LUFS, đỉnh −1,4 dBTP, SFX 63/63 nghe rõ; dựng 267 s (kỹ xảo gần như không làm chậm) |
 | 14/11/2026 | cùng video, vòng 3 — người dùng: **"chưa oki lắm, chỉ giới thiệu tầm 5–10 s thôi, sau giây thứ 10 là phải có giọng nói rồi… mấy giây đầu đang kiểu tuần tự về mặt edit, chưa cao trào, chưa wao… giống 1 cái tổng hợp cả video trong 10 giây đầu"**; giữa chừng gửi 5 tờ ảnh: **"có 1 vài kỹ xảo chuyển cảnh, hãy ghi nhớ và cho vào skill"** (3 cột bật theo nhịp · khung nhỏ bung to · dải ảnh trượt · cắt nối theo hình · hai nửa đổi vai) | Teaser 20 s 1 cảnh / ô nhịp → **MONTAGE TỔNG HỢP ≤ 10 s** (ĐÃ CHỐT 15, `mo_man.kieu: "tong_hop"`): Claude chỉ xếp THỨ TỰ, `ke_hoach._tong_hop` đặt lên lưới phách (15 phách × 0,628 s = 9,42 s, giọng vào đúng phách trước giây 10, `kiem` ⛔ > 10,05 s), vai cot / ten / nhanh / dinh, cú cắt mới `dap` / `nhay_trang` / `nhay_den`, cửa sổ chuyển LỆCH (`d_t` / `d_s`), tên + tít đỉnh ĐẬP (`dap: true`), nháp quét tự lập khuôn → `Audio_DLN_ban3.mp4` (montage 9,42 s, ĐẠT 18/18, −14,1 LUFS, đỉnh −1,5 dBTP). **5 KỸ XẢO MẪU** (ĐÃ CHỐT 17) vẽ trong `ngang.js`: A `ba_cot` (nhóm 3 cột `veNhom`, cột 3 bung, tên dưới cột → ra giữa), C `khung_bung`, D `dai_truot` (dải ảnh các điểm đến, ảnh đỉnh dừng giữa → phóng), E `khop_hinh` (+ `dung._do_hinh` OpenCV tự dò vùng sáng / hình tròn), F `hai_nua` / `hai_nua_doc`; tự dùng trong montage (mở = A, tên = C / F, đỉnh = D) + `KY_XAO` đoạn hook; SFX `fx_cot` / `fx_cot_bung` / `fx_khung_bung` / `fx_dai_truot` / `fx_hai_nua`. Lỗi bắt khi soi: tên cột bị dải đen 2.35:1 cắt chân → `COT_Y` 822; chữ "BẢN GIỐC" đè mây Sa Pa (cảnh khác điểm đến để vai ten) → vai nhanh; tên sau khung bung chỉ 0,48 s → đập ở 62 % cửa sổ; dải trượt lộ mép đen + tít đè dải → giữ cảnh cũ tối, tít ở 70 %; Hough bắt vòng ảo trên phong cảnh → ưu tiên vùng sáng gọn + Hough ngưỡng 80; khớp hình bọt thác → mặt trời lệch chỗ quá xa → KHÔNG dùng ở video này (chỉ khi 2 hình gần cùng chỗ); dựng bản 3 treo 15 phút (Chrome mở hụt EBUSY không bị đóng) → `render.mjs` giết cả cây Chrome + tự thoát. Kết quả `Audio_DLN_ban4.mp4` 127,1 s (montage 9,42 s: ba cột → khung bung → hai nửa → dồn → dải trượt → đỉnh): tự kiểm ĐẠT 18/18 — −14,1 LUFS, đỉnh −1,4 dBTP, nhạc thân −13,6 dB, teaser −1,9 dB so với giọng, SFX 58/58 nghe rõ; dựng 248 s (bản 3 treo 1224 s) |
 | 14/11/2026 | cùng video, vòng 4 — người dùng xem bản 4: **"từ giây thứ 3 đến giây thứ 9 không có sự liên kết, nhịp loạn, hiệu ứng chèn không khớp nhịp… chuyển cảnh bắt đầu vào lời nói chưa có sfx kiểu chốt chuyển, giống kiểu đổ vỡ ở bản demo 3… hiệu ứng chuyển oki nhưng chưa có nhịp chuẩn… đoạn đẩy hình ảnh chỉ có mỗi hình ảnh đẩy, không có text đẩy hay nhân vật gì đó đẩy… kiểu đẩy từ phải qua trái"** | Đo thật: lưới phách cũ (BPM bước 0,5, khung 23 ms) TRÔI 0 → +52 ms sau 15 phách; đầu ô nhịp chọn theo onset toàn dải rơi nhầm phách 2/4. Sửa `nhip.py`: **khớp cục bộ** từng phách với đỉnh onset 6 ms (hồi quy ±8/6/5 phách, trọng số Gauss) → lệch TB 1 ms, độ lệch chuẩn 4 ms; **cú DROP** (độ to [t, t+2 s] − [t−2 s, t] lớn nhất, ≥ 4 dB) = đầu ô nhịp (bài không drop: trầm + đổi hợp âm); độ to 0,5 s đo đúng 0,5 s (trước 21 khung = 0,4876 s, giây 20 lệch 0,5 s). Montage (ĐÃ CHỐT 15/17): cửa sổ kỹ xảo tính bằng PHÁCH (`CHUYEN_NHIP`), mọi nấc rơi đúng phách / ½ phách — khung bung bật (phách) → vừa (½) → tràn + tên (phách sau); HAI NỬA thành cú **ĐẨY**: cảnh cũ bị đẩy trái, cảnh mới lộ sau mép sáng 3 nấc, **CHỮ chạy theo mép** (`day_chu` từ `chu` / `nhan` của cảnh, né người, đứng giữa rồi bị đẩy ra cùng cảnh), **NGƯỜI tách nền** (`scripts/nguoi.py`, u2net_human_seg) nhô qua mép ở nấc 1 (mép tự đặt cắt ngang người) rồi về đúng chỗ; đoạn dồn = chuỗi **ĐẨY NHANH** phải → trái mỗi ½ phách (bỏ trộn 5 kiểu cắt), Ken Burns trôi trái cùng hướng; dải trượt vào phách, khựng ½ phách, ảnh đỉnh phóng đúng phách; **GIỌNG VÀO = VỠ KÍNH** + riser dồn từ ảnh đỉnh + boom chốt (đỉnh chỉ còn thịch nhẹ); SFX theo NẤC (`fx_buoc` / `fx_cham` / `fx_day`). Kế hoạch: ảnh cáp treo (có người) + chữ "Cáp treo · Biển mây" (lời 31,4 s) làm cú đẩy. Bẫy: `cv2.imread` không đọc đường dẫn có dấu → `imdecode(np.fromfile)`. Kết quả `Audio_DLN_ban5.mp4` 127,2 s 1920×1080, teaser 9,47 s (15 phách × 0,631 s), −14,1 LUFS, đỉnh −1,3 dBTP, 72/72 SFX nghe rõ, tự kiểm ĐẠT. |
-| 14/11/2026 | cùng video, vòng 5 — người dùng xem bản 5: **"giây thứ 5, 6, 7 chuyển cảnh nhanh quá, hơi khó chịu, chậm lại chút"** | Đoạn dồn trước cắt mỗi ½ phách (≈ 0,32 s/cảnh) + đẩy outExpo 0,2 s + clip tua ×1,5 → mắt không kịp nhìn. Sửa (tự động): dồn mỗi cảnh **1 PHÁCH** (`TONG_HOP_NHIP['nhanh']` 1,0), cú đẩy **0,34 s** chậm dần đều (outCubic, cửa sổ `CHUYEN_NHIP` ½ → 0,55 phách), clip dồn tua **×1,1**; thừa cảnh dồn thì tự bỏ bớt để cảnh ĐỈNH vẫn đủ 3 phách (dải trượt + tít + vỡ kính không bị dồn). Kế hoạch: dồn còn 3 cảnh khác điểm đến (đầm sen Ninh Bình, thuyền Hạ Long, ruộng Sa Pa — bỏ mây Sa Pa xám, Fansipan đông người). Kết quả `Audio_DLN_ban6.mp4` 127,2 s 1920×1080, dồn 5,05 / 5,68 / 6,32 s, −14,1 LUFS, đỉnh −1,5 dBTP, 70/70 SFX nghe rõ, tự kiểm ĐẠT. |
+| 14/11/2026 | cùng video, vòng 5 — người dùng xem bản 5: **"giây thứ 5, 6, 7 chuyển cảnh nhanh quá, hơi khó chịu, chậm lại chút"** | Đoạn dồn trước cắt mỗi ½ phách (≈ 0,32 s/cảnh) + đẩy outExpo 0,2 s + clip tua ×1,5 → mắt không kịp nhìn. Sửa (tự động): dồn mỗi cảnh **1 PHÁCH** (`TONG_HOP_NHIP['nhanh']` 1,0), cú đẩy **0,34 s** chậm dần đều (outCubic, cửa sổ `CHUYEN_NHIP` ½ → 0,55 phách), clip dồn tua **×1,1**; thừa cảnh dồn thì tự bỏ bớt để cảnh ĐỈNH vẫn đủ 3 phách (dải trượt + tít + vỡ kính không bị dồn). Kế hoạch: dồn còn 3 cảnh khác điểm đến (đầm sen Ninh Bình, thuyền Hạ Long, ruộng Sa Pa — bỏ mây Sa Pa xám, Fansipan đông người). Kết quả `Audio_DLN_ban6.mp4` 127,2 s 1920×1080, dồn 5,05 / 5,68 / 6,32 s, −14,1 LUFS, đỉnh −1,5 dBTP, 70/70 SFX nghe rõ, tự kiểm ĐẠT. Người dùng nói thêm: **"các giây kia là tôi xem thấy vậy thì bảo sửa, đừng ghi hard là giây 5, 6, 7… không được chuyển cảnh nhanh như vậy dù là ở đâu trong video; cập nhật tất cả những cái xịn, lưu ý vào skill để chỉ cần gọi skill là edit xịn"** → LUẬT NHỊP CẮT (ĐÃ CHỐT 18: `CAT_MIN_*`, `DUNG_RO_MIN`, `DAY_S`; `kiem-kh` ⛔ / 🔧, tự kiểm mục "nhịp cắt") + mục "CHUẨN XỊN" tóm tắt mọi điều khách đã duyệt; tự kiểm đặt tên file tạm `_hop_<pid>.json` (chạy `kiem` tay lúc `dung` đang tự kiểm từng giẫm nhau → `FileNotFoundError`). |
 
 ## CÁC DIALOG SKILL PHẢI HỎI (cổng duyệt — dừng 1 lần, LẦN NÀO GỌI SKILL CŨNG HỎI LẠI, có đề xuất sẵn)
 
@@ -231,6 +264,12 @@ Không phải hỏi (đã chốt bên dưới): khổ, fps, phong cách chữ, v
    - TỰ DÙNG: montage (mục 15: mở = A, tên = C / F xoay vòng với xoay / đập / glitch…, đỉnh = D); đoạn cao trào hook (mục 16): `KY_XAO`
      thêm `khung_bung` · `hai_nua` · `dai_truot` · `hai_nua_doc`, kiểu dài chỉ khi 2 cảnh kề đều ≥ 1,8 s (không thì `xoay`). Ngoài 2 đoạn đó
      Claude ghi tay được (`chuyen`), nhưng sau 30 s nên êm (khách chốt).
+18. **LUẬT NHỊP CẮT — KHÔNG CHUYỂN CẢNH DỒN DẬP Ở BẤT KỲ ĐÂU** (khách 14/11/2026 vòng 5: "chuyển cảnh nhanh quá, hơi khó chịu, chậm lại
+    chút"; rồi nói rõ: "các giây kia là tôi xem thấy vậy thì bảo sửa, đừng ghi hard là giây 5, 6, 7… không được chuyển cảnh nhanh như vậy
+    dù là ở đâu trong video"). Số ở `chung.py`: `CAT_MIN_PHACH` 1 phách + `CAT_MIN_S` 0,55 s (montage; nhạc nhanh → `_tong_hop` tự nâng
+    1,5 / 2 phách), `CAT_MIN_THAN` 1,5 s (thân), `DUNG_RO_MIN` 0,25 s đứng yên rõ giữa 2 cú chuyển, `DAY_S` 0,34 s cho cú đẩy cả khung
+    (outCubic). `nhip` Claude ghi nhỏ hơn → 🔧 tự nâng; cảnh / khoảng đứng rõ dưới ngưỡng → ⛔ `kiem-kh`; tự kiểm cuối mục "nhịp cắt" ⛔.
+    Nấc BÊN TRONG 1 kỹ xảo (khung bung bật → vừa → tràn, đẩy 3 nấc) vẫn ½ phách — đó là 1 cảnh đang lộ ra, không phải đổi cảnh.
 
 ## Khuôn kể chuyện du lịch → bố cục + đồ hoạ (áp cho MỌI kịch bản)
 
@@ -266,7 +305,7 @@ Chrome / Edge (`DLN_CHROME` nếu nằm chỗ lạ). Máy mới: `run.py cai-dat
    có nhãn giây), `goi_y.txt` (tên file ↔ lời), `nhac_nhip.json` (BPM / ô nhịp nhạc nền), `ke_hoach.json` NHÁP (`CAN_CLAUDE_SUA: true`;
    mọi cảnh tràn; có nhạc → khung `mo_man` montage tổng hợp 13 cảnh + đỉnh + đoạn cao trào gợi ý). Quét lại giữ mã cũ, file mới nhận số kế tiếp, kế hoạch đã sửa
    giữ nguyên. Whisper lần đầu tải ~3 GB; CPU ~4 phút / phút audio — chạy nền, đừng huỷ.
-2. **Claude viết kế hoạch theo NGHĨA**: đọc `goi_y.txt`, `loi_doc.txt`; MỞ `tai_nguyen.jpg` + MỌI `khung\clip_NN.jpg`; gán mỗi câu 1 kiểu
+2. **Claude viết kế hoạch theo NGHĨA**: đọc mục **CHUẨN XỊN** ở trên (luật nhịp cắt, chọn cảnh montage, cú đẩy có chữ / người), `goi_y.txt`, `loi_doc.txt`; MỞ `tai_nguyen.jpg` + MỌI `khung\clip_NN.jpg`; gán mỗi câu 1 kiểu
    (bảng trên); viết `mo_man` (teaser), `canh` / `do_hoa` (chương có `toa_do` — `run.py tim "<tên>"`, cần mạng) / `cta` / `sua_loi`
    (mẫu `references/vi-du-4-diem-den.json`, khuôn `references/ke_hoach_schema.md`); đặt `CAN_CLAUDE_SUA: false`.
 3. `run.py kiem-kh --work <dir>` → hết ⛔ (⚠ cân nhắc; 🔧 = đã tự sửa giờ cho kịp nhìn).
@@ -282,6 +321,11 @@ Chrome / Edge (`DLN_CHROME` nếu nằm chỗ lạ). Máy mới: `run.py cai-dat
 8. Giao: đường dẫn, độ dài, bảng lời → cảnh / đồ hoạ, mục còn đoán (D4–D6). Dọn: `run.py don --work <dir>` (xoá `footage\`, ~1 GB).
 
 ## Bẫy đã gặp (trang dựng HTML)
+
+- **Góp ý kèm giây ≠ luật theo giây (vòng 5):** khách chỉ "giây 5, 6, 7 nhanh quá" → sửa riêng chỗ đó là SAI; phải tìm NGUYÊN NHÂN chung
+  (cắt ½ phách + đẩy 0,2 s giật + clip tua ×1,5) và đặt luật cho mọi chỗ (ĐÃ CHỐT 18) + kiểm tự động.
+- `run.py kiem` chạy tay trong lúc `dung` còn tự kiểm → 2 tiến trình cùng ghi / xoá `_hop.json` → `FileNotFoundError` → tên file tạm theo
+  pid. Chờ `dung` in "TỰ KIỂM: ĐẠT" rồi hãy kiểm thêm.
 
 - **"Nhịp loạn" dù cú cắt đặt đúng lưới phách (vòng 4):** lưới đều từ BPM bước 0,5 + khung 23 ms trôi +52 ms sau 15 phách (bài thật
   ~95,2 BPM chứ không 95,5) và đầu ô nhịp chọn theo onset toàn dải rơi vào phách 2 / 4 (snare) → `nhip._tinh_chinh` (khớp cục bộ từng phách

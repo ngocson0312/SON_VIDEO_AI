@@ -509,7 +509,7 @@ function ghepCanh(t) {
       }
       case 'day_nhanh': {                                           // ĐẨY phải → trái mỗi 1 phách (đoạn dồn 1 hướng = nối mạch)
         if (t < c.tu) { B = { o: 0 }; break; }
-        const q = clamp((t - c.tu) / Math.min(.34, ds)), e = E.outC(q);   // vòng 5: 0,34 s, chậm dần đều (0,2 s outE "nhanh quá, khó chịu")
+        const q = clamp((t - c.tu) / Math.max(.12, ds)), e = E.outC(q);   // vòng 5: cửa sổ = DAY_S 0,34 s (script), chậm dần đều (0,2 s outE "nhanh quá, khó chịu")
         A = { tf: `translateX(${f1(-W * e)}px)`, f: `brightness(${(1 - .3 * e).toFixed(3)})` };
         B = { tf: `translateX(${f1(W * (1 - e))}px)` };
         raDxV = -W * e;

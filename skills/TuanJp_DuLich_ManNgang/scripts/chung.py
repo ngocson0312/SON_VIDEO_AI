@@ -106,6 +106,13 @@ CHUYEN_DAI = ('khung_bung', 'hai_nua', 'hai_nua_doc', 'dai_truot')   # kiểu c�
 # hiệu ứng chèn không khớp nhịp"): khung bung bật nhỏ (phách) → vừa (½) → tràn (phách sau); hai nửa: mép 2/3 → 1/3 → tràn cùng 3 mốc;
 # dải trượt: dải vào 1 phách trước cú cắt, khựng từng ảnh mỗi ½ phách, ảnh đỉnh phóng tràn trong ½ phách; đẩy nhanh: ½ phách.
 CHUYEN_NHIP = {'khung_bung': (0, 1), 'hai_nua': (0, 1), 'hai_nua_doc': (0, 1), 'dai_truot': (1, .5), 'day_nhanh': (0, .55)}
+# LUẬT NHỊP CẮT — áp MỌI CHỖ trong video (montage, hook, thân, cuối). Khách vòng 5: "chuyển cảnh nhanh quá, hơi khó chịu… KHÔNG được
+# chuyển cảnh nhanh như vậy DÙ LÀ Ở ĐÂU trong video" (giây khách nêu chỉ là chỗ họ thấy, luật là cho cả video). kiem-kh ⛔ + tự kiểm ⛔.
+CAT_MIN_PHACH = 1.0      # montage có nhạc: mỗi cảnh ≥ 1 phách (½ phách ≈ 0,3 s = dồn dập, mắt không kịp nhìn)
+CAT_MIN_S = 0.55         # … và ≥ 0,55 s (nhạc nhanh BPM > 110 → script tự lên 1,5 / 2 phách)
+CAT_MIN_THAN = 1.5       # thân video (có giọng): cảnh ≥ 1,5 s (nên ≥ CANH_MIN 2,5 s)
+DUNG_RO_MIN = 0.25       # mỗi cảnh phải ĐỨNG YÊN RÕ ≥ 0,25 s giữa lúc chuyển vào xong và lúc chuyển ra bắt đầu
+DAY_S = 0.34             # cú di chuyển CẢ KHUNG (đẩy) ≥ 0,34 s, chậm dần đều (outCubic) — 0,2 s outExpo bị chê giật
 NAC_XONG = .18            # nấc cuối (tràn màn) bắt đầu ĐÚNG phách, chạy outExpo ~0,16 s → cửa sổ sau = phách + 0,18 s
 # thứ tự xoay vòng kỹ xảo trong đoạn cao trào: mạnh nhất trước (vỡ kính rơi vào 5 s đầu); vòng sau bỏ vỡ kính (nặng, 1 lần là đủ)
 KY_XAO = ('vo_kinh', 'xoay', 'glitch', 'lat_3d', 'chay_phim', 'xuyen', 'iris', 'tia_sang', 'khung_bung', 'hai_nua', 'dai_truot', 'hai_nua_doc')
