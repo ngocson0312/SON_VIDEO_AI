@@ -28,8 +28,8 @@
   "Sapa": "Sa Pa"
  },
  "mo_man": {
-  "_y": "MONTAGE TỔNG HỢP 15 phách (9,47 s), vòng 4 — mọi nấc đúng phách: BA CỘT Sa Pa · Hạ Long · Ninh Bình (phách 0-1-2, bung phách 3) → Bản Giốc KHUNG BUNG (phách 4 bật, 4½, phách 5 tràn + tên) → CÁP TREO đẩy HAI NỬA phải → trái có chữ + cô gái tách nền nhô qua mép (phách 6, 6½, 7; chữ từ lời 31,4 s) → dồn ĐẨY NHANH mỗi ½ phách cùng hướng (mây Sa Pa, đầm sen, Fansipan, thuyền Hạ Long, đồng lúa) → dải ảnh trượt (phách 11) → đỉnh Bản Giốc (phách 12) + tít (phách 13) → riser → VỠ KÍNH + boom vào giọng (phách 15) — chữ đỉnh lấy từ lời 97,7–103,3 s",
   "kieu": "tong_hop",
+  "_y": "MONTAGE TỔNG HỢP 15 phách (9,47 s), vòng 5 — mọi nấc đúng phách: BA CỘT Sa Pa · Hạ Long · Ninh Bình (phách 0-1-2, bung phách 3) → Bản Giốc KHUNG BUNG (phách 4 bật, 4½, phách 5 tràn + tên) → CÁP TREO đẩy HAI NỬA phải → trái có chữ + cô gái tách nền nhô qua mép (phách 6, 6½, 7; chữ từ lời 31,4 s) → dồn ĐẨY mỗi 1 PHÁCH cùng hướng (đầm sen Ninh Bình, thuyền Hạ Long, ruộng Sa Pa — vòng 5 khách: \"giây 5–7 nhanh quá, chậm lại\") → dải ảnh trượt (phách 11) → đỉnh Bản Giốc (phách 12) + tít (phách 13) → riser → VỠ KÍNH + boom vào giọng (phách 15)",
   "canh": [
    {
     "nguon": "res_07",
@@ -76,20 +76,9 @@
     "nhan": "Biển mây"
    },
    {
-    "nguon": "clip_09",
-    "vao": 9.0,
-    "cat_y": 0.36,
-    "loi": "Sa Pa — mây cuộn qua núi"
-   },
-   {
     "nguon": "clip_16",
     "vao": 0.3,
     "loi": "đầm sen — xích đu"
-   },
-   {
-    "nguon": "clip_08",
-    "vao": 17.0,
-    "loi": "đỉnh Fansipan"
    },
    {
     "nguon": "clip_11",

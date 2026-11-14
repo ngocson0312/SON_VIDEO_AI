@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """run.py — điểm vào skill TuanJp_DuLich_ManNgang (video du lịch NGANG 16:9 cho YouTube).
 
-  python -I -X utf8 run.py cai-dat                                    (máy mới: kiểm thư viện / ffmpeg / Node / Chrome)
+  python -I -X utf8 run.py cai-dat [--tai-mo-hinh]                   (máy mới: cài thư viện + kiểm ffmpeg / Node / Chrome / mô hình)
   python -I -X utf8 run.py quet    --audio <giọng> --res <thư mục Resources> [--nhac <file>] [--ngon-ngu vi] [--work <dir>]
   python -I -X utf8 run.py tim     "<tên địa điểm>"                   (toạ độ [lat, lon] cho chương / bản đồ A → B — cần mạng)
   python -I -X utf8 run.py kiem-kh --work <dir>
@@ -11,6 +11,7 @@
   python -I -X utf8 run.py kiem    --work <dir> [--file <video>]
   python -I -X utf8 run.py khung   --work <dir> --times 1.2,5.0       (chụp khung lẻ để soi)
   python -I -X utf8 run.py don     --work <dir>                       (xoá khung footage đã trích)
+  python -I -X utf8 run.py dong-goi [--out <file.zip>] [--mau <thư mục giọng + Resources>]   (zip gửi khách — giải nén là chạy)
 """
 import argparse
 import sys
@@ -33,6 +34,8 @@ def main():
     ap.add_argument('--file')
     ap.add_argument('--times')
     ap.add_argument('--xem-truoc', dest='xem_truoc', action='store_true')
+    ap.add_argument('--tai-mo-hinh', dest='tai_mo_hinh', action='store_true')
+    ap.add_argument('--mau')
     a = ap.parse_args()
     L = a.lenh.replace('_', '-')
     if L == 'quet':
@@ -47,7 +50,11 @@ def main():
         return
     if L == 'cai-dat':
         from cai_dat import cai_dat
-        sys.exit(0 if cai_dat() else 2)
+        sys.exit(0 if cai_dat(a.tai_mo_hinh) else 2)
+    if L == 'dong-goi':
+        from dong_goi import dong_goi
+        dong_goi(a.out, a.mau)
+        return
     if not a.work:
         raise SystemExit('⛔ thiếu --work')
     w = Path(a.work)

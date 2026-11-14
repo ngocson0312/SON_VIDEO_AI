@@ -36,7 +36,9 @@ thôi"). Skill này đứng riêng: code, phông, SFX, khung trang dựng đều
   (= bản vòng 5 + bỏ chữ loé `CHU_LOE_MIN`) — chờ người dùng xem. Người dùng hay đổi tên / dọn video cũ: `lan_dung.json` trỏ
   file không còn → `run.py kiem --work … --file "<file mới>"`.
 - Còn mở: D1 tên kênh / avatar màn kết đang TRỐNG; clip DỌC 720 px tràn khung ngang phóng 2,7× (mềm — đã làm nét `cas`); khách gửi clip
-  ngang / 4K thì nét hẳn. Chưa có: đóng gói zip gửi khách (`dong-goi` như bản dọc).
+  ngang / 4K thì nét hẳn.
+- **Gửi khách: `run.py dong-goi --mau "<thư mục giọng + Resources>"`** → `<dự án>\Goi_khach\TuanJp_DuLich_ManNgang_<ngày>.zip`
+  (14/11/2026: 317 MB — skill + mô hình tách người + bộ thử Màn Ngang; thử giải nén + dựng lại bộ thử ĐẠT). Sửa skill xong thì đóng gói lại.
 
 ## CHUẨN XỊN — TÓM TẮT MỌI ĐIỀU KHÁCH ĐÃ DUYỆT (đọc TRƯỚC khi viết kế hoạch; áp cho MỌI video, MỌI chỗ trong video)
 
@@ -303,7 +305,16 @@ câu cáp treo Fansipan. Clip dọc tràn khung chỉ thấy dải giữa-trên 
 
 Mọi lệnh: `python -I -X utf8 .claude\skills\TuanJp_DuLich_ManNgang\scripts\run.py <lệnh> …` (từ thư mục dự án; PowerShell: đầu phiên
 `[Console]::OutputEncoding=[Text.Encoding]::UTF8; $env:PYTHONUTF8='1'`). Cần Python ≥ 3.10 + `requirements.txt`, ffmpeg full, Node ≥ 22,
-Chrome / Edge (`DLN_CHROME` nếu nằm chỗ lạ). Máy mới: `run.py cai-dat`.
+Chrome / Edge (`DLN_CHROME` nếu nằm chỗ lạ). Máy mới: `run.py cai-dat [--tai-mo-hinh]` (cài thư viện thiếu, kiểm ffmpeg có
+loudnorm / alimiter / cas / libx264, Node, Chrome, mô hình tách người, Whisper; `--tai-mo-hinh` tải sẵn Whisper ~3 GB).
+
+**Đóng gói gửi khách:** `run.py dong-goi [--out <file.zip>] [--mau "<thư mục có 1 file giọng + Resources (+ kịch bản .txt)>"]` →
+`<dự án>\Goi_khach\TuanJp_DuLich_ManNgang_<ngày>.zip` (không ghi đè, `_ban2`…). Trong zip: `.claude\skills\TuanJp_DuLich_ManNgang\`
+(bỏ `__pycache__` / work / mp4) + `assets\models\u2net_human_seg.onnx` (~176 MB, Apache-2.0 — không có trên git, lấy từ `~/.u2net`; thiếu
+thì cú ĐẨY mất người nhô) + `CLAUDE.md` / `AGENTS.md` (từ `goi_khach\CLAUDE.md`) + `CAI_DAT.bat` + `HUONG_DAN_CAI_DAT.txt` (BOM) +
+`Mau_thu\` (bộ thử; mã tài nguyên khớp `references/vi-du-4-diem-den.json` → khách kiểm máy bằng cách dựng lại đúng bản demo). KHÔNG kèm
+cache vệ tinh (tự tải vào `<thư mục giải nén>\_cache_tiles\esri`), mô hình Whisper. Khách: giải nén → `CAI_DAT.bat` (phải "SẴN SÀNG")
+→ mở thư mục trong Claude Code. Đổi quy trình → sửa cả `goi_khach\CLAUDE.md` rồi đóng gói lại.
 
 1. **Quét**: `run.py quet --audio "<giọng>" --res "<Resources>" [--nhac "<nhạc>"] [--ngon-ngu vi]` → `<audio>_dln_work\`: `loi.json`,
    `loi_doc.txt` (lời + giây từng từ), `tai_nguyen.json` + `tai_nguyen.jpg` (mọi tài nguyên + mã + DỌC/NGANG), `khung\clip_NN.jpg` (tờ khung
@@ -383,9 +394,10 @@ Chrome / Edge (`DLN_CHROME` nếu nằm chỗ lạ). Máy mới: `run.py cai-dat
 - `scripts/run.py` (lệnh) · `quet.py` (Whisper, quét Resources, tờ khung, gợi ý, nháp) · `ke_hoach.py` (kiểm + giải giờ cảnh / chuyển /
   đồ hoạ / sub / SFX) · `dung.py` (trích khung theo bố cục, trang dựng, duyệt, dựng, trộn) · `render.mjs` (Chrome headless qua DevTools,
   chia luồng) · `am_thanh.py` (trộn giọng / nhạc / SFX, −14 LUFS, AAC) · `kiem.py` (tự kiểm file cuối) · `chung.py` (hằng số, tiện ích) ·
-  `cai_dat.py` (kiểm máy) · `tao_sfx.py` (tự tổng hợp `boom.wav` cho cú drop + `vo_kinh.wav` / `xoay.wav` / `glitch.wav` cho kỹ xảo cao trào) · `ban_do_that.py` (tìm toạ độ `run.py tim`, tuyến
+  `cai_dat.py` (kiểm máy, `tim_u2net`) · `dong_goi.py` (zip gửi khách) · `tao_sfx.py` (tự tổng hợp `boom.wav` cho cú drop + `vo_kinh.wav` / `xoay.wav` / `glitch.wav` cho kỹ xảo cao trào) · `ban_do_that.py` (tìm toạ độ `run.py tim`, tuyến
   OSRM, camera + ô vệ tinh Esri cho bản đồ A → B; cache `_cache_tiles\esri`) · `nhip.py` (BPM, phách mạnh, đoạn cao trào của nhạc cho
   teaser) · `binh_luan.py` (bình luận ảo en / ko theo loại cảnh, chọn tất định) · `sua_font.py` (nâng dấu nặng Barlow Condensed).
 - `assets/khung/ngang.css|js` (trang dựng) · `assets/khung/vn_ban_do.js` (đường viền VN Natural Earth 1:50m + Hoàng Sa, Trường Sa) ·
   `assets/binh_luan.json` (kho câu khen / chê en + ko theo loại cảnh, tên người tự đặt, cờ, tên địa danh theo tiếng) ·
   `assets/fonts` (OFL; Barlow Condensed đã sửa dấu nặng) · `assets/sfx` (xem `CREDITS.md`) · `assets/tu_ghep_vi.txt`.
+- `goi_khach/` (mẫu gói khách: `CLAUDE.md` chỉ dẫn trợ lý AI, `CAI_DAT.bat`, `HUONG_DAN_CAI_DAT.txt`) · `assets/models/` chỉ có trong zip.

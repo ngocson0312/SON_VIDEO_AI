@@ -1,0 +1,88 @@
+BỘ DỰNG VIDEO DU LỊCH NGANG 16:9 (YOUTUBE) — skill TuanJp_DuLich_ManNgang (bản 14/11/2026)
+================================================================================
+
+Gói này gồm:
+  .claude\skills\TuanJp_DuLich_ManNgang\   skill: code, font, SFX, khung đồ hoạ, bản đồ VN, mẫu kế hoạch đã duyệt,
+                                            mô hình tách người (assets\models, ~170 MB)
+  CLAUDE.md / AGENTS.md                     chỉ dẫn cho trợ lý AI (Claude Code / Codex) — đừng xoá
+  CAI_DAT.bat                               nháy đúp để cài thư viện + kiểm máy
+  HUONG_DAN_CAI_DAT.txt                     file này
+
+Video ra: 1920×1080, 30 fps, −14 LUFS — montage mở màn ≤ 10 s theo nhịp nhạc, kỹ xảo điện ảnh ~30 s đầu, bản đồ vệ tinh A → B
+mỗi điểm đến (km + giờ), bình luận ảo tiếng Anh + Hàn, sub, nhạc nền + SFX, màn kết Cảm ơn + mời Thích & Đăng ký.
+Resources từng video (giọng đọc, clip, ảnh, nhạc nền) anh/chị tự chuẩn bị — xem mục 4.
+
+
+1. CÀI PHẦN MỀM (1 lần trên mỗi máy, Windows 10/11)
+--------------------------------------------------------------------------------
+Mở PowerShell hoặc CMD, chạy lần lượt (hoặc tải tay từ trang chủ):
+
+   winget install Python.Python.3.12
+   winget install Gyan.FFmpeg
+   winget install OpenJS.NodeJS.LTS
+
+ - Python 3.10 trở lên (python.org — khi cài nhớ TICK "Add python.exe to PATH").
+ - FFmpeg bản FULL (gyan.dev hoặc lệnh winget ở trên).
+ - Node.js 22 trở lên.
+ - Google Chrome hoặc Microsoft Edge (Edge có sẵn trong Windows) — dùng để dựng hình.
+ - Claude Code (app Claude desktop, tab Code; hoặc bản dòng lệnh) — để ra lệnh dựng video bằng tiếng Việt.
+
+Cài xong ĐÓNG hết cửa sổ lệnh rồi mở lại (để máy nhận PATH mới).
+
+
+2. GIẢI NÉN + CÀI THƯ VIỆN
+--------------------------------------------------------------------------------
+ a) Giải nén file zip ra 1 thư mục đường dẫn NGẮN, ví dụ  D:\VideoDuLichNgang
+    (giải nén bằng Windows hoặc 7-Zip; trong thư mục giải nén phải có thư mục ".claude" — đừng xoá, skill nằm trong đó).
+ b) Nháy đúp CAI_DAT.bat  → tự cài thư viện Python (cần mạng, vài phút) và kiểm ffmpeg / Node / Chrome / mô hình.
+    Phải thấy dòng:   CÀI ĐẶT: SẴN SÀNG ✅
+    Còn dòng ⛔ thì làm theo hướng dẫn ngay dòng đó rồi chạy lại CAI_DAT.bat.
+ c) (Tuỳ chọn) tải sẵn mô hình nhận giọng nói Whisper (~3 GB) để lần đầu làm video khỏi chờ:
+    mở CMD trong thư mục giải nén, chạy:   CAI_DAT.bat --tai-mo-hinh
+    Không tải trước thì lần làm video đầu tiên tự tải.
+
+
+3. LÀM VIDEO
+--------------------------------------------------------------------------------
+ a) Mở THƯ MỤC GIẢI NÉN trong Claude Code (thư mục có file CLAUDE.md).
+ b) Gõ yêu cầu, ví dụ:
+
+    Làm video du lịch ngang từ audio D:\Khach\VietNam\Giong_doc.mp3 + Resources D:\Khach\VietNam\Resources
+
+ c) Trợ lý tự nghe lời, dò nhịp nhạc, ghép cảnh, làm bản đồ + đồ hoạ, rồi DỪNG 1 lần ở CỔNG DUYỆT để hỏi:
+    tên kênh hiện ở màn kết, nhạc nền, số km / giờ trên bản đồ (ước tính), bình luận ảo, câu hỏi cuối video…
+    — trả lời (hoặc "duyệt mặc định") là nó dựng tiếp.
+ d) Kết quả: file  <tên file giọng>_DLN.mp4  nằm cạnh file giọng (làm lại thì _DLN_ban2, _ban3… không ghi đè).
+    Dựng ~2 phút video mất khoảng 5–7 phút (tuỳ máy).
+ e) Góp ý thì nói thẳng với trợ lý (vd "giây 5–7 chuyển cảnh nhanh quá") — nó sửa video; bảo "ghi vào skill" để lần sau tự đúng.
+
+
+4. CHUẨN BỊ RESOURCES CHO MỖI VIDEO
+--------------------------------------------------------------------------------
+ - 1 file GIỌNG ĐỌC: .mp3 / .m4a / .wav (tiếng gì cũng được — chữ trên hình tự theo tiếng đó).
+ - 1 thư mục RESOURCES gồm:
+     • clip (.mp4 / .mov…) và ảnh (.jpg / .png / .heic…) — NGANG / 4K / ảnh ≥ 1920 px càng nét (clip dọc vẫn dùng được
+       nhưng phải phóng to nên hơi mềm);
+     • ĐẶT TÊN FILE THEO ĐÚNG TÊN ĐƯỢC ĐỌC trong giọng để tự khớp, ví dụ:
+         "ảnh sapa.jpg", "Sapa_Đỉnh pansipang.mp4", "View_đi_thuyền_hạ_long.mp4", "ảnh thác bản giốc.jpg"
+     • 1 file NHẠC NỀN (vd Music_Bg.mp3) — có thì tự ghép, đoạn cao trào của bài làm nhạc montage mở màn; không có thì thôi.
+ - Mỗi điểm đến được nhắc trong lời tự có bản đồ vệ tinh A → B (đường đi thật, xe chạy, "≈ giờ (km)").
+
+
+5. CẦN MẠNG KHI LÀM VIDEO
+--------------------------------------------------------------------------------
+Ảnh vệ tinh (Esri), đường đi thật (OSRM), toạ độ địa điểm (OpenStreetMap), lần đầu tải Whisper.
+Ảnh vệ tinh đã tải được giữ ở thư mục _cache_tiles (đừng xoá — lần sau nhanh hơn).
+
+
+6. LỖI HAY GẶP
+--------------------------------------------------------------------------------
+ - "python không phải lệnh…"      → cài lại Python, TICK "Add python.exe to PATH", mở lại cửa sổ lệnh.
+ - "thiếu ffmpeg" / "thiếu Node"   → cài theo mục 1, mở lại cửa sổ lệnh, chạy lại CAI_DAT.bat.
+ - "Không tìm thấy Chrome / Edge"  → cài Chrome, hoặc đặt biến môi trường DLN_CHROME=<đường dẫn chrome.exe>.
+ - Lần đầu nhận giọng rất lâu      → đang tải / chạy Whisper bằng CPU, cứ để chạy.
+ - Trợ lý không thấy skill         → kiểm thư mục ẩn .claude\skills\TuanJp_DuLich_ManNgang còn đủ (giải nén lại bằng 7-Zip).
+
+Ghi chú bản quyền: font trong assets\fonts theo giấy phép SIL OFL (file OFL*.txt kèm theo); mô hình tách người U²-Net theo
+Apache-2.0 (assets\models\README.txt). SFX trong assets\sfx: xem assets\sfx\CREDITS.md — làm video thương mại nên thay bằng
+SFX có giấy phép (giữ nguyên tên file).
