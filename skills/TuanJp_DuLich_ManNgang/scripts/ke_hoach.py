@@ -10,7 +10,7 @@ from chung import (BAN_DO_MIN, BINH_LUAN_CACH, BINH_LUAN_DUNG, BO_CUC, BO_CUC_CH
                    CTA_MIN, DUOI, FPS, GHEP_KHE, H, HIEN_ANH, HIEN_MIN, ICON, KHONG_CACH, LOAI_DH, MO_MAN_DAI, MO_MAN_MAX, MO_MAN_MIN, NGON_NGU, NHO,
                    SFX, SFX_TREN, SUB_MAX_KY_TU, SUB_MAX_TU, SUB_NGAT, THE_DOC_CAO, THE_DOC_X, W, XUAT_PHAT_MAC_DINH, ASSETS, doc_json, gio_phut, loi,
                    so_km, TONG_HOP_CAT, TONG_HOP_NHIP, TONG_HOP_TOC, CHUYEN_LECH, CHUYEN_DAI, CHUYEN_NHIP, NAC_XONG, TONG_HOP_CD,
-                   CAT_MIN_PHACH, CAT_MIN_S, CAT_MIN_THAN, DUNG_RO_MIN, DAY_S)
+                   CAT_MIN_PHACH, CAT_MIN_S, CAT_MIN_THAN, DUNG_RO_MIN, DAY_S, CHU_LOE_MIN)
 
 BAT_BUOC = {'mo_dau': ('chinh',), 'hook_tu': ('chu',), 'chuong': ('ten',), 'dia_danh': ('ten',), 'tu_khoa': ('muc',), 'tieu_de': ('khoa',), 'chip': ('muc',),
             'so_lon': ('so',), 'liet_ke': ('muc',), 'trich': ('noi',), 'ban_do': ('diem',), 'hanh_trinh': ('xuat_phat', 'diem_den'), 'binh_luan': ()}
@@ -809,7 +809,13 @@ def giai(work, bao=loi):
                     xong = sau[0] if sau else xong
                 TS(f"{d['id']}: chữ «{d.get('chu')}» chờ cảnh {c['id']} vào xong {d['tu']:.2f}→{xong:.2f}s")
                 d['tu'] = round(xong, 2)
+                con = float(d.get('den', xong + 9)) - d['tu']
+                if con < CHU_LOE_MIN:                     # LUẬT NHỊP: chữ không được loé qua (< 1 s) ở bất kỳ đâu
+                    TS(f"{d['id']}: chữ «{d.get('chu') or d.get('cau') or ''}» chỉ còn {max(0, con):.2f}s sau khi chờ cảnh — loé qua khó chịu "
+                       f"(< {CHU_LOE_MIN} s) → BỎ chữ (sub vẫn có lời)")
+                    d['_bo'] = True
                 break
+    DH = [d for d in DH if not d.get('_bo')]
     # ---- BẢN ĐỒ A → B kiểu Google Maps (khách 14/11/2026): mỗi `chuong` có toa_do + mọi `hanh_trinh` ----
     import ban_do_that as BDT
     truoc = dict(kh.get('xuat_phat') or XUAT_PHAT_MAC_DINH)

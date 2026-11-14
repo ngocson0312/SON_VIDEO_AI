@@ -112,6 +112,7 @@ CAT_MIN_PHACH = 1.0      # montage có nhạc: mỗi cảnh ≥ 1 phách (½ ph�
 CAT_MIN_S = 0.55         # … và ≥ 0,55 s (nhạc nhanh BPM > 110 → script tự lên 1,5 / 2 phách)
 CAT_MIN_THAN = 1.5       # thân video (có giọng): cảnh ≥ 1,5 s (nên ≥ CANH_MIN 2,5 s)
 DUNG_RO_MIN = 0.25       # mỗi cảnh phải ĐỨNG YÊN RÕ ≥ 0,25 s giữa lúc chuyển vào xong và lúc chuyển ra bắt đầu
+CHU_LOE_MIN = 1.0        # chữ đồ hoạ bị dời (chờ chuyển cảnh xong) mà còn < 1 s → BỎ (chữ loé qua khó chịu; sub vẫn có lời)
 DAY_S = 0.34             # cú di chuyển CẢ KHUNG (đẩy) ≥ 0,34 s, chậm dần đều (outCubic) — 0,2 s outExpo bị chê giật
 NAC_XONG = .18            # nấc cuối (tràn màn) bắt đầu ĐÚNG phách, chạy outExpo ~0,16 s → cửa sổ sau = phách + 0,18 s
 # thứ tự xoay vòng kỹ xảo trong đoạn cao trào: mạnh nhất trước (vỡ kính rơi vào 5 s đầu); vòng sau bỏ vỡ kính (nặng, 1 lần là đủ)

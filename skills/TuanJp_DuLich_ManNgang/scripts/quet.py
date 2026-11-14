@@ -206,8 +206,9 @@ def _teaser_nhap(ds, nhip_d, nn):
             '_goi_y': 'MONTAGE TỔNG HỢP ≤ 10 s: liệt kê cảnh THEO THỨ TỰ (không ghi tu — script tự đặt lên lưới phách): '
                       '3 cảnh đầu = BA CỘT (3 điểm đến khác nhau, mỗi cảnh chu = tên + nhan = cảm xúc; khung 0 = ảnh xem trước YouTube); '
                       'điểm đến còn lại mỗi cái 1 cảnh có chu (khung bung / hai nửa tự gán; cảnh thứ 2 CÙNG điểm đến thì không chu, '
-                      'cảnh KHÁC điểm đến không chu thì vai "nhanh"); sau tên cuối 4–8 cảnh DỒN hay nhất khắp video (người, trải nghiệm, '
-                      'món, cảnh lạ; cảnh dồn cuối = nền dải ảnh trượt); cảnh CUỐI = cảnh ĐỈNH ảnh to nét nhất + dinh.khoa (chữ từ lời). Không lặp đoạn clip với nhau; tránh đoạn mờ / tay / điện thoại.'}
+                      'cảnh KHÁC điểm đến không chu thì vai "nhanh"; cảnh tên THỨ 2 = CÚ ĐẨY hai nửa → chọn cảnh CÓ NGƯỜI rõ + chu / nhan lấy từ lời); '
+                      'sau tên cuối 3–4 cảnh DỒN hay nhất khắp video (mỗi cảnh 1 điểm đến / trải nghiệm khác, sáng rõ, có người; mỗi cảnh 1 phách — '
+                      'luật nhịp cắt, thừa thì script bỏ bớt; cảnh dồn cuối = nền dải ảnh trượt); cảnh CUỐI = cảnh ĐỈNH ảnh to nét nhất + dinh.khoa (chữ từ lời). Không lặp đoạn clip với nhau; tránh đoạn mờ / tay / điện thoại.'}
 
 
 def nhap(ds, tu, cau, dur, nn, khop, nhac, nhip_d=None):
