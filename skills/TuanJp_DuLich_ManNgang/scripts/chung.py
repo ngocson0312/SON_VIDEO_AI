@@ -84,7 +84,7 @@ CHUYEN = {
     'dap':        (0.24, None),       # CẮT ĐẬP: cắt cứng + cảnh mới đập 1,16 → 1 + tách màu + rung 1 nhịp
     'nhay_trang': (0.20, None),       # CHỚP TRẮNG: cắt + loé trắng 3–4 khung + đập nhẹ
     'nhay_den':   (0.20, None),       # CHỚP TỐI: cũ sập tối 2 khung trước cắt → mới bừng sáng (phơi sáng quá) rồi về
-    'day_nhanh':  (0.30, 'fx_day'),   # ĐẨY NHANH phải → trái: cảnh mới đẩy cảnh cũ ra trái, KHỰNG đúng nửa phách (vòng 4: "đẩy từ
+    'day_nhanh':  (0.34, 'fx_day'),   # ĐẨY phải → trái: cảnh mới đẩy cảnh cũ ra trái trong 0,34 s rồi đứng tới phách sau (vòng 4: "đẩy từ
                                       #     phải qua trái"; đoạn dồn cùng 1 hướng → các cảnh NỐI MẠCH, không loạn)
     # ---- 5 KỸ XẢO MẪU người dùng gửi ảnh 14/11/2026 ("có 1 vài kỹ xảo chuyển cảnh, hãy ghi nhớ và cho vào skill") — CHIA MÀN TẠM THỜI
     # trong lúc chuyển, kết thúc LUÔN tràn màn (không trái luật tràn màn). Cửa sổ lệch theo CHUYEN_LECH; giữ cảnh sắc nét, không nhoè.
@@ -105,7 +105,7 @@ CHUYEN_DAI = ('khung_bung', 'hai_nua', 'hai_nua_doc', 'dai_truot')   # kiểu c�
 # MONTAGE: cửa sổ kỹ xảo tính bằng PHÁCH (trước, sau cú cắt) — mỗi NẤC rơi đúng phách / nửa phách (khách vòng 4 14/11/2026: "nhịp loạn,
 # hiệu ứng chèn không khớp nhịp"): khung bung bật nhỏ (phách) → vừa (½) → tràn (phách sau); hai nửa: mép 2/3 → 1/3 → tràn cùng 3 mốc;
 # dải trượt: dải vào 1 phách trước cú cắt, khựng từng ảnh mỗi ½ phách, ảnh đỉnh phóng tràn trong ½ phách; đẩy nhanh: ½ phách.
-CHUYEN_NHIP = {'khung_bung': (0, 1), 'hai_nua': (0, 1), 'hai_nua_doc': (0, 1), 'dai_truot': (1, .5), 'day_nhanh': (0, .5)}
+CHUYEN_NHIP = {'khung_bung': (0, 1), 'hai_nua': (0, 1), 'hai_nua_doc': (0, 1), 'dai_truot': (1, .5), 'day_nhanh': (0, .55)}
 NAC_XONG = .18            # nấc cuối (tràn màn) bắt đầu ĐÚNG phách, chạy outExpo ~0,16 s → cửa sổ sau = phách + 0,18 s
 # thứ tự xoay vòng kỹ xảo trong đoạn cao trào: mạnh nhất trước (vỡ kính rơi vào 5 s đầu); vòng sau bỏ vỡ kính (nặng, 1 lần là đủ)
 KY_XAO = ('vo_kinh', 'xoay', 'glitch', 'lat_3d', 'chay_phim', 'xuyen', 'iris', 'tia_sang', 'khung_bung', 'hai_nua', 'dai_truot', 'hai_nua_doc')
@@ -186,7 +186,10 @@ SFX_TREN = {'phong': 4, 'boom': 7, 'riser': 3, 'mo_dau': 4, 'zoom': 2, 'chuong_s
 #   → cảnh ĐỈNH vỡ kính + tít đập + boom (3 phách) → giọng vào ≤ 10 s. Giờ cảnh do script tính, Claude chỉ xếp thứ tự cảnh + chữ.
 MO_MAN_DAI = 9.5         # teaser mặc định (giây) — tự khớp về PHÁCH gần nhất ≤ MO_MAN_MAX
 MO_MAN_MIN, MO_MAN_MAX = 5.0, 10.0
-TONG_HOP_NHIP = {'mo': 2.0, 'ten': 1.0, 'nhanh': 0.5, 'dinh': 3.0}   # số phách mặc định mỗi vai cảnh trong montage
+TONG_HOP_NHIP = {'mo': 2.0, 'ten': 1.0, 'nhanh': 1.0, 'dinh': 3.0}   # số phách mặc định mỗi vai cảnh trong montage
+#   VÒNG 5 (khách xem bản 5: "giây thứ 5, 6, 7 chuyển cảnh nhanh quá, hơi khó chịu, chậm lại chút"): đoạn DỒN mỗi cảnh 1 PHÁCH
+#   (trước ½ phách ≈ 0,32 s/cảnh — mắt không kịp nhìn), cú đẩy 0,34 s (trước 0,2 s), clip dồn tua 1,1× (trước 1,5×); thừa cảnh dồn
+#   thì bỏ bớt để cảnh ĐỈNH vẫn đủ 3 phách (dải trượt + tít + vỡ kính không bị dồn).
 #   + 5 kỹ xảo mẫu (14/11/2026): mở = BA CỘT (3 cảnh đầu bật theo phách, cột 3 bung), cặp tên dùng KHUNG BUNG / HAI NỬA, đỉnh = DẢI TRƯỢT
 #   (dải ảnh các điểm đến trượt qua → cảnh đỉnh phóng ra); kiểu dài chỉ gán khi cảnh vào đứng ≥ 1,5 phách (tự cho 2 phách nếu không ghi nhip).
 #   VÒNG 4 (khách: "từ giây 3 đến 9 không có sự liên kết, nhịp loạn… chuyển cảnh vào lời nói chưa có sfx kiểu chốt, giống đổ vỡ ở
@@ -196,7 +199,7 @@ TONG_HOP_NHIP = {'mo': 2.0, 'ten': 1.0, 'nhanh': 0.5, 'dinh': 3.0}   # số phá
 TONG_HOP_CAT = {'ten': ('khung_bung', 'hai_nua', 'xoay', 'dap', 'hai_nua_doc', 'glitch', 'lat_3d', 'xuyen', 'nhay_trang'),
                 'nhanh': ('day_nhanh',),
                 'mo': 'ba_cot', 'dinh': 'dai_truot', 'dinh_ngan': 'vo_kinh', 'giong': 'vo_kinh'}   # kiểu cắt theo vai cảnh VÀO
-TONG_HOP_TOC = {'nhanh': 1.5, 'dinh': 0.7}
+TONG_HOP_TOC = {'nhanh': 1.1, 'dinh': 0.7}
 TONG_HOP_CD = {'nhanh': 'lia_trai', 'ten': 'lia_trai', 'dinh': 'zoom_ra'}   # Ken Burns montage: dồn + cảnh đẩy trôi TRÁI cùng hướng đẩy                          # clip dồn tua nhanh, clip đỉnh quay chậm (Claude ghi toc_do thì giữ)
 NHAC_TEASER = 12.0       # nhạc trong teaser dâng thêm (dB) so với mức nền (−14 + 12 ≈ −2 dB so với giọng) — nhạc là "giọng" của teaser
 CANH_TEASER_MIN = 1.8    # cảnh teaser cắt theo nhịp: ≥ 1,8 s (1 ô nhịp ~2–2,5 s) — người dùng ghét 1–2 s/cảnh "chưa kịp nhìn"

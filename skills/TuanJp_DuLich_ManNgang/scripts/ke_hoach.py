@@ -25,7 +25,7 @@ def _tong_hop(mm, phach, N, by, E, Wn, TS):
     xếp cảnh Claude liệt kê (theo thứ tự) lên lưới PHÁCH 0…N.
     Vai: 3 cảnh đầu = 'cot' (BA CỘT bật theo phách, cột 3 bung tràn) khi có ≥ 5 cảnh tên đầu, không thì cảnh đầu = 'mo';
     cuối = 'dinh' (DẢI TRƯỢT các điểm đến → phóng ra; cảnh trước đỉnh quá ngắn thì VỠ KÍNH); mọi cảnh tới cảnh có `chu` cuối = 'ten'
-    (1 phách; kỹ xảo dài KHUNG BUNG / HAI NỬA → 2 phách); sau đó = 'nhanh' (nửa phách). `nhip` (bước 0,5) / `vai` / `chuyen` ghi rõ thì giữ.
+    (1 phách; kỹ xảo dài KHUNG BUNG / HAI NỬA → 2 phách); sau đó = 'nhanh' (1 phách — vòng 5: ½ phách "nhanh quá, khó chịu"). `nhip` (bước 0,5) / `vai` / `chuyen` ghi rõ thì giữ.
     → (cảnh teaser có tu / chuyen / _vt / _vs / _nhom / _dai, đồ hoạ teaser: tên đập theo phách + tít đỉnh)"""
     sh = [dict(c) for c in mm.get('canh') or [] if c.get('nguon')]
     if len(sh) < 3:
@@ -76,12 +76,14 @@ def _tong_hop(mm, phach, N, by, E, Wn, TS):
         else:
             nb[-2] = 2.0
     bo = []
-    while N - sum(nb[:-1]) < 2:                     # thiếu phách cho cảnh đỉnh → bỏ bớt cảnh dồn (không bỏ cảnh trước đỉnh có dải trượt)
+    while N - sum(nb[:-1]) < TONG_HOP_NHIP['dinh']:   # cảnh đỉnh cần đủ 3 phách → bỏ bớt cảnh dồn (không bỏ cảnh trước đỉnh có dải trượt)
         cho = [i for i in range(1, len(sh) - 1) if sh[i]['_vai'] == 'nhanh' and not (i == len(sh) - 2 and nb[i] >= 1.5)]
         if cho:
             k = cho[-1]
             bo.append(sh[k].get('nguon')); del sh[k]; del nb[k]
             continue
+        if N - sum(nb[:-1]) >= 2:                   # hết cảnh dồn để bỏ: đỉnh 2 phách vẫn chạy được
+            break
         dai = [i for i in range(len(sh) - 1) if sh[i]['_vai'] == 'ten' and sh[i]['chuyen'] in CHUYEN_DAI and 'nhip' not in sh[i]]
         if dai:                                      # còn thiếu → đổi kỹ xảo dài thành cắt đập 1 phách
             sh[dai[-1]]['chuyen'], nb[dai[-1]] = 'dap', 1.0
