@@ -1,0 +1,127 @@
+{
+  "_ghi_chu": "Ngân hàng BÌNH LUẬN ẢO (khách 14/11/2026: mỗi địa điểm / món ăn có bình luận ảo tiếng Anh, tiếng Hàn khen chê). Tên người dùng là tên tự đặt, không phải người thật. {ten} = tên địa điểm theo tiếng của bình luận (bảng 'ten'); không có tên thì chọn câu không có {ten}. Thêm loại / câu mới thoải mái — mỗi loại cần en/ko × khen/che.",
+  "nguoi": {
+    "en": [["@emma.wanders", "GB"], ["@mike_on_the_road", "US"], ["@sarahgoesplaces", "AU"], ["@backpacker.jay", "CA"], ["@lucy_roams", "GB"],
+           ["@danielexplores", "US"], ["@olivia.trips", "AU"], ["@tomandkate.travel", "US"], ["@noah_abroad", "CA"], ["@chloe.journeys", "GB"]],
+    "ko": [["@지민의여행일기", "KR"], ["@서울사는민수", "KR"], ["@하늘바라기_", "KR"], ["@유나트립", "KR"], ["@배낭여행러준호", "KR"],
+           ["@혜진의베트남", "KR"], ["@여행가는수아", "KR"], ["@동현_트래블", "KR"]]
+  },
+  "tg": {"en": ["2 days ago", "1 week ago", "3 days ago", "5 hours ago", "2 weeks ago", "1 day ago", "4 days ago"],
+         "ko": ["2일 전", "1주 전", "3일 전", "5시간 전", "2주 전", "1일 전", "4일 전"]},
+  "tra_loi": {"en": "Reply", "ko": "답글"},
+  "thich": [127, 342, 856, 1200, 2400, 98, 531, 3100, 214, 689, 1700],
+  "ten": {
+    "sa pa": {"en": "Sapa", "ko": "사파"}, "sapa": {"en": "Sapa", "ko": "사파"}, "fansipan": {"en": "Fansipan", "ko": "판시판"},
+    "ha long": {"en": "Ha Long Bay", "ko": "하롱베이"}, "vinh ha long": {"en": "Ha Long Bay", "ko": "하롱베이"},
+    "ninh binh": {"en": "Ninh Binh", "ko": "닌빈"}, "trang an": {"en": "Trang An", "ko": "짱안"}, "tam coc": {"en": "Tam Coc", "ko": "땀꼭"},
+    "ban gioc": {"en": "Ban Gioc", "ko": "반지옥 폭포"}, "thac ban gioc": {"en": "Ban Gioc Falls", "ko": "반지옥 폭포"},
+    "cao bang": {"en": "Cao Bang", "ko": "까오방"}, "ha noi": {"en": "Hanoi", "ko": "하노이"}, "da nang": {"en": "Da Nang", "ko": "다낭"},
+    "hoi an": {"en": "Hoi An", "ko": "호이안"}, "hue": {"en": "Hue", "ko": "후에"}, "phu quoc": {"en": "Phu Quoc", "ko": "푸꾸옥"},
+    "nha trang": {"en": "Nha Trang", "ko": "나트랑"}, "da lat": {"en": "Da Lat", "ko": "달랏"}, "ha giang": {"en": "Ha Giang", "ko": "하장"},
+    "ho chi minh": {"en": "Saigon", "ko": "호치민"}, "sai gon": {"en": "Saigon", "ko": "호치민"}, "mu cang chai": {"en": "Mu Cang Chai", "ko": "무캉짜이"},
+    "moc chau": {"en": "Moc Chau", "ko": "목쩌우"}, "cat ba": {"en": "Cat Ba", "ko": "깟바"}, "con dao": {"en": "Con Dao", "ko": "꼰다오"},
+    "quy nhon": {"en": "Quy Nhon", "ko": "퀴논"}, "phong nha": {"en": "Phong Nha", "ko": "퐁냐"}, "mui ne": {"en": "Mui Ne", "ko": "무이네"},
+    "vung tau": {"en": "Vung Tau", "ko": "붕따우"}, "can tho": {"en": "Can Tho", "ko": "껀터"}, "pho": {"en": "pho", "ko": "쌀국수"},
+    "bun cha": {"en": "bun cha", "ko": "분짜"}, "banh mi": {"en": "banh mi", "ko": "반미"}, "ca phe trung": {"en": "egg coffee", "ko": "에그커피"},
+    "bun bo hue": {"en": "bun bo Hue", "ko": "분보후에"}, "cao lau": {"en": "cao lau", "ko": "까오러우"}
+  },
+  "loai": {
+    "nui": {
+      "en": {"khen": ["{ten} literally looks like a painting. Adding it to my list! 😍", "Did the rice terrace trek last spring — still the best view of my life.",
+                      "Those clouds rolling over the mountains... I need to be there NOW 🏔️", "Woke up above the clouds in {ten}. Unreal.",
+                      "The hill tribe villages were so welcoming, can't wait to go back.", "This is the Vietnam nobody tells you about. Breathtaking."],
+             "che": ["Gorgeous, but the bus ride up was hours of hairpin turns 😵", "So foggy when I went, saw nothing for 2 days lol",
+                     "Go on weekdays — town gets really crowded on weekends."]},
+      "ko": {"khen": ["{ten} 진짜 그림 같아요… 올해 꼭 가볼래요 😍", "구름 위에서 아침을 맞는 기분, 평생 못 잊어요.", "계단식 논 실제로 보면 더 압도적이에요 👍",
+                      "영상 보자마자 항공권 검색 중입니다 ㅋㅋ", "트레킹 코스 너무 좋았어요. 현지 가이드 강추!", "베트남에 이런 곳이 있는 줄 몰랐어요. 대박."],
+             "che": ["경치는 최고인데 가는 길이 꼬불꼬불해서 멀미했어요 😵", "제가 갔을 땐 안개 때문에 아무것도 안 보였어요 ㅠㅠ", "주말엔 사람이 너무 많아요. 평일 추천!"]}
+    },
+    "cap_treo": {
+      "en": {"khen": ["The cable car ride was epic — above the clouds in 15 minutes! 🚡", "Standing on the roof of Indochina was a bucket-list moment.",
+                      "Views from the top are insane on a clear day."],
+             "che": ["Amazing, but it's freezing at the summit. Bring a jacket!", "Long queue for the cable car on the weekend 😅"]},
+      "ko": {"khen": ["케이블카 타고 구름 위로 올라가는 순간 소름 🚡", "인도차이나 지붕에 서 본 경험, 버킷리스트 완료!", "맑은 날 정상 뷰는 진짜 미쳤어요"],
+             "che": ["정상은 엄청 추워요. 겉옷 꼭 챙기세요!", "주말엔 케이블카 줄이 길어요 😅"]}
+    },
+    "vinh": {
+      "en": {"khen": ["The overnight cruise in {ten} was worth every penny. Sunset on deck = magic ✨", "Kayaking between those limestone islands felt like another planet.",
+                      "{ten} is even better in person. No filter needed.", "Sung Sot cave blew my mind 🤯", "Woke up to mist over the bay. 10/10 would go again.",
+                      "Best part of our Vietnam trip, hands down."],
+             "che": ["Stunning, but pick your cruise carefully — some boats are really crowded.", "Loved it, but the day trip felt rushed. Do the overnight one!",
+                     "Beautiful but bring sunscreen, I got roasted 🥵"]},
+      "ko": {"khen": ["{ten} 크루즈에서 본 일몰, 진짜 인생 노을이었어요 ✨", "카약 타고 섬 사이 지나가는 거 꼭 해보세요!", "사진보다 실제가 훨씬 멋있어요. 강추!",
+                      "동굴 안이 이렇게 클 줄이야… 감동했어요", "1박 크루즈 했는데 아침 안개 낀 바다가 환상적", "베트남 여행 중 최고의 하루였어요 👍"],
+             "che": ["경치는 좋은데 당일 투어는 너무 빡빡해요. 1박 추천!", "성수기엔 배가 너무 많아서 좀 복잡했어요 😅", "햇빛 엄청 강해요. 선크림 필수!"]}
+    },
+    "thac": {
+      "en": {"khen": ["{ten} in full flow is insane. The sound alone gives you chills 💦", "One of the most beautiful waterfalls I've ever seen, worth the long drive.",
+                      "Took the bamboo raft right up to the falls — unforgettable!", "The turquoise water + rice fields around it... perfection.",
+                      "Go in rainy season, the falls are massive!", "Hidden gem of northern Vietnam. Totally worth it."],
+             "che": ["Amazing falls but the drive from Hanoi is loooong. Stay overnight!", "Went in dry season and it was way smaller than the photos 😅",
+                     "Gorgeous but the raft queue took forever on the weekend."]},
+      "ko": {"khen": ["{ten} 물소리만 들어도 소름 돋아요 💦", "대나무 뗏목 타고 폭포 바로 앞까지! 잊지 못할 경험", "에메랄드빛 물이랑 논 풍경이 너무 예뻐요",
+                      "멀어도 갈 가치 200% 있어요", "우기에 가면 폭포가 엄청 웅장해요!", "베트남 북부의 숨은 보석이네요"],
+             "che": ["하노이에서 너무 멀어요… 1박 하는 거 추천해요", "건기에 갔더니 물이 생각보다 적었어요 😅", "주말엔 뗏목 줄이 너무 길었어요"]}
+    },
+    "song_nuoc": {
+      "en": {"khen": ["The boat ride through the {ten} caves was so peaceful. Pure zen 🛶", "Rowers paddling with their FEET?! Vietnam never stops surprising me.",
+                      "Rice fields + karst mountains = my favorite landscape on earth.", "Climbed the Mua Cave viewpoint at sunset. Worth every one of the 500 steps.",
+                      "Felt like I was inside a movie set. Unreal scenery.", "{ten} was the highlight of our whole trip!"],
+             "che": ["Beautiful, but the boat ride is 2+ hours — bring water and a hat!", "Lovely place but it gets really hot at noon. Go early!",
+                     "Gorgeous, just wish there were fewer tour buses 😅"]},
+      "ko": {"khen": ["{ten} 나룻배 타고 동굴 지나가는 거 너무 힐링이었어요 🛶", "발로 노 젓는 사공님들 보고 깜짝 놀랐어요 ㅋㅋ", "논이랑 바위산 풍경이 진짜 수묵화 같아요",
+                      "항무아 전망대 꼭 올라가세요! 계단 힘들어도 최고", "영화 촬영지라더니 진짜 영화 속 같았어요", "이번 베트남 여행의 하이라이트였어요!"],
+             "che": ["배 타는 시간이 길어서 모자랑 물 꼭 챙기세요!", "한낮엔 너무 더워요. 아침 일찍 가는 거 추천", "관광객이 좀 많긴 했어요 😅"]}
+    },
+    "bien": {
+      "en": {"khen": ["That water is unreal 😍 {ten} just jumped to the top of my list.", "Sunset swim in {ten} was the most relaxing hour of my year.",
+                      "Fresh seafood right on the beach for a few dollars. Paradise!", "Clearest water I've seen in Asia."],
+             "che": ["Beautiful beach but some parts are getting really built up.", "Lovely, but the jellyfish in summer are no joke 😅"]},
+      "ko": {"khen": ["물색 실화인가요 😍 {ten} 버킷리스트 1순위 등극", "해 질 녘 바다 수영, 올해 제일 행복했던 순간", "해변에서 먹은 해산물 싸고 맛있어요!",
+                      "동남아에서 본 바다 중 제일 맑았어요"],
+             "che": ["예쁜데 개발이 많이 돼서 좀 아쉬워요", "여름엔 해파리 조심하세요 😅"]}
+    },
+    "chua": {
+      "en": {"khen": ["So much history in one place. The architecture is stunning.", "Went at sunrise, the atmosphere was so peaceful 🙏",
+                      "Our guide explained every detail — totally fascinating.", "{ten} feels like stepping back in time."],
+             "che": ["Beautiful, but remember to cover shoulders and knees!", "Gets crowded with tour groups after 9am."]},
+      "ko": {"khen": ["건축물이 정말 아름다워요. 역사가 느껴져요", "해 뜰 때 가니까 너무 고요하고 좋았어요 🙏", "가이드 설명 들으니까 더 재밌었어요",
+                      "{ten} 시간 여행 온 기분이었어요"],
+             "che": ["어깨, 무릎 가리는 옷 꼭 입고 가세요!", "9시 넘으면 단체 관광객이 많아요"]}
+    },
+    "thanh_pho": {
+      "en": {"khen": ["{ten} at night is pure energy! Street food everywhere 🤤", "Got lost in the old quarter and loved every minute.",
+                      "Coffee culture here is next level ☕", "Such a vibrant city, I'd move here tomorrow."],
+             "che": ["Loved it, but crossing the street is an extreme sport 😂", "Amazing city, just SO many motorbikes lol"]},
+      "ko": {"khen": ["{ten} 밤거리 분위기 최고! 길거리 음식 천국 🤤", "구시가지 골목 걷는 것만으로도 행복했어요", "여기 커피 진짜 맛있어요 ☕",
+                      "활기찬 도시! 한 달 살기 하고 싶어요"],
+             "che": ["길 건너기가 제일 어려웠어요 ㅋㅋ", "오토바이가 진짜 많아요 😂"]}
+    },
+    "am_thuc": {
+      "en": {"khen": ["I could eat {ten} every single day 🤤", "Best thing I ate in Vietnam, no contest.", "Cheap, fresh and SO flavorful. Food heaven!",
+                      "Just watching this made me hungry 😂"],
+             "che": ["Delicious, but way too much fish sauce for me 😅", "Tasty, but the spicy version nearly killed me 🌶️"]},
+      "ko": {"khen": ["{ten} 매일 먹을 수 있어요 🤤", "베트남에서 먹은 것 중 최고였어요", "싸고 신선하고 맛있어요. 음식 천국!", "영상 보다가 배고파졌어요 ㅋㅋ"],
+             "che": ["맛있는데 피시소스 향이 저한텐 좀 셌어요 😅", "매운 버전은 진짜 매워요 🌶️"]}
+    },
+    "chung": {
+      "en": {"khen": ["Vietnam keeps surprising me. Booking my flights tonight ✈️", "This video made me want to travel immediately 😍",
+                      "Absolutely stunning. Adding {ten} to my list!", "The scenery is out of this world."],
+             "che": ["Beautiful, but go outside peak season if you can.", "Gorgeous, just wish it was a bit less crowded 😅"]},
+      "ko": {"khen": ["베트남 너무 예쁘네요. 오늘 비행기표 예약합니다 ✈️", "영상 보자마자 여행 가고 싶어졌어요 😍", "{ten} 꼭 가볼게요!",
+                      "풍경이 비현실적이에요"],
+             "che": ["예쁜데 성수기는 피하는 게 좋아요", "사람이 좀 많은 게 아쉬웠어요 😅"]}
+    }
+  },
+  "tu_khoa_loai": {
+    "nui": ["nui", "sa pa", "sapa", "ruong bac thang", "ha giang", "mu cang chai", "tay bac", "deo", "dinh", "moc chau", "ban lang", "san may"],
+    "cap_treo": ["cap treo", "fansipan"],
+    "vinh": ["vinh", "ha long", "dao da voi", "du thuyen", "lan ha", "cat ba", "bai tu long"],
+    "thac": ["thac", "ban gioc"],
+    "song_nuoc": ["ninh binh", "trang an", "tam coc", "song", "thuyen", "dam", "mekong", "hang mua"],
+    "bien": ["bien", "bai bien", "dao", "phu quoc", "nha trang", "con dao", "quy nhon", "mui ne"],
+    "chua": ["chua", "den", "lang", "co do", "di tich", "van mieu", "hoang thanh", "nha tho", "pagoda"],
+    "thanh_pho": ["pho co", "thanh pho", "ha noi", "sai gon", "ho chi minh", "da nang", "hoi an", "pho di bo"],
+    "am_thuc": ["mon", "am thuc", "pho", "bun", "banh", "ca phe", "che", "nem", "an uong"]
+  }
+}

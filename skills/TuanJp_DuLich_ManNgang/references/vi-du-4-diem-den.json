@@ -6,72 +6,184 @@
   "handle": "",
   "avatar": null
  },
- "nhac": null,
  "dien_anh": true,
  "sua_loi": {
-  "linh đanh": "lênh đênh",
+  "linh đênh": "lênh đênh",
+  "đá vui": "đá vôi",
   "chiêm ngỡ": "chiêm ngưỡng",
   "trùng biệp": "trùng điệp",
   "Phan Xipan": "Fansipan",
   "kháng phá": "khám phá",
-  "cắp treo": "cáp treo",
   "ngóng nhìn": "ngắm nhìn",
   "trốn bồng lai viên cảnh": "chốn bồng lai tiên cảnh",
-  "là nước xanh biếc": "làn nước xanh biếc",
   "manh mông": "mênh mông",
   "nét mình": "nép mình",
   "trên cạm": "trên cạn",
   "gách núi": "vách núi",
-  "Tháp Bản Dốc": "thác Bản Giốc",
+  "Thác Bản Dốc": "Thác Bản Giốc",
   "Bản Dốc": "Bản Giốc",
   "giải thác": "dải thác",
   "ân thanh": "âm thanh",
   "chim ngưỡng": "chiêm ngưỡng",
   "Sapa": "Sa Pa"
  },
+ "mo_man": {
+  "dai": 20.0,
+  "_y": "TEASER 8 ô nhịp: mỗi điểm đến 2 cảnh đẹp nhất, tên đập đúng phách mạnh, kết bằng '4 điểm đến · 4 vẻ đẹp' (chữ lấy từ lời 97,7–103,3 s)",
+  "canh": [
+   {
+    "id": "t1",
+    "tu": 0.0,
+    "nguon": "res_07",
+    "vung": [
+     0.12,
+     0.0,
+     0.92,
+     0.75
+    ],
+    "chuyen": "cat",
+    "chuyen_dong": "zoom_vao",
+    "loi": "Sa Pa — bình minh trên biển mây"
+   },
+   {
+    "id": "t2",
+    "tu": 2.51,
+    "nguon": "clip_09",
+    "vao": 9.0,
+    "cat_y": 0.36,
+    "chuyen": "cat",
+    "chuyen_dong": "zoom_vao",
+    "loi": "Sa Pa — mây cuộn qua núi"
+   },
+   {
+    "id": "t3",
+    "tu": 5.03,
+    "nguon": "res_05",
+    "chuyen": "phong",
+    "chuyen_dong": "lia_phai",
+    "loi": "Hạ Long — du thuyền giữa đảo đá"
+   },
+   {
+    "id": "t4",
+    "tu": 7.54,
+    "nguon": "clip_13",
+    "vao": 7.6,
+    "cat_y": 0.4,
+    "chuyen": "cat",
+    "chuyen_dong": "zoom_vao",
+    "loi": "Hạ Long — cano rẽ sóng"
+   },
+   {
+    "id": "t5",
+    "tu": 10.05,
+    "nguon": "res_06",
+    "vung": [
+     0.05,
+     0.05,
+     0.85,
+     0.95
+    ],
+    "chuyen": "phong",
+    "chuyen_dong": "zoom_vao",
+    "loi": "Ninh Bình — sông uốn quanh núi"
+   },
+   {
+    "id": "t6",
+    "tu": 12.57,
+    "nguon": "clip_10",
+    "vao": 0.6,
+    "chuyen": "cat",
+    "chuyen_dong": "zoom_vao",
+    "loi": "Ninh Bình — thả đèn trên thuyền đêm"
+   },
+   {
+    "id": "t7",
+    "tu": 15.08,
+    "nguon": "res_08",
+    "chuyen": "phong",
+    "chuyen_dong": "zoom_vao",
+    "loi": "Bản Giốc — toàn cảnh thác"
+   },
+   {
+    "id": "t8",
+    "tu": 17.59,
+    "nguon": "clip_03",
+    "vao": 3.6,
+    "cat_y": 0.38,
+    "chuyen": "zoom",
+    "chuyen_dong": "zoom_ra",
+    "loi": "Bản Giốc — cận dải thác"
+   }
+  ],
+  "do_hoa": [
+   {
+    "id": "z1",
+    "loai": "hook_tu",
+    "tu": 0.0,
+    "den": 4.9,
+    "chu": "Sa Pa",
+    "nhan": "Thơ mộng"
+   },
+   {
+    "id": "z2",
+    "loai": "hook_tu",
+    "tu": 5.03,
+    "den": 9.95,
+    "chu": "Hạ Long",
+    "nhan": "Kỳ vĩ"
+   },
+   {
+    "id": "z3",
+    "loai": "hook_tu",
+    "tu": 10.05,
+    "den": 14.95,
+    "chu": "Ninh Bình",
+    "nhan": "Bình yên"
+   },
+   {
+    "id": "z4",
+    "loai": "hook_tu",
+    "tu": 15.08,
+    "den": 17.45,
+    "chu": "Bản Giốc",
+    "nhan": "Hoang sơ"
+   },
+   {
+    "id": "z5",
+    "loai": "tieu_de",
+    "tu": 17.59,
+    "den": 19.85,
+    "vi_tri": "giua",
+    "dan": "4 điểm đến",
+    "khoa": "4 vẻ đẹp",
+    "viet_tay": "khác nhau"
+   }
+  ]
+ },
  "canh": [
   {
    "id": "h1",
    "tu": 0.0,
-   "nguon": "res_07",
-   "bo_cuc": "tran",
-   "vung": [
-    0.3,
-    0.0,
-    1.0,
-    0.62
-   ],
+   "nguon": "clip_05",
+   "vao": 12.0,
+   "cat_y": 0.38,
+   "chuyen": "zoom_muot",
    "chuyen_dong": "zoom_vao",
    "loi": "Bạn đã bao giờ tưởng tượng… biển mây bồng bềnh trên núi cao"
   },
   {
    "id": "h3",
    "tu": 2.9,
-   "nguon": [
-    "clip_13",
-    "res_05"
-   ],
-   "vao": [
-    0.4,
-    0
-   ],
-   "cat_x": [
-    0.5,
-    0.55
-   ],
-   "bo_cuc": "ghep",
+   "nguon": "clip_11",
+   "vao": 3.5,
    "chuyen": "loe",
-   "luc_o": [
-    2.9,
-    3.05
-   ],
+   "chuyen_dong": "zoom_vao",
    "loi": "lênh đênh giữa hàng nghìn hòn đảo đá vôi"
   },
   {
    "id": "h4",
    "tu": 4.9,
    "nguon": "res_06",
-   "bo_cuc": "tran",
    "vung": [
     0,
     0.1,
@@ -86,7 +198,6 @@
    "id": "h6",
    "tu": 7.1,
    "nguon": "res_08",
-   "bo_cuc": "tran",
    "vung": [
     0.25,
     0.0,
@@ -95,186 +206,134 @@
    ],
    "chuyen": "lia",
    "chuyen_dong": "zoom_vao",
-   "loi": "và cuối cùng tận mắt chiêm ngưỡng một thác nước hùng vĩ giữa núi rừng biên giới"
+   "loi": "thác nước hùng vĩ giữa núi rừng biên giới"
   },
   {
    "id": "h8",
    "tu": 10.65,
-   "nguon": "res_07",
-   "bo_cuc": "tran",
+   "nguon": "clip_02",
+   "vao": 19.5,
+   "cat_y": 0.3,
    "chuyen": "cat",
    "chuyen_dong": "zoom_ra",
-   "loi": "CÚ DROP — Đó chính là vẻ đẹp của Việt Nam"
+   "loi": "CÚ DROP — Đó chính là vẻ đẹp của Việt Nam (cờ Tổ quốc)"
   },
   {
    "id": "c6",
-   "tu": 15.95,
+   "tu": 16.0,
    "nguon": "clip_15",
-   "vao": 1.0,
-   "bo_cuc": "tran",
+   "vao": 0.8,
    "chuyen": "man",
    "chuyen_dong": "zoom_vao",
-   "loi": "Hành trình đầu tiên — Sa Pa, núi rừng Tây Bắc"
+   "loi": "(dưới bản đồ) Sa Pa, núi rừng Tây Bắc — đường lên Sa Pa"
   },
   {
    "id": "c7",
-   "tu": 19.3,
-   "nguon": "clip_14",
-   "vao": 12.6,
-   "bo_cuc": "the_doc",
-   "vi_tri": "phai",
+   "tu": 21.4,
+   "nguon": "clip_06",
+   "vao": 6.5,
+   "cat_y": 0.45,
    "chuyen": "lia",
    "chuyen_dong": "zoom_vao",
-   "loi": "dãy núi trùng điệp"
+   "loi": "núi trùng điệp, ruộng bậc thang uốn lượn"
   },
   {
    "id": "c8",
-   "tu": 21.8,
-   "nguon": "clip_06",
-   "vao": 6.5,
-   "bo_cuc": "the_doc",
-   "vi_tri": "phai",
+   "tu": 23.95,
+   "nguon": "clip_09",
+   "vao": 17.0,
+   "cat_y": 0.36,
    "chuyen": "hoa_tan",
    "chuyen_dong": "zoom_ra",
-   "loi": "ruộng bậc thang uốn lượn"
-  },
-  {
-   "id": "c9",
-   "tu": 23.9,
-   "nguon": "clip_05",
-   "vao": 12.0,
-   "bo_cuc": "the_doc",
-   "vi_tri": "phai",
-   "chuyen": "hoa_tan",
-   "chuyen_dong": "zoom_vao",
    "loi": "bản làng ẩn hiện trong làn sương mờ"
   },
   {
-   "id": "c10",
-   "tu": 26.05,
+   "id": "c9",
+   "tu": 26.6,
    "nguon": "clip_08",
    "vao": 26.0,
-   "bo_cuc": "tran",
    "chuyen": "zoom_muot",
    "chuyen_dong": "zoom_vao",
    "loi": "đỉnh Fansipan, nóc nhà Đông Dương"
   },
   {
-   "id": "c12",
-   "tu": 31.1,
+   "id": "c10",
+   "tu": 31.3,
    "nguon": "res_04",
-   "bo_cuc": "the_anh",
-   "vi_tri": "giua",
    "chuyen": "loe",
-   "chuyen_dong": "zoom_vao",
+   "chuyen_dong": "lia_phai",
    "loi": "Ngồi trên cáp treo"
   },
   {
-   "id": "c13",
-   "tu": 33.6,
-   "nguon": [
-    "clip_09",
-    "clip_05"
-   ],
-   "vao": [
-    2.0,
-    15.5
-   ],
-   "bo_cuc": "ghep",
-   "luc_o": [
-    33.6,
-    33.85
-   ],
+   "id": "c11",
+   "tu": 33.8,
+   "nguon": "clip_05",
+   "vao": 19.0,
+   "cat_y": 0.3,
+   "chuyen": "hoa_tan",
+   "chuyen_dong": "zoom_vao",
    "loi": "biển mây bao phủ — chốn bồng lai tiên cảnh"
   },
   {
    "id": "c14",
    "tu": 37.1,
-   "nguon": "clip_01",
-   "vao": 2.35,
-   "bo_cuc": "tran",
+   "nguon": "res_05",
    "chuyen": "man",
    "chuyen_dong": "zoom_vao",
-   "loi": "Rời Sa Pa — Vịnh Hạ Long, kỳ quan thiên nhiên"
-  },
-  {
-   "id": "c15",
-   "tu": 41.75,
-   "nguon": "res_05",
-   "bo_cuc": "the_anh",
-   "vi_tri": "phai",
-   "chuyen": "loe",
-   "chuyen_dong": "zoom_vao",
-   "loi": "ngồi trên một chiếc du thuyền"
+   "loi": "(dưới bản đồ) Vịnh Hạ Long → du thuyền lướt giữa làn nước xanh biếc"
   },
   {
    "id": "c17",
    "tu": 45.5,
    "nguon": "clip_13",
    "vao": 5.5,
-   "bo_cuc": "the_doc",
-   "vi_tri": "trai",
+   "cat_y": 0.42,
    "chuyen": "lia",
    "chuyen_dong": "zoom_vao",
-   "loi": "hàng nghìn hòn đảo đá vôi"
+   "loi": "hàng nghìn hòn đảo đá vôi, mặt biển mênh mông"
   },
   {
    "id": "c18",
    "tu": 49.6,
-   "nguon": "clip_13",
-   "vao": 10.2,
-   "bo_cuc": "the_doc",
-   "vi_tri": "phai",
+   "nguon": "clip_01",
+   "vao": 1.0,
    "chuyen": "zoom_muot",
-   "chuyen_dong": "zoom_ra",
-   "loi": "hang động kỳ bí, bãi biển nhỏ"
+   "chuyen_dong": "lia_phai",
+   "loi": "hang động kỳ bí, bãi biển nép mình bên chân núi"
   },
   {
    "id": "c19",
-   "tu": 52.4,
+   "tu": 52.5,
    "nguon": "res_02",
-   "bo_cuc": "the_anh",
-   "vi_tri": "phai",
-   "chuyen": "loe",
-   "chuyen_dong": "zoom_vao",
-   "loi": "hoàng hôn phản chiếu trên mặt nước",
    "vung": [
-    0.16,
-    0.14,
+    0.0,
+    0.08,
     1,
     1
-   ]
+   ],
+   "chuyen": "loe",
+   "chuyen_dong": "zoom_vao",
+   "loi": "hoàng hôn phản chiếu trên mặt nước"
   },
   {
    "id": "c20",
    "tu": 56.3,
    "nguon": "res_06",
-   "bo_cuc": "tran",
-   "chuyen": "man",
-   "chuyen_dong": "zoom_vao",
-   "loi": "Ninh Bình — Hạ Long trên cạn"
-  },
-  {
-   "id": "c21",
-   "tu": 59.75,
-   "nguon": "res_06",
-   "bo_cuc": "tran",
    "vung": [
     0,
     0.08,
     0.66,
     0.92
    ],
-   "chuyen": "zoom_muot",
+   "chuyen": "man",
    "chuyen_dong": "lia_phai",
-   "loi": "núi đá vôi soi bóng xuống dòng sông xanh"
+   "loi": "(dưới bản đồ) Ninh Bình → núi đá vôi soi bóng dòng sông xanh"
   },
   {
    "id": "c22",
    "tu": 62.8,
    "nguon": "clip_16",
    "vao": 0.3,
-   "bo_cuc": "tran",
    "chuyen": "hoa_tan",
    "chuyen_dong": "zoom_vao",
    "loi": "vừa hùng vĩ vừa yên bình"
@@ -283,9 +342,8 @@
    "id": "c23",
    "tu": 65.3,
    "nguon": "clip_10",
-   "vao": 0.2,
-   "bo_cuc": "tran",
-   "chuyen": "nhoe",
+   "vao": 4.0,
+   "chuyen": "loe",
    "chuyen_dong": "zoom_vao",
    "loi": "ngồi trên chiếc thuyền nhỏ, người lái đò"
   },
@@ -293,25 +351,23 @@
    "id": "c24",
    "tu": 68.4,
    "nguon": "res_06",
-   "bo_cuc": "tran",
    "vung": [
     0.34,
     0.42,
     1,
     1
    ],
-   "chuyen": "loe",
+   "chuyen": "zoom_muot",
    "chuyen_dong": "lia_trai",
    "loi": "hang động xuyên núi tại Tràng An"
   },
   {
    "id": "c25",
    "tu": 70.9,
-   "nguon": "clip_03",
-   "vao": 9.6,
-   "bo_cuc": "the_doc",
-   "vi_tri": "giua",
-   "chuyen": "zoom_muot",
+   "nguon": "clip_14",
+   "vao": 12.6,
+   "cat_y": 0.4,
+   "chuyen": "lia",
    "chuyen_dong": "zoom_vao",
    "loi": "vách núi cao sừng sững"
   },
@@ -319,8 +375,7 @@
    "id": "c26",
    "tu": 73.5,
    "nguon": "clip_16",
-   "vao": 7.9,
-   "bo_cuc": "tran",
+   "vao": 7.2,
    "chuyen": "hoa_tan",
    "chuyen_dong": "lia_phai",
    "loi": "cánh đồng xanh mướt trải dài bất tận"
@@ -329,33 +384,16 @@
    "id": "c27",
    "tu": 76.1,
    "nguon": "res_08",
-   "bo_cuc": "tran",
    "chuyen": "man",
    "chuyen_dong": "zoom_vao",
-   "loi": "thác Bản Giốc, Cao Bằng"
-  },
-  {
-   "id": "c28",
-   "tu": 80.3,
-   "nguon": "res_08",
-   "bo_cuc": "tran",
-   "vung": [
-    0,
-    0,
-    0.62,
-    0.7
-   ],
-   "chuyen": "zoom_muot",
-   "chuyen_dong": "lia_trai",
-   "loi": "giữa núi rừng xanh thẳm"
+   "loi": "(dưới bản đồ) thác Bản Giốc → giữa núi rừng xanh thẳm"
   },
   {
    "id": "c29",
    "tu": 82.8,
    "nguon": "clip_03",
-   "vao": 0.2,
-   "bo_cuc": "the_doc",
-   "vi_tri": "phai",
+   "vao": 4.4,
+   "cat_y": 0.38,
    "chuyen": "lia",
    "chuyen_dong": "zoom_vao",
    "loi": "nước đổ xuống qua nhiều tầng đá — dải thác trắng xóa"
@@ -364,7 +402,6 @@
    "id": "c30",
    "tu": 87.7,
    "nguon": "res_08",
-   "bo_cuc": "tran",
    "vung": [
     0.38,
     0.32,
@@ -379,9 +416,8 @@
    "id": "c31",
    "tu": 90.3,
    "nguon": "clip_03",
-   "vao": 6.1,
-   "bo_cuc": "the_doc",
-   "vi_tri": "trai",
+   "vao": 0.4,
+   "cat_y": 0.36,
    "chuyen": "zoom_muot",
    "chuyen_dong": "zoom_ra",
    "loi": "tung bọt trắng xóa hòa cùng màu xanh"
@@ -390,88 +426,52 @@
    "id": "c32",
    "tu": 93.1,
    "nguon": "res_08",
-   "bo_cuc": "tran",
    "chuyen": "hoa_tan",
    "chuyen_dong": "zoom_ra",
-   "loi": "ít nhất một lần trong đời — bốn điểm đến"
+   "loi": "ít nhất một lần trong đời"
   },
   {
    "id": "c33",
-   "tu": 99.45,
-   "nguon": [
-    "clip_06",
-    "clip_13",
-    "res_06",
-    "res_08"
-   ],
-   "vao": [
-    9.6,
-    6.3,
-    0,
-    0
-   ],
-   "cat_x": [
-    0.5,
-    0.5,
-    0.62,
-    0.55
-   ],
-   "bo_cuc": "ghep",
-   "luc_o": [
-    99.45,
-    100.55,
-    101.45,
-    102.45
-   ],
-   "nhan": [
-    {
-     "chu": "Sa Pa",
-     "phu": "thơ mộng"
-    },
-    {
-     "chu": "Hạ Long",
-     "phu": "kỳ vĩ"
-    },
-    {
-     "chu": "Ninh Bình",
-     "phu": "bình yên"
-    },
-    {
-     "chu": "Bản Giốc",
-     "phu": "hoang sơ"
-    }
-   ],
-   "loi": "Sa Pa thơ mộng, Hạ Long kỳ vĩ, Ninh Bình bình yên, Bản Giốc hoang sơ"
+   "tu": 97.6,
+   "nguon": "res_07",
+   "chuyen": "loe",
+   "chuyen_dong": "zoom_vao",
+   "loi": "4 điểm đến, 4 vẻ đẹp — Sa Pa thơ mộng"
   },
   {
    "id": "c34",
-   "tu": 103.5,
+   "tu": 100.7,
+   "nguon": "res_05",
+   "chuyen": "lia",
+   "chuyen_dong": "lia_phai",
+   "loi": "Hạ Long kỳ vĩ, Ninh Bình bình yên, Bản Giốc hoang sơ"
+  },
+  {
+   "id": "c35",
+   "tu": 103.6,
    "nguon": "clip_15",
    "vao": 13.0,
-   "bo_cuc": "tran",
    "chuyen": "zoom_muot",
    "chuyen_dong": "zoom_vao",
    "loi": "những hành trình để trải nghiệm"
   },
   {
-   "id": "c35",
+   "id": "c36",
    "tu": 106.4,
    "nguon": "clip_08",
-   "vao": 76.6,
-   "bo_cuc": "tran",
+   "vao": 85.0,
    "chuyen": "hoa_tan",
    "chuyen_dong": "zoom_vao",
    "loi": "lưu giữ những ký ức khó quên"
   },
   {
-   "id": "c36",
-   "tu": 109.85,
+   "id": "c37",
+   "tu": 110.2,
    "nguon": "res_01",
-   "bo_cuc": "the_anh",
-   "vi_tri": "phai",
    "chuyen": "loe",
    "chuyen_dong": "zoom_vao",
-   "loi": "màn kết"
+   "toc_do": 0.6,
+   "loi": "màn kết — câu hỏi, cảm ơn, Thích & Đăng ký"
   }
  ],
  "do_hoa": [
@@ -529,23 +529,25 @@
   {
    "id": "g2",
    "loai": "chuong",
-   "tu": 16.45,
-   "den": 19.55,
+   "tu": 16.0,
+   "den": 20.4,
+   "luc_den": 18.0,
    "so": "01",
-   "ten": "SA PA",
+   "ten": "Sa Pa",
    "phu": "Núi rừng Tây Bắc",
    "icon": "nui",
    "toa_do": [
-    22.336,
-    103.844
+    22.3364,
+    103.8438
    ],
-   "vi_tri": "trai"
+   "phuong_tien": "o_to",
+   "luc_binh_luan": 26.4
   },
   {
    "id": "g3",
    "loai": "liet_ke",
-   "tu": 19.8,
-   "den": 26.0,
+   "tu": 20.6,
+   "den": 25.95,
    "vi_tri": "trai",
    "dan": "Nổi tiếng với",
    "muc": [
@@ -557,7 +559,7 @@
     {
      "chu": "Ruộng bậc thang",
      "icon": "ruong",
-     "luc": 22.2
+     "luc": 22.3
     },
     {
      "chu": "Bản làng trong sương",
@@ -569,7 +571,7 @@
   {
    "id": "g4",
    "loai": "dia_danh",
-   "tu": 26.6,
+   "tu": 26.7,
    "den": 31.0,
    "ten": "Đỉnh Fansipan",
    "phu": "Nóc nhà Đông Dương",
@@ -580,8 +582,8 @@
    "id": "g5",
    "loai": "chip",
    "tu": 31.5,
-   "den": 33.6,
-   "vi_tri": "giua",
+   "den": 33.7,
+   "vi_tri": "trai",
    "muc": [
     {
      "chu": "Ngồi cáp treo ngắm mây",
@@ -593,73 +595,55 @@
   {
    "id": "g6",
    "loai": "tu_khoa",
-   "tu": 35.5,
-   "den": 37.35,
+   "tu": 35.2,
+   "den": 37.05,
    "vi_tri": "giua",
    "muc": [
     {
      "chu": "Bồng lai",
      "kieu": "serif",
-     "luc": 35.75
+     "luc": 35.45
     },
     {
      "chu": "tiên cảnh",
      "kieu": "tay",
-     "luc": 36.05
+     "luc": 35.75
     }
    ]
   },
   {
    "id": "g7",
    "loai": "chuong",
-   "tu": 38.7,
-   "den": 41.65,
+   "tu": 37.1,
+   "den": 41.6,
+   "luc_den": 39.4,
    "so": "02",
-   "ten": "VỊNH HẠ LONG",
-   "ten_ngan": "HẠ LONG",
+   "ten": "Vịnh Hạ Long",
    "phu": "Kỳ quan thiên nhiên",
    "icon": "dao",
    "toa_do": [
-    20.91,
-    107.18
+    20.9101,
+    107.1839
    ],
-   "vi_tri": "trai"
+   "phuong_tien": "o_to",
+   "luc_binh_luan": 42.3
   },
   {
    "id": "g8",
    "loai": "chip",
-   "tu": 42.6,
-   "den": 45.6,
+   "tu": 42.4,
+   "den": 45.4,
    "vi_tri": "trai",
    "muc": [
     {
      "chu": "Du thuyền ngắm vịnh",
      "icon": "tau",
-     "luc": 43.1
+     "luc": 42.8
     },
     {
      "chu": "Làn nước xanh biếc",
      "icon": "song_nuoc",
-     "luc": 44.0
-    }
-   ]
-  },
-  {
-   "id": "g9",
-   "loai": "tu_khoa",
-   "tu": 45.9,
-   "den": 49.5,
-   "vi_tri": "phai",
-   "muc": [
-    {
-     "chu": "Hàng nghìn",
-     "kieu": "serif",
-     "luc": 46.15
-    },
-    {
-     "chu": "đảo đá vôi",
-     "kieu": "tay",
-     "luc": 46.75
+     "luc": 43.8
     }
    ]
   },
@@ -677,7 +661,7 @@
      "luc": 50.05
     },
     {
-     "chu": "Bãi biển nhỏ nép mình",
+     "chu": "Bãi biển nép mình",
      "icon": "bien",
      "luc": 51.05
     },
@@ -691,34 +675,36 @@
   {
    "id": "g11",
    "loai": "chuong",
-   "tu": 57.25,
-   "den": 59.95,
+   "tu": 56.3,
+   "den": 60.2,
+   "luc_den": 58.0,
    "so": "03",
-   "ten": "NINH BÌNH",
+   "ten": "Ninh Bình",
    "phu": "Hạ Long trên cạn",
    "icon": "nui",
    "toa_do": [
-    20.253,
-    105.905
+    20.2539,
+    105.975
    ],
-   "vi_tri": "trai"
+   "phuong_tien": "o_to",
+   "luc_binh_luan": 66.1
   },
   {
    "id": "g12",
    "loai": "tu_khoa",
-   "tu": 63.6,
-   "den": 66.3,
+   "tu": 63.5,
+   "den": 65.75,
    "vi_tri": "phai",
    "muc": [
     {
      "chu": "Hùng vĩ",
      "kieu": "serif",
-     "luc": 64.1
+     "luc": 63.7
     },
     {
      "chu": "& yên bình",
      "kieu": "tay",
-     "luc": 64.6
+     "luc": 64.1
     }
    ],
    "y": 300
@@ -736,24 +722,25 @@
   {
    "id": "g14",
    "loai": "chuong",
-   "tu": 77.4,
-   "den": 80.65,
+   "tu": 76.1,
+   "den": 80.7,
+   "luc_den": 78.2,
    "so": "04",
-   "ten": "THÁC BẢN GIỐC",
-   "ten_ngan": "BẢN GIỐC",
+   "ten": "Thác Bản Giốc",
    "phu": "Cao Bằng · biên giới phía Bắc",
    "icon": "thac",
    "toa_do": [
-    22.855,
-    106.722
+    22.8546,
+    106.7226
    ],
-   "vi_tri": "trai"
+   "phuong_tien": "o_to",
+   "luc_binh_luan": 87.9
   },
   {
    "id": "g15",
    "loai": "tu_khoa",
    "tu": 84.4,
-   "den": 87.75,
+   "den": 87.6,
    "vi_tri": "trai",
    "muc": [
     {
@@ -773,7 +760,7 @@
    "loai": "chip",
    "tu": 88.1,
    "den": 92.9,
-   "vi_tri": "giua",
+   "vi_tri": "trai",
    "muc": [
     {
      "chu": "Mùa nước lớn",
@@ -790,8 +777,8 @@
   {
    "id": "g17",
    "loai": "tieu_de",
-   "tu": 94.5,
-   "den": 97.55,
+   "tu": 94.3,
+   "den": 97.5,
    "vi_tri": "giua",
    "dan": "Nên chiêm ngưỡng",
    "khoa": "Một lần trong đời"
@@ -800,16 +787,46 @@
    "id": "g18",
    "loai": "tieu_de",
    "tu": 97.65,
-   "den": 99.55,
+   "den": 99.4,
    "vi_tri": "giua",
-   "khoa": "Bốn điểm đến",
-   "viet_tay": "bốn vẻ đẹp khác nhau"
+   "khoa": "4 điểm đến",
+   "viet_tay": "4 vẻ đẹp khác nhau"
+  },
+  {
+   "id": "g18b",
+   "loai": "liet_ke",
+   "tu": 99.5,
+   "den": 104.25,
+   "vi_tri": "trai",
+   "dan": "4 vẻ đẹp",
+   "muc": [
+    {
+     "chu": "Sa Pa · thơ mộng",
+     "icon": "may",
+     "luc": 99.6
+    },
+    {
+     "chu": "Hạ Long · kỳ vĩ",
+     "icon": "dao",
+     "luc": 100.8
+    },
+    {
+     "chu": "Ninh Bình · bình yên",
+     "icon": "nui",
+     "luc": 101.6
+    },
+    {
+     "chu": "Bản Giốc · hoang sơ",
+     "icon": "thac",
+     "luc": 102.6
+    }
+   ]
   },
   {
    "id": "g19",
    "loai": "tieu_de",
-   "tu": 103.85,
-   "den": 106.55,
+   "tu": 104.4,
+   "den": 106.6,
    "vi_tri": "giua",
    "dan": "Việt Nam",
    "khoa": "Không chỉ để ngắm nhìn"
@@ -818,8 +835,10 @@
    "id": "g20",
    "loai": "tu_khoa",
    "tu": 106.75,
-   "den": 109.95,
-   "vi_tri": "giua",
+   "den": 110.0,
+   "vi_tri": "phai",
+   "y": 650,
+   "co": 115,
    "muc": [
     {
      "chu": "Trải nghiệm",
@@ -839,16 +858,19 @@
    ]
   }
  ],
+ "binh_luan_nn": [
+  "en",
+  "ko"
+ ],
  "cta": {
-  "tu": 109.95,
+  "tu": 110.25,
   "cau_hoi": "Bạn muốn đặt chân đến đâu đầu tiên?",
   "lua_chon": [
    "Sa Pa",
    "Vịnh Hạ Long",
    "Ninh Bình",
    "Thác Bản Giốc"
-  ],
-  "viet_tay": "Bình luận cho mình biết nhé!"
+  ]
  },
  "sub": {
   "bat": true,

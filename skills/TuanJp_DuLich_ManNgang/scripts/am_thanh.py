@@ -7,7 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
-from chung import LUFS, NHAC_DANG, NHAC_LUI_MAX, NHAC_MUC, NHAC_SAN, SFX_DIR, TP, run
+from chung import LUFS, NHAC_DANG, NHAC_LUI_MAX, NHAC_MUC, NHAC_SAN, NHAC_TEASER, SFX_DIR, TP, run
 
 SR = 48000
 
@@ -78,6 +78,31 @@ def chuan_bi_nhac(m, n, n_day_du=None, bat_dau=None, khop_cuoi=True, bao=print):
     return m[:n].copy(), f_in, f_out
 
 
+def nhac_teaser(raw, nd, i_l, dau, bat_dau=None, khop_cuoi=True, bao=print):
+    """TEASER mở màn: [0, lech) phát đoạn CAO TRÀO của bài từ `dau` giây (đầu ô nhịp, nhip.chon_dau) → nối hoà tan
+    công suất đều 1 s (kết thúc 0,2 s sau lúc giọng vào) sang nhạc phần thân (lùi nhạc như thường: nốt kết trùng cuối video).
+    → (mảng nd mẫu, giây fade vào, giây fade ra)"""
+    x = np.abs(raw).max(1)
+    nz = np.where(x > 10 ** (-50 / 20))[0]
+    tr = raw[nz[0]:nz[-1] + 1] if len(nz) else raw
+    xf = int(1.0 * SR)
+    c0 = max(0, min(nd - 1, i_l - int(.8 * SR)))
+    c1 = min(nd, c0 + xf)
+    d0 = int(float(dau) * SR)
+    mt = tr[d0:d0 + c1]
+    if len(mt) < c1:
+        mt = np.concatenate([mt, np.zeros((c1 - len(mt), 2), np.float32)])
+    mb, _fi, fo = chuan_bi_nhac(raw, nd - c0, nd - c0, bat_dau, khop_cuoi, bao)
+    out = np.zeros((nd, 2), np.float32)
+    k = c1 - c0
+    r = np.linspace(0, 1, k, dtype=np.float32)[:, None] * (np.pi / 2)
+    out[:c0] = mt[:c0]
+    out[c0:c1] = mt[c0:c1] * np.cos(r) + mb[:k] * np.sin(r)
+    out[c1:] = mb[k:nd - c0]
+    bao(f'  nhạc: teaser từ {float(dau):.1f}s của bài (cao trào), nối hoà tan sang phần thân lúc {c0 / SR:.1f}–{c1 / SR:.1f}s')
+    return out, .02, fo
+
+
 def san_bang(m, toi_da=NHAC_SAN, giu_cuoi=4.0):
     """nâng đoạn nhạc NHỎ (intro / outro / bridge) lên gần mức đoạn chính, tối đa `toi_da` dB, mượt 3 s.
     Không nâng chỗ gần như lặng (tránh kéo ồn), không đụng `giu_cuoi` giây cuối (giữ nốt kết tự nhiên của bài)."""
@@ -99,9 +124,10 @@ def san_bang(m, toi_da=NHAC_SAN, giu_cuoi=4.0):
 
 
 def tron(giong, dur, out, tu=None, nhac=None, sfx=(), nhac_muc=NHAC_MUC, nhac_dang=NHAC_DANG, bao=print,
-         nhac_bat_dau=None, nhac_khop_cuoi=True, dai_video=None):
-    """giong: file giọng (video/audio). tu: [{w,s,e}] để biết chỗ lặng. sfx: [{luc,file,db,dai?}].
-    dai_video: độ dài video đầy đủ (bản xem trước 20 s vẫn căn nhạc theo video thật)."""
+         nhac_bat_dau=None, nhac_khop_cuoi=True, dai_video=None, lech=0.0, teaser_dau=None, nhac_teaser_db=NHAC_TEASER):
+    """giong: file giọng (video/audio). tu: [{w,s,e}] (giờ trong file giọng) để biết chỗ lặng. sfx: [{luc,file,db,dai?}] (giờ video).
+    dai_video: độ dài video đầy đủ (bản xem trước 20 s vẫn căn nhạc theo video thật).
+    lech: TEASER mở màn — giọng vào muộn `lech` giây; teaser_dau: giây trong nhạc bắt đầu teaser (đoạn cao trào)."""
     out = Path(out)
     tmp = out.with_name('_do_tam.wav')
     try:
@@ -109,18 +135,33 @@ def tron(giong, dur, out, tu=None, nhac=None, sfx=(), nhac_muc=NHAC_MUC, nhac_da
     except Exception:
         pass
     n = int(round(dur * SR))
-    v = doc(giong)[:n]
+    i_l = int(round(float(lech or 0) * SR))
+    v = doc(giong)
+    if i_l:
+        v = np.concatenate([np.zeros((i_l, 2), np.float32), v])
+        tu = [dict(w, s=w['s'] + lech, e=w['e'] + lech) for w in tu] if tu else tu
+    v = v[:n]
     v = np.pad(v, ((0, n - len(v)), (0, 0)))
     g = 10 ** ((-16.0 - _lufs_mang(v, tmp)) / 20)
     v *= g
     mix = v.copy()
     # ---- nhạc ----
     if nhac:
-        m, fi, fo = chuan_bi_nhac(doc(nhac), n, int(round((dai_video or dur) * SR)), nhac_bat_dau, nhac_khop_cuoi, bao)
+        nd = max(n, int(round((dai_video or dur) * SR)))
+        if i_l and teaser_dau is not None:
+            m, fi, fo = nhac_teaser(doc(nhac), nd, i_l, teaser_dau, nhac_bat_dau, nhac_khop_cuoi, bao)
+            m = m[:n].copy()
+        else:
+            m, fi, fo = chuan_bi_nhac(doc(nhac), n, nd, nhac_bat_dau, nhac_khop_cuoi, bao)
         m = san_bang(m)
         lm = _lufs_mang(m, tmp)
         m *= 10 ** ((-16.0 + nhac_muc - lm) / 20)
         env = np.zeros(n, np.float32)              # dB thêm theo thời gian
+        if i_l:                                    # teaser: nhạc là "giọng" → to, hạ dần về nền 0,6 s trước lúc giọng vào
+            a1 = max(0, min(n, i_l - int(.6 * SR)))
+            env[:a1] = nhac_teaser_db
+            b1 = min(n, i_l)
+            env[a1:b1] = np.linspace(nhac_teaser_db, 0, max(0, b1 - a1), dtype=np.float32)
         if tu:
             ds = [(0.0, tu[0]['s'])] + [(a['e'], b['s']) for a, b in zip(tu, tu[1:])] + [(tu[-1]['e'], dur)]
             for a, b in ds:
@@ -144,10 +185,14 @@ def tron(giong, dur, out, tu=None, nhac=None, sfx=(), nhac_muc=NHAC_MUC, nhac_da
         gain[-f_out:] *= np.linspace(1, 0, f_out)
         mt = m * gain[:, None]
         mix += mt
-        rel = _lufs_mang(mt, tmp) - _lufs_mang(v, tmp)
-        bao(f'  nhạc nền ≈ {rel:.1f} dB dưới giọng (cả bài)')
-        (out.parent / 'tron_bao_cao.json').write_text(json.dumps({'nhac': str(nhac), 'nhac_so_giong_db': round(rel, 1)}, ensure_ascii=False),
-                                                     encoding='utf-8')
+        rel = _lufs_mang(mt[i_l:], tmp) - _lufs_mang(v[i_l:], tmp)
+        bc = {'nhac': str(nhac), 'nhac_so_giong_db': round(rel, 1)}
+        bao(f'  nhạc nền ≈ {rel:.1f} dB dưới giọng (phần có giọng)')
+        if i_l > SR * 4:
+            tz = _lufs_mang(mt[:max(SR, i_l - int(.6 * SR))], tmp) - _lufs_mang(v[i_l:], tmp)
+            bc['teaser_so_giong_db'] = round(tz, 1)
+            bao(f'  teaser: nhạc ≈ {tz:+.1f} dB so với giọng phần thân')
+        (out.parent / 'tron_bao_cao.json').write_text(json.dumps(bc, ensure_ascii=False), encoding='utf-8')
     # ---- SFX ----
     # mức nghe rõ: tiếng có khoá 'tren' (dB trên giọng TẠI CHỖ) → gain tính riêng cho từng tiếng
     mono_v = v.mean(1)

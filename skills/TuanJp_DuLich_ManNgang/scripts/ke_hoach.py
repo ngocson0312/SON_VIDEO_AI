@@ -5,12 +5,41 @@ import re
 import unicodedata
 from pathlib import Path
 
-from chung import (BO_CUC, CANH_MIN, CHUYEN, CHUYEN_DONG, CTA_MIN, DUOI, FPS, GHEP_KHE, H, HIEN_ANH, HIEN_MIN, ICON, KHONG_CACH, LOAI_DH, NGON_NGU,
-                   NHO, SFX, SFX_TREN, SUB_MAX_KY_TU, SUB_MAX_TU, SUB_NGAT, THE_DOC_CAO, THE_DOC_X, W, ASSETS, doc_json, loi)
+from chung import (BAN_DO_MIN, BINH_LUAN_CACH, BINH_LUAN_DUNG, BO_CUC, BO_CUC_CHO, CANH_MIN, CANH_TEASER_MIN, CAT_Y_DOC, CHUYEN, CHUYEN_DONG,
+                   CTA_MIN, DUOI, FPS, GHEP_KHE, H, HIEN_ANH, HIEN_MIN, ICON, KHONG_CACH, LOAI_DH, MO_MAN_DAI, MO_MAN_MAX, MO_MAN_MIN, NGON_NGU, NHO,
+                   SFX, SFX_TREN, SUB_MAX_KY_TU, SUB_MAX_TU, SUB_NGAT, THE_DOC_CAO, THE_DOC_X, W, XUAT_PHAT_MAC_DINH, ASSETS, doc_json, gio_phut, loi,
+                   so_km)
 
 BAT_BUOC = {'mo_dau': ('chinh',), 'hook_tu': ('chu',), 'chuong': ('ten',), 'dia_danh': ('ten',), 'tu_khoa': ('muc',), 'tieu_de': ('khoa',), 'chip': ('muc',),
-            'so_lon': ('so',), 'liet_ke': ('muc',), 'trich': ('noi',), 'ban_do': ('diem',)}
+            'so_lon': ('so',), 'liet_ke': ('muc',), 'trich': ('noi',), 'ban_do': ('diem',), 'hanh_trinh': ('xuat_phat', 'diem_den'), 'binh_luan': ()}
 VI_TRI_DH = ('giua', 'trai', 'phai')
+BAN_DO_LOAI = ('hanh_trinh',)          # + chuong có toa_do → bản đồ A → B toàn màn
+
+# ---- TEASER: phần thân viết theo giờ trong loi_doc.txt; có mo_man thì mọi giờ phần thân dời thêm `dai` giây ----
+KHOA_GIO = {'tu', 'den', 'luc', 'dem_tu', 'luc_di', 'luc_den', 'luc_tg', 'luc_kc', 'luc_ten_di', 'luc_ten_den', 'luc_anh', 'luc_o', 'luc_cam_on', 'luc_binh_luan'}
+
+
+def _dich(o, off):
+    """dời mọi khoá giờ (tu, den, luc…) trong cảnh / đồ hoạ / cta (lồng nhau) thêm off giây."""
+    if isinstance(o, dict):
+        for k, v in list(o.items()):
+            if k in KHOA_GIO and isinstance(v, (int, float)) and not isinstance(v, bool):
+                o[k] = round(float(v) + off, 3)
+            elif k in KHOA_GIO and isinstance(v, list) and all(isinstance(z, (int, float)) for z in v):
+                o[k] = [round(float(z) + off, 3) for z in v]
+            elif isinstance(v, (dict, list)) and k not in ('toa_do', 'bd'):
+                _dich(v, off)
+    elif isinstance(o, list):
+        for z in o:
+            _dich(z, off)
+
+
+def _nhac_file(kh, work):
+    nh = kh.get('nhac')
+    if nh is False:
+        return None
+    nh = nh or doc_json(Path(work) / 'tai_nguyen.json').get('nhac')
+    return nh if nh and Path(nh).exists() else None
 
 
 # ---------------- sửa lỗi nhận lời ----------------
@@ -221,13 +250,86 @@ def giai(work, bao=loi):
     tu, khong = sua_tu(lj['tu'], kh.get('sua_loi'))
     for k in khong:
         Wn(f'sua_loi: không thấy cụm «{k}» trong lời (khoá phải đúng chữ Whisper trong loi_doc.txt)')
-    het_loi = tu[-1]['e'] if tu else lj.get('dai', 10)
+    # ---- TEASER mở màn (mo_man): ~20 s nhạc + cảnh đẹp nhất cắt theo nhịp + chữ lớn, rồi giọng mới vào ----
+    import copy
+    kh = copy.deepcopy(kh)
+    mm = kh.get('mo_man') or {}
+    nhac_f = _nhac_file(kh, work)
+    OFF, nhip_d, nhac_dau = 0.0, None, None
+    if mm and mm.get('bat', True) is not False and mm.get('canh'):
+        if not nhac_f:
+            Wn('mo_man: teaser cần NHẠC NỀN (Resources không có nhạc) → bỏ teaser, video mở thẳng bằng hook lời')
+            mm = {}
+        else:
+            import nhip as NH
+            nhip_d = NH.phan_tich(nhac_f, work, bao=lambda m: None)
+            dai = float(mm.get('dai', MO_MAN_DAI))
+            if not MO_MAN_MIN <= dai <= MO_MAN_MAX:
+                Wn(f'mo_man.dai {dai:.1f}s ngoài {MO_MAN_MIN:.0f}–{MO_MAN_MAX:.0f}s')
+            nhac_dau = mm.get('nhac_tu')
+            if nhac_dau is None:
+                nhac_dau = NH.chon_dau(nhip_d, dai)
+                TS(f'mo_man: nhạc teaser bắt đầu từ {nhac_dau:.2f}s của bài (đoạn cao trào, đầu ô nhịp ≈ {nhip_d["bpm"]:.0f} BPM)')
+            # khớp độ dài teaser về đầu ô nhịp gần nhất → giọng vào đúng phách mạnh
+            on = [x - nhac_dau for x in nhip_d['o_nhip'] if x - nhac_dau > MO_MAN_MIN - 1]
+            if on:
+                k = min(on, key=lambda x: abs(x - dai))
+                if abs(k - dai) > .02:
+                    TS(f'mo_man: dài {dai:.2f}s → {k:.2f}s (đúng đầu ô nhịp)')
+                dai = round(k, 3)
+            OFF = dai
+            phach = [round(x - nhac_dau, 3) for x in nhip_d['nhip'] if 0 <= x - nhac_dau <= OFF + .01]
+            # phần thân: mọi giờ dời OFF
+            for c in kh.get('canh') or []:
+                _dich(c, OFF)
+            for d in kh.get('do_hoa') or []:
+                _dich(d, OFF)
+            if kh.get('cta'):
+                _dich(kh['cta'], OFF)
+            kh['bo_di_chuyen'] = [float(x) + OFF for x in kh.get('bo_di_chuyen') or []]
+            tu = [dict(w, s=round(w['s'] + OFF, 3), e=round(w['e'] + OFF, 3)) for w in tu]
+            # cảnh teaser: giờ riêng 0…dai, bắt về phách gần nhất
+            tc = sorted([dict(c) for c in mm['canh']], key=lambda c: float(c['tu']))
+            for i, c in enumerate(tc):
+                c['tu'] = 0.0 if i == 0 else NH.bat_nhip(float(c['tu']), phach)
+                c.setdefault('id', f't{i + 1}')
+                c.setdefault('chuyen', 'phong' if i else 'cat')
+                c['_teaser'] = True
+            if tc and tc[-1]['tu'] > OFF - CANH_TEASER_MIN:
+                E(f"mo_man: cảnh teaser cuối bắt đầu {tc[-1]['tu']:.2f}s — quá sát lúc giọng vào ({OFF:.2f}s)")
+            body = kh.get('canh') or []
+            if body and float(min(c['tu'] for c in body)) > OFF + .01:
+                Wn(f'cảnh đầu phần thân không bắt đầu đúng lúc giọng vào — kéo về {OFF:.2f}s')
+                min(body, key=lambda c: c['tu'])['tu'] = OFF
+            kh['canh'] = tc + [c for c in body]
+            td = [dict(d, _teaser=True) for d in mm.get('do_hoa') or []]
+            for d in td:
+                if 'tu' in d and float(d['tu']) > .01:
+                    d['tu'] = NH.bat_nhip(float(d['tu']), phach, .25)
+            kh['do_hoa'] = td + list(kh.get('do_hoa') or [])
+            loi_teaser = [d for d in td if float(d.get('den', 0)) > OFF + .05]
+            for d in loi_teaser:
+                E(f"{d.get('id', d.get('loai'))}: chữ teaser kéo quá lúc giọng vào ({OFF:.2f}s)")
+    elif not mm:
+        Wn('chưa có mo_man (TEASER ~20 s đầu: cảnh đẹp nhất cắt theo nhịp nhạc + chữ lớn — khách 14/11/2026 chốt "đầu video cao trào giữ người xem")')
+    het_loi = tu[-1]['e'] if tu else lj.get('dai', 10) + OFF
     cta = dict(kh.get('cta') or {})
     co_cta = cta.get('bat', True)
-    dur = max(het_loi + DUOI, lj.get('dai', 0) + .2)
+    dur = max(het_loi + DUOI, lj.get('dai', 0) + OFF + .2)
     if co_cta:
         cta.setdefault('tu', max(0, het_loi - 4))
         dur = max(dur, cta['tu'] + CTA_MIN)
+        # màn KẾT CẢM ƠN: câu hỏi (nếu có) → "Cảm ơn bạn đã xem" khi giọng đọc xong → tay bấm Đăng ký → chuông → Thích
+        if cta.get('luc_cam_on'):
+            cta['luc_cam_on'] = round(float(cta['luc_cam_on']), 2)
+        elif cta.get('cau_hoi'):
+            cta['luc_cam_on'] = round(max(cta['tu'] + 1.4, min(het_loi + .15, cta['tu'] + 3.5)), 2)
+        else:
+            cta['luc_cam_on'] = round(cta['tu'] + .5, 2)
+        cta['luc_bam'] = round(cta['luc_cam_on'] + 1.8, 2)
+        cta['luc_chuong'] = round(cta['luc_bam'] + .55, 2)
+        cta['luc_thich'] = round(cta['luc_bam'] + 1.3, 2)
+        dur = max(dur, cta['luc_thich'] + 1.5)
     dur = math.ceil(dur * FPS) / FPS
     # ---- cảnh ----
     canh = sorted(kh.get('canh') or [], key=lambda c: c['tu'])
@@ -260,7 +362,7 @@ def giai(work, bao=loi):
         if ch == 'phong' and dai_c < .8 or ch != 'phong' and dai_c < 1.5:
             E(f'{cid} @ {tu0:.2f}s chỉ {dai_c:.2f}s — quá gấp, người xem chưa kịp nhìn')
         else:
-            nguong = 1.8 if tu0 < moc_hook else (2.0 if montage else CANH_MIN)
+            nguong = CANH_TEASER_MIN if c.get('_teaser') else (1.8 if tu0 < moc_hook else (2.0 if montage else CANH_MIN))
             if dai_c < nguong - .01:
                 Wn(f'{cid} @ {tu0:.2f}s đứng {dai_c:.2f}s (< {nguong:.1f} s) — gộp với cảnh kề / kéo dài cho kịp nhìn')
         a, b = max(0, tu0 - d_in / 2), min(dur, den + d_out / 2)
@@ -283,17 +385,23 @@ def giai(work, bao=loi):
                 rs.append(by[m])
         if not rs:
             continue
-        bc = c.get('bo_cuc') or ('ghep' if len(rs) > 1 else ('the_doc' if rs[0]['doc'] else
-                                                             ('the_anh' if rs[0]['loai'] == 'anh' and rs[0]['w'] < 1500 else 'tran')))
-        if bc not in BO_CUC:
-            E(f'{cid}: bo_cuc lạ «{bc}» (có: {", ".join(BO_CUC)})')
+        # LUÔN TRÀN MÀN (khách 14/11/2026: "không làm ảnh kiểu chia màn hình… giống màn dọc quá, lúc nào cũng full màn hình")
+        bc = c.get('bo_cuc') or 'tran'
+        if bc not in BO_CUC_CHO:
+            E(f'{cid}: bo_cuc «{bc}» — đã chốt LUÔN TRÀN MÀN (không chia ô / thẻ dọc / thẻ ảnh) → bỏ bo_cuc hoặc ghi "tran"')
             bc = 'tran'
-        if bc == 'ghep' and not 2 <= len(rs) <= 4:
-            E(f'{cid}: ghep cần 2–4 nguồn')
-        if bc == 'tran' and rs[0]['doc']:
-            Wn(f"{cid}: {rs[0]['ma']} là clip DỌC mà để tràn khung ngang → phóng {W / rs[0]['w']:.1f}× sẽ mờ; dùng the_doc / ghep")
-        if bc == 'tran' and rs[0]['loai'] == 'anh' and rs[0]['w'] < 1500:
-            Wn(f"{cid}: ảnh {rs[0]['ma']} chỉ {rs[0]['w']} px ngang — tràn khung sẽ mờ, nên dùng the_anh")
+        if len(rs) > 1:
+            E(f'{cid}: 1 cảnh chỉ 1 nguồn (không ghép ô) — tách thành nhiều cảnh nối tiếp')
+            rs, ds_vao = rs[:1], ds_vao[:1]
+        r0 = rs[0]
+        phong = max(W / max(1, r0['w']), H / max(1, r0['h']))
+        if r0['doc']:
+            if 'cat_y' not in c:
+                TS(f"{cid}: {r0['ma']} DỌC → tràn khung ngang, lấy dải 16:9 neo cao {CAT_Y_DOC:.2f} (đổi bằng cat_y 0–1)")
+            if phong > 1.9:
+                Wn(f"{cid}: {r0['ma']} dọc chỉ {r0['w']} px ngang — phóng {phong:.1f}× hơi mềm (đã làm nét bù); có cảnh ngang / 4K thì nên thay")
+        elif phong > 1.6:
+            Wn(f"{cid}: {r0['ma']} chỉ {r0['w']}×{r0['h']} — tràn khung phóng {phong:.1f}× sẽ mờ; nên thay nguồn to hơn")
         toc = float(c.get('toc_do', 1.0))
         cd = c.get('chuyen_dong', 'zoom_vao')
         if cd not in CHUYEN_DONG:
@@ -328,7 +436,8 @@ def giai(work, bao=loi):
             pw = (W - GHEP_KHE * (len(rs) - 1)) // len(rs) if bc == 'ghep' else 0
             p = {'id': f'{cid}_{k}', 'ma': r['ma'], 'loai': r['loai'], 'file': r['file'], 'w': r['w'], 'h': r['h'], 'hdr': r.get('hdr'),
                  'kieu': kieu, 'vao': round(v0, 3), 'toc': toc, 'n': n, 'pw': pw,
-                 'cat_x': float(theo('cat_x', k, .5)), 'cat_y': float(theo('cat_y', k, .5)), 'vung': theo('vung', k, None)}
+                 'cat_x': float(theo('cat_x', k, .5)), 'cat_y': float(theo('cat_y', k, CAT_Y_DOC if r['doc'] else .5)),
+                 'vung': theo('vung', k, None)}
             if p['vung'] is not None and (len(p['vung']) != 4 or not all(0 <= float(z) <= 1 for z in p['vung'])):
                 E(f"{cid}: vung phải là [x0, y0, x1, y1] trong 0–1")
                 p['vung'] = None
@@ -340,7 +449,8 @@ def giai(work, bao=loi):
         CS.append({'id': cid, 'tu': round(tu0, 3), 'den': round(den, 3), 'a': round(a, 3), 'b': round(b, 3), 'n': n, 'bo_cuc': bc,
                    'chuyen': ch if i > 0 else 'mo', 'd_in': d_in, 'chuyen_dong': cd, 'vi_tri': vt, 'toc': toc, 'lop': lop,
                    'nen': f'{cid}_nen' if bc in ('the_doc', 'the_anh') else None, 'nghieng': float(c.get('nghieng', 0)),
-                   'loai_nguon': [r['loai'] for r in rs], 'nhan': c.get('nhan'), 'luc_o': c.get('luc_o'), 'pw': (W - GHEP_KHE * (len(rs) - 1)) // len(rs) if bc == 'ghep' else 0})
+                   'loai_nguon': [r['loai'] for r in rs], 'nhan': c.get('nhan'), 'luc_o': c.get('luc_o'), 'pw': 0,
+                   'teaser': bool(c.get('_teaser'))})
     # ---- đồ hoạ ----
     DH = []
     for k, d in enumerate(kh.get('do_hoa') or []):
@@ -353,6 +463,9 @@ def giai(work, bao=loi):
         for f in BAT_BUOC.get(lo, ()):
             if not d.get(f):
                 E(f'{did} ({lo}): thiếu «{f}»')
+        if lo == 'binh_luan' and 'tu' in d:
+            d.setdefault('den', float(d['tu']) + BINH_LUAN_DUNG)
+            d.setdefault('vi_tri', 'phai')
         if 'tu' not in d or 'den' not in d:
             E(f'{did}: thiếu tu / den')
             continue
@@ -411,6 +524,121 @@ def giai(work, bao=loi):
                 TS(f"{d['id']}: chữ «{d.get('chu')}» chờ cảnh {c['id']} vào xong {d['tu']:.2f}→{xong:.2f}s")
                 d['tu'] = round(xong, 2)
                 break
+    # ---- BẢN ĐỒ A → B kiểu Google Maps (khách 14/11/2026): mỗi `chuong` có toa_do + mọi `hanh_trinh` ----
+    import ban_do_that as BDT
+    truoc = dict(kh.get('xuat_phat') or XUAT_PHAT_MAC_DINH)
+    so_ch = 0
+    for d in sorted(DH, key=lambda d: d['tu']):
+        lo, did = d['loai'], d['id']
+        if lo == 'chuong':
+            so_ch += 1
+            d.setdefault('so', f'{so_ch:02d}')
+        la_bd = lo == 'hanh_trinh' or (lo == 'chuong' and d.get('toa_do') and d.get('ban_do', True) is not False)
+        if lo == 'chuong' and not d.get('toa_do') and d.get('ban_do', True) is not False:
+            Wn(f"{did}: chương «{d.get('ten')}» chưa có toa_do → không có bản đồ A → B (run.py tim \"<tên>\" lấy toạ độ)")
+        if not la_bd:
+            continue
+        if lo == 'chuong':
+            d['diem_den'] = {'ten': d.get('ten_ban_do') or d['ten'], 'toa_do': d['toa_do']}
+            if not d.get('xuat_phat'):
+                d['xuat_phat'] = dict(truoc)
+        hong = False
+        for f in ('xuat_phat', 'diem_den'):
+            p = d.get(f)
+            if isinstance(p, str):
+                p = d[f] = {'ten': p}
+            td = (p or {}).get('toa_do')
+            if not (isinstance(td, list) and len(td) == 2 and -90 <= float(td[0]) <= 90 and -180 <= float(td[1]) <= 180):
+                E(f'{did}: {f}.toa_do phải là [lat, lon] (run.py tim "<tên>")')
+                hong = True
+        if hong:
+            continue
+        a, b = d['xuat_phat']['toa_do'], d['diem_den']['toa_do']
+        if BDT.km_giua(a, b) < .3:
+            E(f"{did}: điểm đi và điểm đến trùng nhau ({d['xuat_phat'].get('ten')} → {d['diem_den'].get('ten')})")
+            continue
+        if lo == 'chuong':
+            truoc = {'ten': d['diem_den']['ten'], 'toa_do': b}
+        pt = d.setdefault('phuong_tien', 'o_to')
+        if pt not in T.get('xe', {}):
+            E(f"{did}: phuong_tien «{pt}» (có: {', '.join(T.get('xe', {}))})")
+            continue
+        if d['den'] - d['tu'] < BAN_DO_MIN - .01:
+            E(f"{did}: bản đồ chỉ {d['den'] - d['tu']:.2f}s (< {BAN_DO_MIN}s — bay ra, chạy tuyến, sà vào điểm đến)")
+        dai_bd = d['den'] - d['tu']
+        d['luc_di'] = round(float(d.get('luc_di', d['tu'] + .35)), 3)
+        d['luc_den'] = round(float(d.get('luc_den') or max(d['luc_di'] + 1.6, min(d['den'] - 1.4, d['tu'] + .55 * dai_bd))), 3)
+        if not d['tu'] <= d['luc_di'] < d['luc_den'] <= d['den'] - .6:
+            E(f"{did}: cần tu ≤ luc_di < luc_den ≤ den − 0,6 (đang {d['tu']:.2f} / {d['luc_di']:.2f} / {d['luc_den']:.2f} / {d['den']:.2f})")
+        # số giờ / km: lời nói có thì theo lời (thoi_gian / khoang_cach); không có thì ước tính OSRM, luôn "≈"
+        try:
+            _r, km, giay, kieu = BDT.tuyen(work, a, b, pt, bao=lambda m: None)
+        except Exception as e:                                # noqa: BLE001
+            km, giay, kieu = None, None, '?'
+            Wn(f'{did}: không tính được tuyến ({e}) — cần mạng lần đầu')
+        tg, kc = d.get('thoi_gian'), d.get('khoang_cach')
+        d['chu_gio'] = str(tg) if tg else (gio_phut(giay, nn) if giay else None)
+        if isinstance(kc, (int, float)) and not isinstance(kc, bool):
+            d['km_so'], d['chu_km'] = float(kc), so_km(float(kc), nn)
+        elif kc:
+            d['km_so'], d['chu_km'] = None, str(kc)
+        elif km:
+            d['km_so'], d['chu_km'] = round(km), '≈ ' + so_km(km, nn)
+        d['chu_ghi'] = d.get('chu_ghi') or (T['xe'].get(pt, '') + (' · ' + T['uoc'] if not tg and giay else ''))
+        nguon_so = 'lời' if tg or kc else f'ước tính OSRM {kieu}'
+        d['_so'] = f"{d['xuat_phat'].get('ten')} → {d['diem_den'].get('ten')}: {d.get('chu_km') or '—'} · {d.get('chu_gio') or '—'} ({nguon_so})"
+        TS(f"{did}: bản đồ {d['_so']} — xác nhận số ở cổng duyệt")
+        if not d['chu_gio'] and not d.get('chu_km'):
+            Wn(f'{did}: bản đồ không có giờ / km (mạng?) — thẻ chỉ ghi tên')
+    # ---- BÌNH LUẬN ẢO tiếng Anh / Hàn (khách 14/11/2026): mỗi chương 1 đợt 3 thẻ khen / chê nhẹ, tự đặt chỗ trống ----
+    import binh_luan as BL
+    bl_nn = tuple(kh.get('binh_luan_nn') or BINH_LUAN_NN)
+    seed = kh.get('binh_luan_seed') or 'dln'
+    da_dung = set()
+    chs = sorted([d for d in DH if d['loai'] == 'chuong'], key=lambda d: d['tu'])
+    het_than = cta['tu'] if co_cta else dur
+    for d in [x for x in DH if x['loai'] == 'binh_luan']:          # bình luận Claude viết: điền phần thiếu
+        ch = max([c for c in chs if c['tu'] <= d['tu']] or [None], key=lambda c: c['tu'] if c else 0)
+        ten = d.get('ten') or (ch or {}).get('ten') or ''
+        loai = d.get('loai_canh') or BL.loai_canh(ten, (ch or {}).get('phu'))
+        if d.get('muc'):
+            d['muc'] = [BL.dien(m if isinstance(m, dict) else {'chu': str(m)}, seed, ten, loai, k, d['tu'] + k * BINH_LUAN_CACH, da_dung)
+                        for k, m in enumerate(d['muc'])]
+        else:
+            d['muc'] = BL.tao(seed, ten, loai, int(d.get('so', 3)), bl_nn, d['tu'], da_dung=da_dung)
+        d['ten'] = ten
+    if kh.get('binh_luan', True) is not False:
+        for i, ch in enumerate(chs):
+            if ch.get('binh_luan') is False:
+                continue
+            ket = chs[i + 1]['tu'] if i + 1 < len(chs) else het_than
+            if any(x['loai'] == 'binh_luan' and ch['tu'] <= x['tu'] < ket for x in DH):
+                continue
+            so = int(ch.get('so_binh_luan', 3))
+            dai_bl = max(BINH_LUAN_DUNG, (so - 1) * BINH_LUAN_CACH + 3.5)
+            chon = None
+            for vt in ('phai', 'trai'):
+                # tránh MỌI đồ hoạ lớn (chữ 2 bên cùng lúc rối mắt); chỉ chung khung với nhãn nhỏ dia_danh / chip
+                cam = [(x['tu'], x['den']) for x in DH if x['loai'] not in ('dia_danh', 'chip', 'binh_luan')]
+                cam += [(x['tu'], x['den']) for x in DH if x['loai'] == 'binh_luan']
+                t = round(float(ch.get('luc_binh_luan', ch['den'] + 2.5)), 2)
+                while t + dai_bl <= ket - .3:
+                    va = [(a_, b_) for a_, b_ in cam if a_ < t + dai_bl + .2 and b_ > t - .2]
+                    if not va:
+                        break
+                    t = round(max(b_ for _a, b_ in va) + .3, 2)
+                if t + dai_bl <= ket - .3 and (chon is None or t < chon[0] - 1.5):
+                    chon = (t, vt)
+            if not chon:
+                Wn(f"{ch['id']}: chương «{ch.get('ten')}» không còn chỗ trống {dai_bl:.0f}s cho bình luận ảo → thêm tay (loai binh_luan) hoặc binh_luan: false")
+                continue
+            t, vt = chon
+            ten = ch.get('ten_binh_luan') or ch.get('ten')
+            loai = ch.get('loai_canh') or BL.loai_canh(ten, ch.get('phu'))
+            bl = {'id': f"bl_{ch['id']}", 'loai': 'binh_luan', 'tu': t, 'den': round(t + dai_bl, 2), 'vi_tri': vt, 'ten': ten,
+                  'muc': BL.tao(seed, ten, loai, so, bl_nn, t, da_dung=da_dung), '_tu_dong': True}
+            DH.append(bl)
+            TS(f"{bl['id']}: {so} bình luận ảo ({'/'.join(bl_nn)}, loại {loai}) cho «{ten}» {t:.1f}–{bl['den']:.1f}s, cột {vt}")
     # chồng nhau: tối đa 1 đồ hoạ LỚN 1 lúc
     lon = sorted([d for d in DH if d['loai'] not in NHO], key=lambda d: d['tu'])
     for x, y in zip(lon, lon[1:]):
@@ -420,9 +648,6 @@ def giai(work, bao=loi):
     sub_cfg = kh.get('sub') or {}
     giu = list(sub_cfg.get('giu_lien') or []) + list((kh.get('sua_loi') or {}).values())
     SUB = gom_sub(tu, nn, giu) if sub_cfg.get('bat', True) else []
-    if co_cta:
-        for s in SUB:
-            pass
     # ---- màn kết ----
     if co_cta:
         cta['den'] = dur
@@ -432,9 +657,14 @@ def giai(work, bao=loi):
         cta['nut_da'] = cta.get('nut_da') or T['nut_da']
         cta['thich'] = cta.get('thich') or T['thich']
         cta['chia_se'] = cta.get('chia_se') or T['chia_se']
-        cta['luc_bam'] = round(cta['tu'] + 1.9, 2)
-        cta['luc_chuong'] = round(cta['luc_bam'] + .55, 2)
-        cta['luc_thich'] = round(cta['luc_bam'] + 1.25, 2)
+        cta['chuong_nhan'] = cta.get('chuong_nhan') or T.get('chuong_nhan') or ''
+        # màn KẾT CẢM ƠN (khách 14/11/2026: "cuối video cảm ơn mọi người xem và hãy like và đăng ký")
+        cta['cam_on'] = cta.get('cam_on') or T.get('cam_on') or T['tieu_de']
+        cta['loi_moi'] = cta.get('loi_moi') or T.get('loi_moi') or T['viet_tay']
+        if cta.get('lua_chon') and not cta.get('cau_hoi'):
+            E('cta.lua_chon cần cta.cau_hoi (câu hỏi trong lời, vd "Bạn muốn đặt chân đến đâu đầu tiên?")')
+        if len(cta.get('lua_chon') or []) > 5:
+            Wn('cta.lua_chon > 5 lựa chọn — hàng nút quá dài')
         if dur - cta['tu'] < CTA_MIN - .05:
             Wn(f"màn kết chỉ {dur - cta['tu']:.1f}s (< {CTA_MIN}s)")
     kenh = kh.get('kenh') or {}
@@ -455,13 +685,27 @@ def giai(work, bao=loi):
         cue.append({'luc': round(max(0, luc + lech), 3), 'file': f, 'db': db, 'ten': ten, **({'dai': dai} if dai else {}),
                     **({'tren': SFX_TREN[ten]} if ten in SFX_TREN else {})})
     for i, c in enumerate(CS):
-        if i == 0:
+        if i == 0 or c.get('teaser'):            # teaser: nhạc là xương sống — cắt cảnh không kèm whoosh
             continue
         sf = CHUYEN[c['chuyen']][1]
         if sf:
             S(sf, c['tu'] - c['d_in'] / 2)
     for d in DH:
         lo = d['loai']
+        if d.get('_teaser'):                    # chữ lớn đập vào trong teaser: 1 whoosh ngắn (không phải mọi chữ)
+            if lo in ('mo_dau', 'tieu_de', 'tu_khoa', 'hook_tu', 'so_lon') and d.get('sfx', True):
+                S('teaser_dap', d['tu'])
+            continue
+        if lo == 'binh_luan':
+            for m in d.get('muc') or []:
+                S('binh_luan', float(m.get('luc', d['tu'])))
+            continue
+        if lo == 'hanh_trinh' or (lo == 'chuong' and d.get('diem_den')):
+            S('ban_do_vao', d['tu'])
+            if d.get('phuong_tien') in ('o_to', 'xe_may', 'xe_buyt'):
+                S('xe_chay', d['luc_di'], dai=round(d['luc_den'] - d['luc_di'], 2))
+            S('toi_noi', d['luc_den'])
+            continue
         if lo == 'mo_dau':
             if d.get('drop', True):              # cú DROP: dồn → nổ trầm đúng lúc chữ đập vào
                 S('riser', d['tu'] - 1.85)
@@ -490,6 +734,7 @@ def giai(work, bao=loi):
         S('cta_vao', cta['tu'])
         if cta.get('lua_chon'):
             S('chip', cta['tu'] + .95)
+        S('lap_lanh', cta['luc_cam_on'])
         S('bam', cta['luc_bam'])
         S('chuong_bell', cta['luc_chuong'])
         S('thich', cta['luc_thich'])
@@ -502,7 +747,10 @@ def giai(work, bao=loi):
         gon.append(x)
     KH = {'W': W, 'H': H, 'fps': FPS, 'dur': dur, 'ngon_ngu': nn, 'canh': CS, 'do_hoa': DH, 'sub': SUB, 'cta': cta if co_cta else None,
           'kenh': kenh, 'T': T, 'khe': GHEP_KHE, 'the_doc_cao': THE_DOC_CAO, 'the_doc_x': THE_DOC_X,
-          'mau': kh.get('mau', {}), 'dien_anh': kh.get('dien_anh', True)}
+          'mau': kh.get('mau', {}), 'dien_anh': kh.get('dien_anh', True),
+          # teaser: giọng / sub / phần thân lùi `lech` giây; nhạc teaser lấy từ `teaser_dau` của bài, phần thân theo nhac_bat_dau
+          'lech': round(OFF, 3), 'teaser_dau': round(nhac_dau, 3) if OFF and nhac_dau is not None else None,
+          'nhac_bat_dau': kh.get('nhac_bat_dau'), 'bpm': nhip_d['bpm'] if nhip_d else None}
     return KH, CB, gon, L
 
 

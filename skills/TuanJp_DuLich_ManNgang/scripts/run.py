@@ -3,6 +3,7 @@
 
   python -I -X utf8 run.py cai-dat                                    (máy mới: kiểm thư viện / ffmpeg / Node / Chrome)
   python -I -X utf8 run.py quet    --audio <giọng> --res <thư mục Resources> [--nhac <file>] [--ngon-ngu vi] [--work <dir>]
+  python -I -X utf8 run.py tim     "<tên địa điểm>"                   (toạ độ [lat, lon] cho chương / bản đồ A → B — cần mạng)
   python -I -X utf8 run.py kiem-kh --work <dir>
   python -I -X utf8 run.py duyet   --work <dir>                       (ảnh duyệt duyet.jpg + bang_duyet.txt)
   python -I -X utf8 run.py dung    --work <dir> [--luong 4] [--out <ra.mp4>] [--xem-truoc]
@@ -21,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('lenh')
+    ap.add_argument('ten', nargs='?')
     ap.add_argument('--audio')
     ap.add_argument('--res')
     ap.add_argument('--nhac')
@@ -38,6 +40,10 @@ def main():
             raise SystemExit('⛔ thiếu --audio')
         from quet import quet
         quet(a.audio, a.res, a.nhac, a.ngon_ngu, a.work)
+        return
+    if L == 'tim':
+        from ban_do_that import tim
+        tim(a.ten or '')
         return
     if L == 'cai-dat':
         from cai_dat import cai_dat

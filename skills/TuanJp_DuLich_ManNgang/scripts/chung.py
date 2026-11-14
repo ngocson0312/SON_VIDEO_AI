@@ -20,7 +20,7 @@ KHUNG = ASSETS / 'khung'
 
 W, H, FPS = 1920, 1080, 30
 DUOI = 0.8               # giữ hình sau tiếng cuối (giây)
-CTA_MIN = 5.0            # màn kết (Đăng ký kênh) dài tối thiểu — YouTube cho gắn màn hình kết thúc 5–20 s cuối
+CTA_MIN = 6.5            # màn kết (câu hỏi → CẢM ƠN → Thích & Đăng ký) dài tối thiểu — YouTube cho gắn màn hình kết thúc 5–20 s cuối
 HIEN_MIN = 1.6           # mỗi mục chữ đứng ≥ 1,6 s (được hiện SỚM hơn lời)
 HIEN_ANH = 2.0           # ảnh đứng ≥ 2 s
 LUFS, TP = -14.0, -1.0   # YouTube chuẩn hoá về −14 LUFS
@@ -43,6 +43,10 @@ SUB_NGAT = 0.38          # khoảng lặng ≥ này giữa 2 từ ⇒ ngắt c�
 #   ghep      2–3 clip / ảnh dọc ghép cạnh nhau thành các ô cao trọn khung (trượt vào lần lượt)
 #   the_anh   ảnh nhỏ (< 1500 px ngang) thành thẻ ảnh có viền trên nền nhoè của chính nó
 BO_CUC = ('tran', 'the_doc', 'ghep', 'the_anh')
+# KHÁCH 14/11/2026: "không làm ảnh kiểu chia màn hình… giống màn hình dọc quá, LÚC NÀO CŨNG FULL MÀN HÌNH giữa ảnh và video"
+# → chỉ cho `tran` (clip / ảnh dọc cũng cắt dải 16:9 rồi phóng tràn, làm nét bù); the_doc / ghep / the_anh bị kiem-kh chặn ⛔.
+BO_CUC_CHO = ('tran',)
+CAT_Y_DOC = 0.42         # clip / ảnh DỌC tràn khung ngang: neo dải 16:9 hơi cao hơn giữa (trời + chủ thể, bớt chân / tay cầm máy)
 THE_DOC_CAO = 900        # chiều cao thẻ clip dọc (px) → rộng 506
 THE_DOC_X = {'giua': 960, 'trai': 600, 'phai': 1320}   # tâm x thẻ dọc theo vị trí
 GHEP_KHE = 10            # khe giữa các ô ghép
@@ -95,12 +99,42 @@ SFX = {
     'bam':       ('click-button.mp3', -7, 0.0),
     'chuong_bell': ('quick-ting.mp3', -10, 0.0),
     'thich':     ('pop.mp3', -9, 0.0),
+    'ban_do_vao': ('swoosh.mp3', -12, -0.08),        # bản đồ A → B bay vào
+    'xe_chay':   ('xe-chay.wav', -20, 0.0),           # tiếng xe rất nhỏ lúc tuyến chạy (bản đồ ô tô / xe máy)
+    'toi_noi':   ('ding.mp3', -16, 0.0),              # tới điểm đến — ghim rơi
+    'binh_luan': ('pop-2.mp3', -12, 0.0),             # mỗi thẻ bình luận ảo bật lên
+    'teaser_dap': ('whoosh-short.mp3', -9, -0.12),    # cú đập chữ trong teaser (chỉ cảnh `phong`)
 }
 
 # SFX phải NGHE RÕ trên nền giọng (người dùng từng chê "không thấy có SFX" khi đặt nhỏ): mức đỉnh 10 ms của tiếng so với giọng
 # TẠI CHỖ (±1,5 s quanh tiếng, trung vị RMS 50 ms) — bộ trộn tự tính gain cho từng tiếng; tiếng không có trong bảng dùng dB cố định.
 SFX_TREN = {'phong': 4, 'boom': 7, 'riser': 3, 'mo_dau': 4, 'zoom': 2, 'chuong_so': 0, 'bam': 4, 'thich': 2, 'cta_vao': 1,
-            'chip': -4, 'liet_ke': -4, 'ghim': -3, 'chuong_bell': 1}
+            'chip': -4, 'liet_ke': -4, 'ghim': -3, 'chuong_bell': 1, 'ban_do_vao': 1, 'toi_noi': -2, 'binh_luan': -5,
+            'xe_chay': -12}
+
+# ---- TEASER mở màn (khách 14/11/2026: "đầu video để đoạn cao trào giật gân giữ người xem tầm 30 s, xem cái là muốn đi du lịch luôn")
+#   ke_hoach.mo_man = {dai, canh[], do_hoa[]} — giờ RIÊNG 0…dai; giọng đọc lùi `dai` giây (mọi giờ phần thân = giờ trong loi_doc.txt).
+#   Teaser ~20 s chỉ có NHẠC (to như giọng, tới lúc giọng vào thì hạ về nền) + cảnh ĐẸP NHẤT mọi điểm đến cắt THEO NHỊP nhạc
+#   + chữ lớn đập vào; cộng hook lời ~10 s → ~30 s cao trào trước khi vào điểm đến đầu tiên.
+MO_MAN_DAI = 20.0        # teaser mặc định (giây) — tự khớp về ô nhịp gần nhất khi có nhạc
+MO_MAN_MIN, MO_MAN_MAX = 12.0, 32.0
+NHAC_TEASER = 12.0       # nhạc trong teaser dâng thêm (dB) so với mức nền (−14 + 12 ≈ −2 dB so với giọng) — nhạc là "giọng" của teaser
+CANH_TEASER_MIN = 1.8    # cảnh teaser cắt theo nhịp: ≥ 1,8 s (1 ô nhịp ~2–2,5 s) — người dùng ghét 1–2 s/cảnh "chưa kịp nhìn"
+
+# ---- BẢN ĐỒ A → B (khách 14/11/2026: "có ghi gg map Việt Nam đi từ điểm A đến B bao nhiêu km, bao nhiêu lâu")
+#   Mỗi `chuong` có toa_do = 1 BẢN ĐỒ VỆ TINH THẬT bay từ điểm trước (chương đầu: XUAT_PHAT_MAC_DINH) → điểm đến, tuyến xanh kiểu
+#   Google Maps, thẻ "≈ giờ · km" tính bằng đường đi thật OSRM (luôn có "≈"), bản đồ VN nhỏ góc (có Hoàng Sa, Trường Sa).
+XUAT_PHAT_MAC_DINH = {'ten': 'Hà Nội', 'toa_do': [21.0285, 105.8542]}
+BAN_DO_MIN = 3.6         # bản đồ đứng ≥ 3,6 s (bay ra → chạy → sà vào → tên điểm đến)
+TUYEN_XANH = '#4C8DF6'   # màu tuyến kiểu Google Maps
+
+# ---- BÌNH LUẬN ẢO (khách 14/11/2026: "mỗi địa điểm / món ăn có bình luận ảo bằng tiếng Anh, tiếng Hàn khen chê")
+#   Thẻ bình luận kiểu YouTube nổi bên PHẢI (avatar chữ cái, tên giả, cờ nhỏ, câu khen / chê nhẹ, lượt thích) — mỗi điểm đến 1 đợt
+#   2–3 thẻ. Ngân hàng câu theo loại cảnh: assets/binh_luan.json. NGOẠI LỆ duy nhất của luật ngôn ngữ (mục 10): bình luận theo
+#   tiếng `binh_luan_nn` (mặc định ["en", "ko"]), không theo tiếng audio. Tên người dùng tự đặt, không phải người thật.
+BINH_LUAN_NN = ('en', 'ko')
+BINH_LUAN_CACH = 1.25    # 2 thẻ cách nhau (giây)
+BINH_LUAN_DUNG = 6.0     # 1 đợt 3 thẻ đứng (giây) tính từ thẻ đầu — đủ đọc 3 câu ngắn
 
 # ---- nhạc nền (CHỈ file người dùng đưa trong Resources / --nhac) ----
 NHAC_MUC = -14.0         # nhạc dưới giọng (dB, cả bài)
@@ -111,18 +145,35 @@ NHAC_TEN = r'(music|background|nhac|nhạc|bgm|(^|[^a-z])bg([^a-z]|$)|beat|sound
 GIONG_TEN = r'(voice|giong|giọng|kich ?ban|kịch ?bản|thuyet ?minh|thuyết ?minh|narrat|loi ?doc|lời ?đọc|vo\b|audio)'
 
 # ---- chữ mặc định màn kết YouTube (theo ngôn ngữ giọng) ----
+#   cam_on / loi_moi: màn kết CẢM ƠN + mời Thích & Đăng ký (khách 14/11/2026: "cuối video cảm ơn mọi người xem và hãy like và đăng ký")
+#   gio / phut / o_to…: chữ trên thẻ bản đồ A → B
 NGON_NGU = {
     'vi': {'ten': 'tiếng Việt', 'nut': 'ĐĂNG KÝ', 'nut_da': 'ĐÃ ĐĂNG KÝ', 'tieu_de': 'Cùng khám phá Việt Nam',
-           'viet_tay': 'Hẹn gặp bạn ở chuyến đi tiếp theo', 'thich': 'Thích', 'chia_se': 'Chia sẻ', 'dan_chuong': 'Điểm đến',
-           'nguon': 'Ảnh'},
+           'viet_tay': 'Hẹn gặp bạn ở chuyến đi tiếp theo', 'thich': 'Thích', 'chia_se': 'Chia sẻ', 'chuong_nhan': 'Bật chuông', 'dan_chuong': 'Điểm đến',
+           'nguon': 'Ảnh', 'cam_on': 'Cảm ơn bạn đã xem', 'loi_moi': 'Nhấn Thích & Đăng ký kênh để cùng đi tiếp những hành trình mới nhé!',
+           'gio': 'giờ', 'phut': 'phút', 'xe': {'o_to': 'Ô tô', 'xe_may': 'Xe máy', 'xe_buyt': 'Xe khách', 'di_bo': 'Đi bộ',
+                                                  'may_bay': 'Máy bay', 'tau_hoa': 'Tàu hoả', 'tau_thuy': 'Tàu thuỷ', 'xe_dap': 'Xe đạp'},
+           'tuyen': 'Tuyến đường', 'uoc': 'ước tính theo đường đi thật'},
     'en': {'ten': 'English', 'nut': 'SUBSCRIBE', 'nut_da': 'SUBSCRIBED', 'tieu_de': 'Explore Vietnam with us',
-           'viet_tay': 'See you on the next trip', 'thich': 'Like', 'chia_se': 'Share', 'dan_chuong': 'Destination', 'nguon': 'Photo'},
+           'viet_tay': 'See you on the next trip', 'thich': 'Like', 'chia_se': 'Share', 'chuong_nhan': 'Notify', 'dan_chuong': 'Destination', 'nguon': 'Photo',
+           'cam_on': 'Thanks for watching', 'loi_moi': 'Like & subscribe to join the next journey!', 'gio': 'h', 'phut': 'min',
+           'xe': {'o_to': 'Car', 'xe_may': 'Motorbike', 'xe_buyt': 'Bus', 'di_bo': 'Walk', 'may_bay': 'Flight', 'tau_hoa': 'Train',
+                  'tau_thuy': 'Boat', 'xe_dap': 'Bike'}, 'tuyen': 'Route', 'uoc': 'estimated by real road'},
     'ko': {'ten': '한국어', 'nut': '구독', 'nut_da': '구독중', 'tieu_de': '함께 베트남을 여행해요', 'viet_tay': '다음 여행에서 만나요',
-           'thich': '좋아요', 'chia_se': '공유', 'dan_chuong': '여행지', 'nguon': '사진'},
+           'thich': '좋아요', 'chia_se': '공유', 'chuong_nhan': '알림', 'dan_chuong': '여행지', 'nguon': '사진', 'cam_on': '시청해 주셔서 감사합니다',
+           'loi_moi': '좋아요와 구독으로 다음 여행도 함께해요!', 'gio': '시간', 'phut': '분',
+           'xe': {'o_to': '자동차', 'xe_may': '오토바이', 'xe_buyt': '버스', 'di_bo': '도보', 'may_bay': '비행기', 'tau_hoa': '기차',
+                  'tau_thuy': '배', 'xe_dap': '자전거'}, 'tuyen': '경로', 'uoc': '실제 도로 기준 예상'},
     'ja': {'ten': '日本語', 'nut': 'チャンネル登録', 'nut_da': '登録済み', 'tieu_de': 'ベトナムを一緒に旅しよう', 'viet_tay': '次の旅でまた会いましょう',
-           'thich': '高評価', 'chia_se': '共有', 'dan_chuong': '目的地', 'nguon': '写真'},
+           'thich': '高評価', 'chia_se': '共有', 'chuong_nhan': '通知', 'dan_chuong': '目的地', 'nguon': '写真', 'cam_on': 'ご視聴ありがとうございました',
+           'loi_moi': '高評価とチャンネル登録で次の旅もご一緒に！', 'gio': '時間', 'phut': '分',
+           'xe': {'o_to': '車', 'xe_may': 'バイク', 'xe_buyt': 'バス', 'di_bo': '徒歩', 'may_bay': '飛行機', 'tau_hoa': '列車',
+                  'tau_thuy': '船', 'xe_dap': '自転車'}, 'tuyen': 'ルート', 'uoc': '実際の道路で概算'},
     'zh': {'ten': '中文', 'nut': '订阅', 'nut_da': '已订阅', 'tieu_de': '一起探索越南', 'viet_tay': '下次旅行再见',
-           'thich': '点赞', 'chia_se': '分享', 'dan_chuong': '目的地', 'nguon': '图片'},
+           'thich': '点赞', 'chia_se': '分享', 'chuong_nhan': '通知', 'dan_chuong': '目的地', 'nguon': '图片', 'cam_on': '感谢观看',
+           'loi_moi': '点赞并订阅，一起开启下一段旅程！', 'gio': '小时', 'phut': '分钟',
+           'xe': {'o_to': '汽车', 'xe_may': '摩托车', 'xe_buyt': '大巴', 'di_bo': '步行', 'may_bay': '飞机', 'tau_hoa': '火车',
+                  'tau_thuy': '船', 'xe_dap': '自行车'}, 'tuyen': '路线', 'uoc': '按实际道路估算'},
 }
 KHONG_CACH = ('ja', 'zh', 'th')
 
@@ -132,8 +183,36 @@ ICON = {'ghim', 'nui', 'bien', 'dao', 'thac', 'may', 'mat_troi', 'trang', 'sao',
         'thanh_pho', 'lich_su', 'dong_ho', 'nhiet_do', 'an_uong', 'ca_phe', 'lap_lanh', 'balo', 'la_ban', 'ban_do', 'nguoi', 'gio',
         'tuyet', 'mua', 'song_nuoc', 'non_la', 'cay', 'tich', 've', 'gia', 'khach_san', 'leu', 'hang'}
 
-LOAI_DH = ('mo_dau', 'hook_tu', 'chuong', 'dia_danh', 'tu_khoa', 'tieu_de', 'chip', 'so_lon', 'liet_ke', 'trich', 'ban_do')
-NHO = ('dia_danh', 'chip')       # đồ hoạ nhỏ — được chồng thời gian với 1 đồ hoạ lớn
+LOAI_DH = ('mo_dau', 'hook_tu', 'chuong', 'dia_danh', 'tu_khoa', 'tieu_de', 'chip', 'so_lon', 'liet_ke', 'trich', 'ban_do',
+           'hanh_trinh', 'binh_luan')
+NHO = ('dia_danh', 'chip', 'binh_luan')   # đồ hoạ nhỏ — được chồng thời gian với 1 đồ hoạ lớn (bình luận: cột phải)
+
+
+def gio_phut(giay, nn='vi'):
+    """giây → '≈ 5 giờ 15 phút' (làm tròn 5 phút dưới 1 giờ, 15 phút từ 1 giờ trở lên) theo chữ của ngôn ngữ."""
+    T = NGON_NGU.get(nn, NGON_NGU['en'])
+    p = giay / 60
+    p = max(5, int(round(p / 5) * 5)) if p < 60 else int(round(p / 15) * 15)
+    g, m = divmod(p, 60)
+    kc = '' if nn in KHONG_CACH or nn == 'ko' else ' '
+    if nn == 'en':
+        s = (f'{g} h ' if g else '') + (f'{m} min' if m else '')
+    elif g and m:
+        s = f"{g}{kc}{T['gio']} {m}{kc}{T['phut']}"
+    elif g:
+        s = f"{g}{kc}{T['gio']}"
+    else:
+        s = f"{m}{kc}{T['phut']}"
+    return '≈ ' + s.strip()
+
+
+def so_km(km, nn='vi'):
+    if km is None:
+        return ''
+    s = f'{km:.0f}' if km >= 20 else f'{km:.1f}'
+    if nn == 'vi':
+        s = s.replace('.', ',')
+    return f'{s} km'
 
 
 # ---------------- tiện ích ----------------

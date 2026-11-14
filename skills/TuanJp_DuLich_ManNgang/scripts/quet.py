@@ -178,9 +178,32 @@ def loi_doc_txt(tu, cau, work):
     (work / 'loi_doc.txt').write_text('\n'.join(L) + '\n', encoding='utf-8')
 
 
-def nhap(ds, tu, cau, dur, nn, khop, nhac):
-    """kế hoạch NHÁP: mỗi câu 1 cảnh, tài nguyên khớp tên đặt đúng câu nhắc, còn lại xoay vòng; bố cục theo hướng clip.
-    Claude PHẢI sửa theo nghĩa (đồ hoạ, bố cục, đoạn clip, chuyển cảnh)."""
+def _teaser_nhap(ds, nhip_d, nn):
+    """khung TEASER mở màn: ~20 s, 1 cảnh / ô nhịp, xoay vòng tài nguyên (ưu tiên clip), 1 tít đập cuối — Claude chọn lại cảnh ĐẸP NHẤT."""
+    import nhip as NH
+    from chung import MO_MAN_DAI
+    dau = NH.chon_dau(nhip_d, MO_MAN_DAI)
+    bars = [round(x - dau, 2) for x in nhip_d['o_nhip'] if 0 <= x - dau < MO_MAN_DAI - 1.5]
+    clip = [r for r in ds if r['loai'] == 'clip'] + [r for r in ds if r['loai'] == 'anh']
+    canh = []
+    for k, t in enumerate(bars):
+        if not clip:
+            break
+        r = clip[k % len(clip)]
+        canh.append({'id': f't{k + 1}', 'tu': t, 'nguon': r['ma'], 'vao': round(r['dai'] * .4, 1) if r['loai'] == 'clip' else 0,
+                     'chuyen': 'cat' if k == 0 else ('phong' if k % 3 == 1 else ('zoom_muot' if k % 3 == 2 else 'cat')),
+                     'chuyen_dong': 'zoom_vao' if k % 2 == 0 else 'lia_phai'})
+    t_cuoi = bars[-1] if bars else MO_MAN_DAI - 2.5
+    return {'dai': MO_MAN_DAI, 'nhac_tu': round(dau, 3), 'canh': canh,
+            'do_hoa': [{'id': 'tz1', 'loai': 'tieu_de', 'tu': round(t_cuoi, 2), 'den': round(MO_MAN_DAI - .25, 2),
+                        'dan': '<dẫn ngắn>', 'khoa': '<CHỮ KHOÁ TEASER>', 'viet_tay': '<1 dòng gợi cảm xúc>'}],
+            '_goi_y': 'TEASER: thay mọi cảnh bằng cảnh ĐẸP NHẤT của từng điểm đến (flycam, toàn cảnh, chuyển động mạnh), '
+                      'giờ cảnh = đầu ô nhịp (kiem-kh tự bắt phách); 2–4 chữ lớn đập đúng phách; không lặp đoạn clip với phần thân.'}
+
+
+def nhap(ds, tu, cau, dur, nn, khop, nhac, nhip_d=None):
+    """kế hoạch NHÁP: mỗi câu 1 cảnh TRÀN MÀN, tài nguyên khớp tên đặt đúng câu nhắc, còn lại xoay vòng; có nhạc → khung TEASER.
+    Claude PHẢI sửa theo nghĩa (teaser, chương + toạ độ bản đồ, đồ hoạ, đoạn clip, chuyển cảnh)."""
     dung = {}
     for ma, ks in khop.items():
         for (s, cum, L) in ks[:1]:
@@ -202,8 +225,7 @@ def nhap(ds, tu, cau, dur, nn, khop, nhac):
         if ma is None:
             continue
         r = by[ma]
-        bc = 'the_doc' if r['doc'] else ('the_anh' if r['loai'] == 'anh' and r['w'] < 1500 else 'tran')
-        canh.append({'id': f'c{len(canh) + 1}', 'tu': round(0 if not canh else c['s'] - .1, 2), 'nguon': ma, 'bo_cuc': bc,
+        canh.append({'id': f'c{len(canh) + 1}', 'tu': round(0 if not canh else c['s'] - .1, 2), 'nguon': ma,
                      'vao': round(r['dai'] * .2, 1) if r['loai'] == 'clip' else 0, 'chuyen': chuyen[k % len(chuyen)] if canh else 'loe',
                      'chuyen_dong': 'zoom_vao' if k % 2 == 0 else 'lia_phai', 'loi': c['text'][:60]})
         k += 1
@@ -219,9 +241,12 @@ def nhap(ds, tu, cau, dur, nn, khop, nhac):
         'kenh': {'ten': '', 'handle': '', 'avatar': None},
         'nhac': str(nhac) if nhac else None,
         'sua_loi': {},
+        **({'mo_man': _teaser_nhap(ds, nhip_d, nn)} if nhip_d else {}),
         'canh': canh,
         'do_hoa': [],
-        'cta': {'tu': round(cta_tu if cta_tu is not None else max(0, dur - 5), 2), 'tieu_de': T['tieu_de'], 'viet_tay': T['viet_tay']},
+        'binh_luan_nn': ['en', 'ko'],
+        'cta': {'tu': round(cta_tu if cta_tu is not None else max(0, dur - 5), 2), 'cau_hoi': None, 'lua_chon': [],
+                'cam_on': T.get('cam_on'), 'loi_moi': T.get('loi_moi')},
         'sub': {'bat': True, 'giu_lien': []},
     }
 
@@ -268,7 +293,13 @@ def quet(audio, res=None, nhac=None, ngon_ngu=None, work=None):
     to_tong(ds, work / 'tai_nguyen.jpg')
     n_doc = sum(1 for r in ds if r['doc'])
     loi(f"  {len(ds)} tài nguyên ({sum(r['loai'] == 'clip' for r in ds)} clip, {sum(r['loai'] == 'anh' for r in ds)} ảnh; "
-        f"{n_doc} DỌC → bố cục the_doc / ghep), nhạc nền: {nhac_f.name if nhac_f else 'không có'}")
+        f"{n_doc} DỌC → vẫn TRÀN MÀN, dải 16:9 neo cao), nhạc nền: {nhac_f.name if nhac_f else 'không có'}")
+    nhip_d = None
+    if nhac_f:
+        import nhip as NH
+        from chung import MO_MAN_DAI
+        nhip_d = NH.phan_tich(nhac_f, work)
+        loi(f"  teaser: đoạn cao trào gợi ý từ {NH.chon_dau(nhip_d, MO_MAN_DAI):.2f}s của bài")
     # ---- 3. gợi ý + nháp ----
     loi('3/3 Gợi ý khớp tên ↔ lời + kế hoạch nháp …')
     khop = khop_ten(ds, tu)
@@ -285,6 +316,6 @@ def quet(audio, res=None, nhac=None, ngon_ngu=None, work=None):
     if kp.exists() and not doc_json(kp).get('CAN_CLAUDE_SUA', True):
         loi('  ke_hoach.json đã sửa → GIỮ NGUYÊN (chỉ cập nhật tài nguyên)')
     else:
-        ghi_json(kp, nhap(ds, tu, cau, pa['duration'], nn, khop, nhac_f))
+        ghi_json(kp, nhap(ds, tu, cau, pa['duration'], nn, khop, nhac_f, nhip_d))
     loi(f'XONG. Đọc {work / "goi_y.txt"}, {work / "loi_doc.txt"}, mở tai_nguyen.jpg + khung/*.jpg, rồi viết ke_hoach.json theo NGHĨA.')
     return work

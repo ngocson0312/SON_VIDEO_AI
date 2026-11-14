@@ -30,15 +30,20 @@ def _khung_den(f, dur):
     return o
 
 
+def _kh_trang(work):
+    try:
+        txt = (Path(work) / 'trang.html').read_text(encoding='utf-8')
+        return json.loads(re.search(r'window\.KH = (\{.*?\});</script>', txt, re.S).group(1))
+    except Exception:
+        return None
+
+
 def _de_nhau(work):
     """dò sub đè chữ đồ hoạ: chụp hộp chữ mỗi 0,5 s bằng chính trang dựng."""
     from dung import _render
     trang = Path(work) / 'trang.html'
-    KH = None
-    try:
-        txt = trang.read_text(encoding='utf-8')
-        KH = json.loads(re.search(r'window\.KH = (\{.*?\});</script>', txt, re.S).group(1))
-    except Exception:
+    KH = _kh_trang(work)
+    if not KH:
         return None
     ts = [round(x * .5, 2) for x in range(1, int(KH['dur'] / .5))]
     rp = Path(work) / '_hop.json'
@@ -93,8 +98,30 @@ def kiem(work, file=None, bao=loi):
         R.append(f"{'✅' if dat else '⛔'} {ten}: {chi_tiet}")
     M(pa['w'] == W and pa['h'] == H, 'khổ', f"{pa['w']}×{pa['h']}")
     M(abs(pa['fps'] - FPS) < .01, 'fps', f"{pa['fps']:.2f}")
-    het = lj['tu'][-1]['e'] if lj.get('tu') else 0
-    M(pa['duration'] >= het + .3, 'không cắt giọng', f"video {pa['duration']:.2f}s, tiếng cuối {het:.2f}s")
+    KH = _kh_trang(work) or {}
+    lech = float(KH.get('lech') or 0)
+    het = (lj['tu'][-1]['e'] if lj.get('tu') else 0) + lech
+    M(pa['duration'] >= het + .3, 'không cắt giọng', f"video {pa['duration']:.2f}s, tiếng cuối {het:.2f}s" + (f' (giọng lùi {lech:.2f}s sau teaser)' if lech else ''))
+    if KH:
+        # góp ý khách 14/11/2026 thành luật kiểm trên mọi video
+        kc = [c for c in KH.get('canh', []) if c.get('bo_cuc') != 'tran']
+        M(not kc, 'luôn tràn màn', 'mọi cảnh tràn khung' if not kc else ', '.join(c['id'] for c in kc[:6]) + ' không tràn')
+        dh = KH.get('do_hoa', [])
+        ch = [d for d in dh if d['loai'] == 'chuong']
+        bd = [d for d in dh if d.get('bd')]
+        if ch:
+            M(len([d for d in ch if d.get('bd')]) == len([d for d in ch if d.get('toa_do') and d.get('ban_do', True) is not False]),
+              'bản đồ A → B', f"{len(bd)} tuyến: " + '; '.join(d.get('_so', '') for d in bd[:5]))
+        bl = [d for d in dh if d['loai'] == 'binh_luan']
+        if ch and kh.get('binh_luan', True) is not False:
+            co = {d.get('ten') for d in bl}
+            M(len(bl) >= len([d for d in ch if d.get('binh_luan') is not False]), 'bình luận ảo',
+              f"{len(bl)} đợt / {len(ch)} điểm đến ({', '.join(sorted(x for x in co if x))})")
+        if kh.get('mo_man'):
+            M(lech > 0, 'teaser mở màn', f'{lech:.1f}s chỉ nhạc trước khi giọng vào' if lech else 'không bật (thiếu nhạc?)')
+        c = KH.get('cta') or {}
+        if c:
+            M(bool(c.get('cam_on')), 'màn cảm ơn', f"«{c.get('cam_on')}» + Thích / Đăng ký")
     M(pa['audio'], 'có tiếng', 'AAC' if pa['audio'] else 'KHÔNG CÓ')
     d = _do_to(f)
     if d:
@@ -104,8 +131,12 @@ def kiem(work, file=None, bao=loi):
     rb = work / 'tron_bao_cao.json'
     if (kh.get('nhac') or doc_json(work / 'tai_nguyen.json').get('nhac')) and kh.get('nhac') is not False:
         if rb.exists():
-            r = doc_json(rb)['nhac_so_giong_db']
+            bcn = doc_json(rb)
+            r = bcn['nhac_so_giong_db']
             M(-24 <= r <= -9, 'nhạc nền', f'{r:.1f} dB dưới giọng')
+            if 'teaser_so_giong_db' in bcn:
+                z = bcn['teaser_so_giong_db']
+                M(-6 <= z <= 3, 'nhạc teaser', f'{z:+.1f} dB so với giọng (teaser phải to như giọng)')
         else:
             M(False, 'nhạc nền', 'kế hoạch có nhạc nhưng không thấy bản trộn')
     if rb.exists() and doc_json(rb).get('sfx'):

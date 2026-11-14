@@ -15,6 +15,7 @@ from ke_hoach import giai
 
 MAU_CLIP = 'eq=contrast=1.06:saturation=1.16:brightness=0.008:gamma=0.98,colorbalance=rm=0.025:bm=-0.03:rh=0.03:gh=0.01:bh=-0.03'
 NET = 'unsharp=5:5:0.6:5:5:0'
+NET_PHONG = 'cas=0.55,unsharp=5:5:0.35:5:5:0'   # nguồn phải phóng > 1,5× (clip dọc tràn khung ngang): làm nét thích ứng bù độ mềm
 DOC_CW, DOC_CH = 576, 1024          # khung lưu của thẻ dọc (hiện 506×900, dư cho Ken Burns)
 NEN_W, NEN_H = 384, 216             # nền nhoè lưu nhỏ, trang phóng lên (đã nhoè nên không lộ)
 
@@ -71,7 +72,7 @@ def chuan_bi(work, CB, bao=loi):
         k = p['kieu']
         tw, th = _kich_thuoc(p)
         if p['loai'] == 'clip':
-            khoa = bam(p['file'], p['vao'], p['toc'], p['n'], k, tw, th, p['cat_x'], p['cat_y'], p.get('vung'), MAU_CLIP, 3)
+            khoa = bam(p['file'], p['vao'], p['toc'], p['n'], k, tw, th, p['cat_x'], p['cat_y'], p.get('vung'), MAU_CLIP, NET_PHONG, 4)
             d = fd / f"{p['id']}_{khoa}"
             if not (d / f"{p['n']:05d}.jpg").exists():
                 if d.exists():
@@ -86,7 +87,8 @@ def chuan_bi(work, CB, bao=loi):
                     vf = f"setpts=PTS/{p['toc']},fps={FPS},{crop},scale={tw}:{th}:flags=bicubic,gblur=sigma=5,eq=saturation=1.2:brightness=-0.03"
                     q = '5'
                 else:
-                    vf = f"setpts=PTS/{p['toc']},fps={FPS},{crop},scale={tw}:{th}:flags=lanczos,{MAU_CLIP},{NET}"
+                    net = NET if tw / max(1, cw) <= 1.5 else NET_PHONG
+                    vf = f"setpts=PTS/{p['toc']},fps={FPS},{crop},scale={tw}:{th}:flags=lanczos,{MAU_CLIP},{net}"
                     q = '3'
                 vf = (hdr_vf if p.get('hdr') else '') + vf
                 run(['ffmpeg', '-v', 'error', '-y', '-ss', f"{p['vao']:.3f}", '-i', p['file'], '-vf', vf, '-frames:v', str(p['n']),
@@ -141,7 +143,11 @@ def viet_trang(work, KH):
                  ('BeVietnamPro-Bold.ttf', '700', 'normal'), ('BeVietnamPro-ExtraBold.ttf', '800', 'normal'),
                  ('BeVietnamPro-Black.ttf', '900', 'normal')],
          'MS': [('Montserrat-SemiBold.ttf', '600', 'normal'), ('Montserrat-Bold.ttf', '700', 'normal'),
-                ('Montserrat-ExtraBold.ttf', '800', 'normal')]}
+                ('Montserrat-ExtraBold.ttf', '800', 'normal')],
+         # bộ chữ NGANG riêng (khách 14/11/2026: "text khác hẳn màn dọc"): Barlow Condensed IN HOA + Montserrat nghiêng
+         'BC': [('BarlowCondensed-Black.ttf', '900', 'normal')], 'BCI': [('BarlowCondensed-BlackItalic.ttf', '900', 'normal')],
+         'BCE': [('BarlowCondensed-ExtraBold.ttf', '800', 'normal')],
+         'MSI': [('Montserrat-SemiBoldItalic.ttf', '600', 'normal'), ('Montserrat-BoldItalic.ttf', '700', 'normal')]}
     ff = [f"@font-face{{font-family:'{fam}';src:url('{url(FONT_DIR / f)}');font-weight:{wt};font-style:{st};font-display:block}}"
           for fam, ds in F.items() for f, wt, st in ds]
     html = f"""<!doctype html><html lang="{KH['ngon_ngu']}"><head><meta charset="utf-8">
@@ -180,6 +186,12 @@ def _chuan_bi_trang(work, bao=loi, cho_phep_loi=False):
         raise SystemExit(f'⛔ Kế hoạch còn {so} lỗi — chạy kiem-kh, sửa rồi dựng lại')
     tn = doc_json(Path(work) / 'tai_nguyen.json')
     KH['part'] = chuan_bi(work, CB, bao)
+    bds = [d for d in KH['do_hoa'] if d.get('diem_den') and d.get('xuat_phat') and (d['loai'] == 'hanh_trinh' or d['loai'] == 'chuong')]
+    if bds:
+        import ban_do_that as BDT
+        bao(f'  bản đồ A → B: {len(bds)} tuyến …')
+        for d in bds:
+            d['bd'] = BDT.chuan_bi(work, d, bao)
     kenh = KH.get('kenh') or {}
     if kenh.get('avatar'):
         a = Path(kenh['avatar'])
@@ -201,6 +213,10 @@ def _cho_duyet(KH):
     for c in KH['canh']:
         ts.append((round(c['tu'] + min(1.4, (c['den'] - c['tu']) * .55), 2), f"{c['id']} {c['bo_cuc']}"))
     for d in KH['do_hoa']:
+        if d.get('luc_den') and d.get('diem_den'):           # bản đồ: 1 khung lúc đang chạy tuyến + 1 khung lúc tới nơi
+            ts.append((round((d['luc_di'] + d['luc_den']) / 2 + .3, 2), f"{d['id']} bản đồ chạy"))
+            ts.append((round(min(d['den'] - .3, d['luc_den'] + .9), 2), f"{d['id']} tới {d['diem_den'].get('ten', '')}"))
+            continue
         ts.append((round(min(d['den'] - .3, d['tu'] + max(1.0, (d['den'] - d['tu']) * .6)), 2), f"{d['id']} {d['loai']}"))
     if KH.get('cta'):
         ts.append((round(KH['dur'] - .4, 2), 'màn kết'))
@@ -240,8 +256,20 @@ def duyet(work, bao=loi):
     _render(['--html', trang, '--anh', d, '--times', ','.join(f'{t:.2f}' for t, _ in ts)], bao)
     items = [(d / f'k_{t:.2f}.jpg', f'{t:.1f}s  {n}') for t, n in ts]
     _to_anh(work, items, work / 'duyet.jpg')
-    B = [f"DUYỆT — {KH['dur']:.1f}s, {len(KH['canh'])} cảnh, {len(KH['do_hoa'])} đồ hoạ, {len(KH['sub'])} cụm sub, {len(cue)} SFX", '',
-         'CẢNH:']
+    B = [f"DUYỆT — {KH['dur']:.1f}s, {len(KH['canh'])} cảnh, {len(KH['do_hoa'])} đồ hoạ, {len(KH['sub'])} cụm sub, {len(cue)} SFX", '']
+    if KH.get('lech'):
+        B += [f"TEASER mở màn 0–{KH['lech']:.2f}s (chỉ nhạc, từ {KH.get('teaser_dau') or 0:.2f}s của bài, ≈ {KH.get('bpm') or 0:.0f} BPM) → giọng vào {KH['lech']:.2f}s", '']
+    bd = [d for d in KH['do_hoa'] if d.get('_so')]
+    if bd:
+        B += ['BẢN ĐỒ A → B (số ≈ ước tính đường đi thật — XÁC NHẬN):'] + [f"  {d['tu']:6.2f}  {d['id']:5s} {d['_so']}" for d in bd] + ['']
+    bl = [d for d in KH['do_hoa'] if d['loai'] == 'binh_luan']
+    if bl:
+        B.append('BÌNH LUẬN ẢO:')
+        for d in bl:
+            B.append(f"  {d['tu']:6.2f}–{d['den']:6.2f}  {d.get('ten', '')} ({d.get('vi_tri')})")
+            B += [f"      [{m.get('nn')}] {m.get('ten')}: {m.get('chu')}" for m in d.get('muc') or []]
+        B.append('')
+    B.append('CẢNH:')
     for c in KH['canh']:
         B.append(f"  {c['tu']:6.2f}–{c['den']:6.2f}  {c['id']:5s} {c['bo_cuc']:8s} {c['chuyen']:8s} {', '.join(c['lop'])}")
     B += ['', 'ĐỒ HOẠ:']
@@ -252,7 +280,8 @@ def duyet(work, bao=loi):
         B.append(f"  {g['tu']:6.2f}–{g['den']:6.2f}  {g['id']:4s} {g['loai']:9s} {chu}")
     if KH.get('cta'):
         c = KH['cta']
-        B += ['', f"MÀN KẾT {c['tu']:.2f}s: {c.get('cau_hoi') or ''} | {c['tieu_de']} | {c['viet_tay']} | kênh: {KH['kenh'].get('ten') or '(trống)'}"]
+        B += ['', f"MÀN KẾT {c['tu']:.2f}s: {c.get('cau_hoi') or ''} {' / '.join(c.get('lua_chon') or [])} | {c['cam_on']} | {c['loi_moi']} | "
+                  f"kênh: {KH['kenh'].get('ten') or '(trống)'}"]
     B += ['', 'SUB:'] + [f"  {s['tu']:6.2f}  " + ' / '.join(' '.join(w['w'] for w in dg) for dg in s['dong']) for s in KH['sub']]
     (work / 'bang_duyet.txt').write_text('\n'.join(B) + '\n', encoding='utf-8')
     bao(f'→ {work / "duyet.jpg"}  ({len(ts)} khung) + bang_duyet.txt')
@@ -281,7 +310,7 @@ def _tron(work, KH, cue, out_wav, dur, bao=loi):
         bao(f'⚠ không thấy file nhạc {nhac} — bỏ nhạc')
         nhac = None
     return tron(lj['nguon'], dur, out_wav, tu=lj['tu'], nhac=nhac, sfx=cue, bao=bao, dai_video=KH['dur'],
-                nhac_bat_dau=kh.get('nhac_bat_dau'))
+                nhac_bat_dau=kh.get('nhac_bat_dau'), lech=KH.get('lech') or 0.0, teaser_dau=KH.get('teaser_dau'))
 
 
 def dung(work, luong=4, out=None, xem_truoc=False, bao=loi):

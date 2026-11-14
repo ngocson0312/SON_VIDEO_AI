@@ -1,56 +1,47 @@
-/* ngang.css — trang dựng 1920×1080 cho TuanJp_DuLich_ManNgang. Màu / phông chuẩn của skill nằm ở :root. */
+/* ngang.css — trang dựng 1920×1080 cho TuanJp_DuLich_ManNgang. Màu / phông chuẩn của skill nằm ở :root.
+ * KIỂU CHỮ RIÊNG CỦA BẢN NGANG (khách 14/11/2026: "text khác hẳn skill màn dọc, nhưng vẫn là kiểu text / sub du lịch"):
+ *   tít BC = Barlow Condensed Black IN HOA trắng · nhấn XANH NGỌC #4FE3D0 (không vàng) · dòng phụ MSI = Montserrat nghiêng
+ *   (không viết tay) · nhãn BCE = Barlow Condensed ExtraBold giãn chữ · sub hộp tối bo góc, chữ đang đọc xanh ngọc.
+ *   Bản dọc dùng serif Playfair + viết tay Dancing Script + vàng — KHÔNG dùng lại ở đây. */
 :root {
-  --vang: #F4C66A;
-  --vang2: #FFE3A3;
-  --vang3: #D9A441;
-  --kem: #FFF6E6;
-  --toi: rgba(8, 11, 16, .62);
+  --nhan: #4FE3D0;
+  --nhan2: #B9FFF6;
+  --nhan3: #16B3A1;
+  --trang: #FFFFFF;
+  --toi: rgba(6, 10, 14, .6);
   --do: #FF0033;
-  --sub-vang: #FFC845;
+  --gg: #4C8DF6;
+  --gg_vien: #1A4FB0;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
 #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; background: #050608;
-  font-family: 'BVP', sans-serif; color: var(--kem); -webkit-font-smoothing: antialiased; }
+  font-family: 'BVP', 'Malgun Gothic', 'Segoe UI Emoji', sans-serif; color: #fff; -webkit-font-smoothing: antialiased; }
 .abs { position: absolute; }
 img { display: block; }
 
-/* ---------- footage ---------- */
+/* ---------- footage: LUÔN TRÀN MÀN ---------- */
 #canh_lop { position: absolute; inset: 0; z-index: 1; }
 .canh { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; background: #07080b; will-change: transform, opacity; }
 .canh .full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; transform-origin: 50% 50%; }
-.canh .nen { position: absolute; left: -96px; top: -54px; width: 2112px; height: 1188px; object-fit: cover; filter: brightness(.58) saturate(1.15); }
-.canh .nen_phu { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 30%, rgba(0,0,0,.45) 100%); }
-.the_doc { position: absolute; overflow: hidden; border-radius: 26px; box-shadow: 0 30px 70px rgba(0,0,0,.55), 0 0 0 3px rgba(255,246,230,.88);
-  background: #111; }
-.the_doc img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
-.the_doc .bong { position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 32%); }
-.ghep_nen { position: absolute; inset: 0; background: #0b0c10; }
-.o_ghep { position: absolute; top: 0; height: 1080px; overflow: hidden; background: #111; }
-.o_ghep img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
-.o_ghep .vien { position: absolute; inset: 0; box-shadow: inset 0 0 0 2px rgba(255,246,230,.18); }
-.the_anh { position: absolute; background: #FFF9EE; padding: 16px 16px 16px 16px; border-radius: 10px;
-  box-shadow: 0 34px 80px rgba(0,0,0,.6); }
-.the_anh .khung_anh { position: relative; overflow: hidden; border-radius: 4px; }
-.the_anh img { width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
 
 /* ---------- màu phim ---------- */
 #mau { position: absolute; inset: 0; z-index: 5; pointer-events: none;
-  background: linear-gradient(180deg, rgba(255,190,110,.10) 0%, rgba(255,190,110,0) 40%, rgba(20,40,70,0) 70%, rgba(10,20,40,.16) 100%);
+  background: linear-gradient(180deg, rgba(255,196,130,.08) 0%, rgba(255,196,130,0) 40%, rgba(20,60,80,0) 70%, rgba(10,30,45,.14) 100%);
   mix-blend-mode: soft-light; }
 #vignette { position: absolute; inset: 0; z-index: 6; pointer-events: none;
-  background: radial-gradient(ellipse 75% 70% at 50% 48%, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%); }
-#day_toi { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; z-index: 7; pointer-events: none;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.18) 45%, rgba(0,0,0,.5) 100%); }
-#hat { position: absolute; inset: -64px; z-index: 8; pointer-events: none; opacity: .075; mix-blend-mode: overlay; }
+  background: radial-gradient(ellipse 78% 72% at 50% 48%, rgba(0,0,0,0) 58%, rgba(0,0,0,.38) 100%); }
+#day_toi { position: absolute; left: 0; right: 0; bottom: 0; height: 240px; z-index: 7; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.14) 50%, rgba(0,0,0,.38) 100%); }
+#hat { position: absolute; inset: -64px; z-index: 8; pointer-events: none; opacity: .07; mix-blend-mode: overlay; }
 #loe { position: absolute; inset: -20%; z-index: 9; pointer-events: none; mix-blend-mode: screen; opacity: 0;
   background:
-    radial-gradient(ellipse 34% 52% at 30% 45%, rgba(255,170,70,.95) 0%, rgba(255,140,40,.0) 70%),
-    radial-gradient(ellipse 28% 44% at 62% 55%, rgba(255,215,140,.9) 0%, rgba(255,200,120,0) 70%),
-    radial-gradient(ellipse 22% 36% at 80% 35%, rgba(255,120,140,.75) 0%, rgba(255,110,130,0) 70%); }
-#trang { position: absolute; inset: 0; z-index: 9; pointer-events: none; background: #FFF4DE; opacity: 0; }
+    radial-gradient(ellipse 34% 52% at 30% 45%, rgba(255,170,90,.9) 0%, rgba(255,140,60,0) 70%),
+    radial-gradient(ellipse 28% 44% at 62% 55%, rgba(170,255,240,.75) 0%, rgba(120,230,220,0) 70%),
+    radial-gradient(ellipse 22% 36% at 80% 35%, rgba(255,150,120,.7) 0%, rgba(255,110,130,0) 70%); }
+#trang { position: absolute; inset: 0; z-index: 9; pointer-events: none; background: #F4FFFD; opacity: 0; }
 #man { position: absolute; top: -200px; height: 1480px; width: 520px; z-index: 9; pointer-events: none;
-  background: linear-gradient(90deg, rgba(255,246,230,0) 0%, rgba(255,240,214,.95) 22%, #FFF6E6 50%, rgba(244,198,106,.95) 78%, rgba(244,198,106,0) 100%);
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(230,255,252,.95) 22%, #FFFFFF 50%, rgba(79,227,208,.95) 78%, rgba(79,227,208,0) 100%);
   transform-origin: 50% 50%; }
 #den { position: absolute; inset: 0; z-index: 10; background: #000; pointer-events: none; opacity: 0; }
 .bar { position: absolute; left: 0; width: 1920px; height: 132px; background: #000; z-index: 11; pointer-events: none; }
@@ -63,89 +54,143 @@ img { display: block; }
 .man_toi { position: absolute; pointer-events: none; }
 
 /* chữ */
-/* Chữ GRADIENT (background-clip:text, màu trong suốt): phần glyph ra NGOÀI hộp phần tử không được tô → MẤT DẤU tiếng Việt
-   (Ể, Ấ, Ữ… cao hơn line-height 1). Nới hộp trên / dưới bằng padding rồi bù margin âm để bố cục không đổi. */
-.vang_grad, .kem_grad, .chu_drop { padding: .26em .05em .16em; margin: -.26em -.05em -.16em; }
-.serif { font-family: 'PF', serif; font-weight: 900; line-height: 1.02; letter-spacing: .005em; }
-.tay { font-family: 'DS', cursive; font-weight: 700; color: var(--vang); line-height: 1.1;
-  text-shadow: 0 3px 14px rgba(0,0,0,.55); }
-.caps { font-family: 'MS', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .32em; }
-.vang_grad { background: linear-gradient(180deg, #FFF1C9 0%, #F8D486 45%, #E4AE4C 100%); -webkit-background-clip: text; background-clip: text;
-  color: transparent; filter: drop-shadow(0 4px 18px rgba(0,0,0,.55)); }
-.chu_drop { background: linear-gradient(100deg, #F3DDB4 0%, #FFF6E6 36%, #FFFFFF 45%, #FFE09A 50%, #FFFFFF 55%, #FFF6E6 64%, #F3DDB4 100%);
+.tit { font-family: 'BC', 'Malgun Gothic', sans-serif; font-weight: 900; text-transform: uppercase; line-height: .94; letter-spacing: .004em;
+  color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.45); }
+.tit_i { font-family: 'BCI', 'BC', 'Malgun Gothic', sans-serif; font-weight: 900; text-transform: uppercase; line-height: .94;
+  color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.45); }
+.nhan_nho { font-family: 'BCE', 'Malgun Gothic', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: .26em; color: var(--nhan);
+  text-shadow: 0 2px 12px rgba(0,0,0,.65); white-space: nowrap; }
+.nghieng { font-family: 'MSI', 'Malgun Gothic', sans-serif; font-weight: 600; line-height: 1.15; color: #fff;
+  text-shadow: 0 3px 16px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.5); }
+.nghieng.dam { font-weight: 700; }
+.nghieng.ngoc { color: var(--nhan); }
+/* chữ sáng loé (cú drop): gradient trắng → ngọc quét qua. background-clip:text làm MẤT DẤU ở phần glyph ra ngoài hộp
+   (Ể, Ấ, Ữ cao hơn line-height) → nới hộp bằng padding rồi bù margin âm. */
+.chu_sang { padding: .3em .05em .16em; margin: -.3em -.05em -.16em;
+  background: linear-gradient(100deg, #FFFFFF 0%, #FFFFFF 38%, #DFFFFA 45%, #4FE3D0 50%, #DFFFFA 55%, #FFFFFF 62%, #FFFFFF 100%);
   background-size: 300% 100%; background-position: 100% 50%; -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 6px 26px rgba(0,0,0,.65)); transform-origin: 50% 55%; }
-.kem_grad { background: linear-gradient(180deg, #FFFFFF 0%, #FFF6E6 55%, #F3DDB4 100%); -webkit-background-clip: text; background-clip: text;
-  color: transparent; filter: drop-shadow(0 5px 22px rgba(0,0,0,.6)); }
+  text-shadow: none; filter: drop-shadow(0 6px 26px rgba(0,0,0,.6)); transform-origin: 50% 55%; }
 .bong_chu { text-shadow: 0 4px 18px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.5); }
 .ch { display: inline-block; white-space: pre; }
 .dong { display: block; white-space: nowrap; }
-.mask { display: block; overflow: hidden; padding: .06em .04em .14em; margin: -.06em -.04em -.14em; }
-.vach { position: absolute; height: 2px; background: linear-gradient(90deg, rgba(244,198,106,0), var(--vang) 30%, var(--vang) 70%, rgba(244,198,106,0)); }
+.mask { display: block; overflow: hidden; padding: .24em .04em .32em; margin: -.24em -.04em -.32em; }   /* đáy .32em: không cắt dấu nặng (CẢM ƠN BẠN) */
+.vach_n { position: absolute; height: 8px; border-radius: 4px; background: var(--nhan); box-shadow: 0 2px 12px rgba(0,0,0,.35); }
+.gach_n { width: 64px; height: 5px; border-radius: 3px; background: var(--nhan); flex: none; }
 
-/* chương */
-.so_vien { font-family: 'AN', sans-serif; font-size: 230px; line-height: .9; color: transparent; -webkit-text-stroke: 2.5px var(--vang);
+/* chương (khi không có bản đồ) */
+.so_vien { font-family: 'BC', sans-serif; font-weight: 900; font-size: 230px; line-height: .86; color: transparent; -webkit-text-stroke: 3px var(--nhan);
   position: relative; display: inline-block; }
-.so_vien .to { position: absolute; left: 0; top: 0; color: var(--vang); -webkit-text-stroke: 0; }
-.nhan_chuong { display: flex; align-items: center; gap: 22px; }
-.nhan_chuong .gach { width: 90px; height: 3px; background: var(--vang); }
+.so_vien .to { position: absolute; left: 0; top: 0; color: var(--nhan); -webkit-text-stroke: 0; }
+.nhan_chuong { display: flex; align-items: center; gap: 18px; }
 
 /* địa danh (lower third) */
-.ld_tron { position: absolute; width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(160deg, #FFE7A8, #E2A94A);
-  box-shadow: 0 8px 26px rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; color: #2A1B05; }
+.ld_tron { position: absolute; width: 84px; height: 84px; border-radius: 50%; background: var(--nhan);
+  box-shadow: 0 8px 26px rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; color: #08302B; }
 .ld_tron svg { width: 46px; height: 46px; }
-.ld_gach { position: absolute; width: 3px; background: var(--vang); }
+.ld_vach { position: absolute; width: 8px; border-radius: 4px; background: var(--nhan); }
 
-/* chip */
-.chip { position: absolute; display: flex; align-items: center; gap: 16px; height: 86px; padding: 0 34px 0 14px; border-radius: 44px;
-  background: linear-gradient(180deg, rgba(20,24,32,.78), rgba(10,12,18,.72)); box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1.5px rgba(244,198,106,.55);
-  white-space: nowrap; font-weight: 700; font-size: 40px; color: var(--kem); }
-.chip .ic { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(160deg, #FFE7A8, #E2A94A); display: flex;
-  align-items: center; justify-content: center; color: #2A1B05; flex: none; }
+/* chip — viên trắng, chữ tối, icon tròn ngọc */
+.chip { position: absolute; display: flex; align-items: center; gap: 14px; height: 76px; padding: 0 30px 0 10px; border-radius: 40px;
+  background: rgba(255,255,255,.94); box-shadow: 0 12px 30px rgba(0,0,0,.32); white-space: nowrap; font-weight: 700; font-size: 34px; color: #0E1B22; }
+.chip .ic { width: 58px; height: 58px; border-radius: 50%; background: var(--nhan); display: flex; align-items: center; justify-content: center;
+  color: #07302B; flex: none; }
 .chip .ic svg { width: 32px; height: 32px; }
 
-/* liệt kê */
-.bang { position: absolute; border-radius: 30px; padding: 40px 48px 44px; background: linear-gradient(170deg, rgba(18,22,30,.80), rgba(8,10,14,.74));
-  box-shadow: 0 30px 70px rgba(0,0,0,.45), inset 0 0 0 1.5px rgba(244,198,106,.45); }
-.bang .dan { font-family: 'MS', sans-serif; font-weight: 700; letter-spacing: .28em; text-transform: uppercase; color: var(--vang); font-size: 32px;
-  margin-bottom: 22px; }
-.muc { display: flex; align-items: center; gap: 24px; height: 94px; font-size: 50px; font-weight: 700; white-space: nowrap; }
-.muc .tick { width: 58px; height: 58px; border-radius: 50%; border: 3px solid var(--vang); display: flex; align-items: center;
-  justify-content: center; color: var(--vang); flex: none; }
-.muc .tick svg { width: 30px; height: 30px; }
+/* liệt kê — KHÔNG hộp: số thứ tự ngọc + chữ in hoa trắng */
+.lk { position: absolute; }
+.lk .dan_lk { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.muc { display: flex; align-items: center; gap: 22px; height: 92px; white-space: nowrap; }
+.muc .so_m { font-family: 'BCE', sans-serif; font-weight: 800; font-size: 44px; color: var(--nhan); width: 64px; text-shadow: 0 2px 10px rgba(0,0,0,.6); flex: none; }
+.muc .chu_m { font-family: 'BC', sans-serif; font-weight: 900; font-size: 70px; text-transform: uppercase; line-height: 1; color: #fff;
+  text-shadow: 0 5px 22px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.5); }
 
-/* sub */
+/* ---------- bản đồ A → B kiểu Google Maps ---------- */
+.bd_ab { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0d1624; transform-origin: 58% 45%; }
+.bd_cv { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; filter: saturate(1.08) contrast(1.04) brightness(.96); }
+.bd_toi { position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,.22) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 66%, rgba(0,0,0,.42) 100%),
+              linear-gradient(90deg, rgba(0,0,0,.32) 0%, rgba(0,0,0,0) 34%); }
+.bd_tuyen { position: absolute; left: 0; top: 0; overflow: visible; }
+.bd_a { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: #fff; border: 7px solid var(--gg);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.9), 0 4px 14px rgba(0,0,0,.5); }
+.bd_song { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; background: rgba(76,141,246,.35);
+  border: 2px solid rgba(76,141,246,.9); }
+.bd_ghim { position: absolute; width: 74px; height: 98px; filter: drop-shadow(0 8px 12px rgba(0,0,0,.5)); transform-origin: 50% 100%; }
+.bd_xe { position: absolute; width: 0; height: 0; }
+.bd_xe .ic { position: absolute; left: -32px; top: -32px; width: 64px; height: 64px; border-radius: 50%; background: #fff; color: var(--gg);
+  display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 4px var(--gg), 0 8px 18px rgba(0,0,0,.45); }
+.bd_xe .ic svg { width: 36px; height: 36px; }
+.bd_xe .mb { position: absolute; left: -48px; top: -48px; width: 96px; height: 96px; filter: drop-shadow(0 10px 10px rgba(0,0,0,.45)); }
+.bd_tag { position: absolute; padding: 8px 20px 9px; border-radius: 999px; background: #fff; color: #202124; font-weight: 700; font-size: 30px;
+  white-space: nowrap; box-shadow: 0 6px 20px rgba(0,0,0,.4); }
+.bd_tag.den { color: #fff; background: #EA4335; }
+.the_tt { position: absolute; left: 96px; top: 236px; min-width: 520px; width: max-content; max-width: 780px; background: #fff; border-radius: 24px; padding: 26px 30px 24px;
+  box-shadow: 0 26px 60px rgba(0,0,0,.45); color: #202124; transform-origin: 0 50%; }
+.the_tt .tt_nhan { font-family: 'BCE', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: .2em; color: #5F6368; text-transform: uppercase; }
+.the_tt .tt_tuyen { display: flex; align-items: center; gap: 14px; margin-top: 12px; font-weight: 700; font-size: 36px; white-space: nowrap; }
+.the_tt .tt_tuyen .mui { color: #9AA0A6; font-weight: 600; }
+.the_tt .tt_hang { display: flex; align-items: center; gap: 16px; margin-top: 18px; padding-top: 18px; border-top: 2px solid #E8EAED; white-space: nowrap; }
+.the_tt .tt_ic { width: 64px; height: 64px; border-radius: 50%; background: #E8F0FE; color: var(--gg); display: flex; align-items: center;
+  justify-content: center; flex: none; }
+.the_tt .tt_ic svg { width: 38px; height: 38px; }
+.the_tt .tt_gio { font-weight: 800; font-size: 50px; color: #188038; line-height: 1; }
+.the_tt .tt_km { font-weight: 600; font-size: 34px; color: #5F6368; }
+.the_tt .tt_ghi { margin-top: 12px; font-weight: 500; font-size: 22px; color: #5F6368; white-space: nowrap; }
+.the_vn { position: absolute; right: 72px; top: 56px; padding: 14px 14px 10px; border-radius: 20px; background: rgba(255,255,255,.93);
+  box-shadow: 0 16px 40px rgba(0,0,0,.4); transform-origin: 100% 0; }
+.toi_noi { position: absolute; display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+/* ---------- bình luận ảo (thẻ kiểu YouTube, cột phải) ---------- */
+.bl_cot { position: absolute; left: 1250px; top: 104px; width: 574px; }
+.bl { position: absolute; left: 0; width: 574px; display: flex; gap: 18px; padding: 20px 24px 18px 20px; border-radius: 22px;
+  background: rgba(255,255,255,.96); color: #0F0F0F; box-shadow: 0 16px 40px rgba(0,0,0,.38); }
+.bl_av { width: 62px; height: 62px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 30px; }
+.bl_than { flex: 1; min-width: 0; }
+.bl_dau { display: flex; align-items: center; gap: 10px; font-size: 23px; white-space: nowrap; }
+.bl_dau b { font-weight: 700; color: #0F0F0F; }
+.bl_dau .co { width: 34px; height: 23px; border-radius: 3px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.15); flex: none; }
+.bl_dau .tg { color: #606060; font-weight: 500; }
+.bl_chu { margin-top: 6px; font-size: 29px; line-height: 1.32; font-weight: 500; color: #0F0F0F; }
+.bl_chan { display: flex; align-items: center; gap: 12px; margin-top: 10px; font-size: 22px; color: #606060; font-weight: 600; }
+.bl_chan svg { width: 26px; height: 26px; }
+.bl_chan .tim_tg { margin-left: auto; width: 32px; height: 32px; color: #FF2D55; }
+
+/* sub — hộp tối bo góc từng dòng, chữ đang đọc XANH NGỌC (khác bản dọc: viền đen + vàng phồng) */
 #sub { position: absolute; left: 0; right: 0; z-index: 30; text-align: center; pointer-events: none; }
-#sub .sd { display: block; white-space: nowrap; font-family: 'BVP', sans-serif; font-weight: 700; font-size: 50px; line-height: 64px; color: #FFFFFF;
-  text-shadow: 0 0 2px #000, 0 0 4px rgba(0,0,0,.9), 2px 2px 0 rgba(0,0,0,.85), -2px 2px 0 rgba(0,0,0,.85), 2px -2px 0 rgba(0,0,0,.85),
-    -2px -2px 0 rgba(0,0,0,.85), 0 4px 14px rgba(0,0,0,.7); }
-#sub .w { display: inline-block; transform-origin: 50% 70%; }
-#sub .w.on { color: var(--sub-vang); }
+#sub .hang { display: block; }
+#sub .sd { display: inline-block; white-space: nowrap; font-family: 'BVP', 'Malgun Gothic', sans-serif; font-weight: 600; font-size: 44px;
+  line-height: 58px; color: #FFFFFF; padding: 3px 24px 6px; margin: 3px 0; border-radius: 14px; background: rgba(8,12,16,.6); }
+#sub .w { display: inline-block; }
+#sub .w.on { color: var(--nhan); }
 
-/* màn kết */
+/* màn kết: CẢM ƠN + mời Thích / Đăng ký */
 #cta { position: absolute; inset: 0; z-index: 40; }
-.cta_toi { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4,6,10,.78) 0%, rgba(4,6,10,.55) 48%, rgba(4,6,10,.12) 100%); }
-.avatar { position: absolute; width: 190px; height: 190px; border-radius: 50%; overflow: hidden; background: linear-gradient(160deg, #2a2f3a, #12151c);
-  display: flex; align-items: center; justify-content: center; font-family: 'PF', serif; font-weight: 900; font-size: 96px; color: var(--vang); }
+.cta_toi { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(4,8,12,.6) 0%, rgba(4,8,12,.8) 100%); }
+.cta_kenh { position: absolute; left: 0; width: 1920px; top: 58px; display: flex; justify-content: center; align-items: center; gap: 18px; }
+.avatar { width: 78px; height: 78px; border-radius: 50%; overflow: hidden; background: linear-gradient(160deg, #2a3a3a, #121c1c);
+  display: flex; align-items: center; justify-content: center; font-family: 'BC', sans-serif; font-weight: 900; font-size: 44px; color: var(--nhan);
+  box-shadow: 0 0 0 4px var(--nhan); flex: none; }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
-.vong { position: absolute; width: 214px; height: 214px; border-radius: 50%;
-  background: conic-gradient(from 0deg, #FFE3A3, #F4C66A, #FF4D6D, #FF0033, #F4C66A, #FFE3A3); }
-.vong_trong { position: absolute; width: 202px; height: 202px; border-radius: 50%; background: #0b0d12; }
-.ten_kenh { position: absolute; font-weight: 800; font-size: 56px; white-space: nowrap; display: flex; align-items: center; gap: 16px; }
-.tich { width: 40px; height: 40px; border-radius: 50%; background: #3EA6FF; display: inline-flex; align-items: center; justify-content: center; }
-.tich svg { width: 26px; height: 26px; color: #fff; }
-.handle { position: absolute; font-family: 'MS', sans-serif; font-weight: 600; font-size: 28px; color: rgba(255,246,230,.75); letter-spacing: .04em; }
+.ten_kenh { font-weight: 800; font-size: 40px; white-space: nowrap; display: flex; align-items: center; gap: 12px; }
+.tich { width: 32px; height: 32px; border-radius: 50%; background: #3EA6FF; display: inline-flex; align-items: center; justify-content: center; }
+.tich svg { width: 22px; height: 22px; color: #fff; }
+.handle { font-weight: 600; font-size: 26px; color: rgba(255,255,255,.7); }
 .nut_dk { position: absolute; height: 104px; border-radius: 52px; display: flex; align-items: center; justify-content: center; gap: 18px;
-  font-family: 'BVP', sans-serif; font-weight: 800; font-size: 42px; letter-spacing: .04em; color: #fff; white-space: nowrap; overflow: hidden;
+  font-family: 'BVP', sans-serif; font-weight: 800; font-size: 40px; letter-spacing: .04em; color: #fff; white-space: nowrap; overflow: hidden;
   background: linear-gradient(180deg, #FF2A4D 0%, #E5001F 100%); box-shadow: 0 16px 40px rgba(255,0,40,.35); }
 .nut_dk.da { background: linear-gradient(180deg, #4A4F5A, #2E323B); box-shadow: 0 12px 30px rgba(0,0,0,.4); color: #E8E8E8; }
 .nut_dk .quet { position: absolute; top: -20px; bottom: -20px; width: 120px; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.45), rgba(255,255,255,0));
   transform: skewX(-20deg); }
 .nut_dk svg { width: 44px; height: 44px; }
-.nut_tron { position: absolute; width: 104px; height: 104px; border-radius: 50%; background: rgba(255,255,255,.14);
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); display: flex; align-items: center; justify-content: center; color: #fff; }
+.nut_tron { position: absolute; width: 104px; height: 104px; border-radius: 50%; background: rgba(255,255,255,.16);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.4); display: flex; align-items: center; justify-content: center; color: #fff; }
 .nut_tron svg { width: 52px; height: 52px; }
-.nhan_nut { position: absolute; font-weight: 700; font-size: 24px; color: rgba(255,246,230,.85); text-align: center; width: 160px; }
+.nhan_nut { position: absolute; font-weight: 700; font-size: 24px; color: rgba(255,255,255,.88); text-align: center; width: 160px; }
 .song { position: absolute; border-radius: 60px; border: 3px solid rgba(255,60,90,.8); }
 .tay_bam { position: absolute; width: 120px; height: 170px; z-index: 5; filter: drop-shadow(0 10px 18px rgba(0,0,0,.5)); }
 .tim_bay { position: absolute; color: #FF3355; width: 40px; height: 40px; }
+.lua { position: absolute; display: flex; align-items: center; gap: 12px; height: 70px; padding: 0 28px 0 8px; border-radius: 36px;
+  background: rgba(255,255,255,.94); color: #0E1B22; font-weight: 700; font-size: 32px; white-space: nowrap; box-shadow: 0 10px 26px rgba(0,0,0,.35); }
+.lua .so { width: 54px; height: 54px; border-radius: 50%; background: var(--nhan); color: #07302B; display: flex; align-items: center;
+  justify-content: center; font-family: 'BC', sans-serif; font-weight: 900; font-size: 32px; flex: none; }

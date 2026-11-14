@@ -1,6 +1,8 @@
 /* ngang.js — trang dựng 1920×1080 của TuanJp_DuLich_ManNgang.
  * Nhận window.KH (kế hoạch đã giải giờ bởi scripts/ke_hoach.py + KH.part từ dung.py), vẽ đúng khung ở giây t qua window.__seek(t).
  * Không dùng thời gian thực: mọi chuyển động là hàm thuần của t → dựng tất định, chia luồng được.
+ * Khách 14/11/2026: ảnh / clip LUÔN TRÀN MÀN; chữ kiểu riêng bản ngang (Barlow Condensed in hoa + Montserrat nghiêng + xanh ngọc);
+ * bản đồ A → B kiểu Google Maps (vệ tinh thật, km + giờ); bình luận ảo Anh / Hàn; teaser mở màn; màn kết CẢM ƠN + Thích / Đăng ký.
  */
 const KH = window.KH;
 const W = 1920, H = 1080, FPS = KH.fps || 30;
@@ -15,6 +17,7 @@ const E = {
   outE: u => u >= 1 ? 1 : 1 - Math.pow(2, -10 * u), ioS: u => -(Math.cos(Math.PI * u) - 1) / 2,
   outB: u => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2); },
   outQ: u => 1 - (1 - u) * (1 - u),
+  drop: u => { if (u < .62) { const k = u / .62; return k * k; } const k = (u - .62) / .38; return 1 - .16 * Math.sin(Math.PI * k) * (1 - k); },
 };
 const P = (t, a, d, e = E.outC) => e(clamp((t - a) / Math.max(1e-6, d)));
 const mk = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; (parent || stage).appendChild(e); if (cls === 'dh') e.style.display = 'none'; return e; };
@@ -22,12 +25,15 @@ const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').re
 const pad5 = i => String(i).padStart(5, '0');
 const chars = s => Array.from(String(s ?? '').normalize('NFC'));
 const words = s => String(s ?? '').trim().split(/\s+/).filter(Boolean);
+const md = (a, n) => ((a % n) + n) % n;
+const f1 = x => (+x).toFixed(1);
 function css(el, o) { for (const k in o) { const v = o[k]; if (el.style[k] !== v) el.style[k] = v; } }
 function show(el, on) { const v = on ? '' : 'none'; if (el.style.display !== v) el.style.display = v; }
 const DS = [];   // ảnh vừa đổi src → chờ decode trước khi chụp
 function setSrc(img, u) { if (u && img.dataset.u !== u) { img.dataset.u = u; img.src = u; DS.push(img); } }
 const NN = KH.ngon_ngu || 'vi';
 const T = KH.T || {};
+const FULL = { left: '0px', top: '0px', width: W + 'px', height: H + 'px' };
 
 // ---------------- icon (nét 24×24) ----------------
 const S = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
@@ -50,6 +56,7 @@ const IC = {
   cap_treo: '<path d="M3 3l18 4"/><path d="M12 5v4"/><rect x="5" y="9" width="14" height="11" rx="2"/><path d="M5 14h14"/><path d="M12 9v5"/>',
   xe_may: '<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h2l3 11.5"/><path d="M5.5 17.5 9 10h7l-3 7.5"/>',
   o_to: '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>',
+  xe_buyt: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 17v3M17 17v3"/><path d="M7 14h.01M17 14h.01"/>',
   may_bay: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
   di_bo: '<path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/>',
   co: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
@@ -85,6 +92,7 @@ const IC = {
   hang: '<path d="M2 20c0-7 4-14 10-14s10 7 10 14"/><path d="M8 20c0-3 2-6 4-6s4 3 4 6"/><path d="M2 20h20"/>',
   chuong: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
   thich: '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>',
+  khong_thich: '<path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/>',
   chia_se: '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/>',
   binh_luan: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
 };
@@ -93,7 +101,7 @@ const TAY = `<svg viewBox="0 0 120 170" width="120" height="170"><defs><linearGr
 <g fill="url(#gtay)" stroke="#2b2b2b" stroke-width="4" stroke-linejoin="round"><rect x="28" y="3" width="22" height="80" rx="11"/><rect x="48" y="44" width="21" height="46" rx="10.5"/><rect x="66.5" y="50" width="20" height="42" rx="10"/><rect x="84.5" y="58" width="18" height="36" rx="9"/><path d="M27 66 L103 72 L103 116 Q103 146 76 150 L54 150 Q30 147 27 124 Z"/><rect x="9" y="76" width="22" height="50" rx="11" transform="rotate(-36 20 101)"/></g></svg>`;
 const TAY_DIEM = [39, 4];          // đầu ngón trỏ trong khung 120×170
 
-// ---------------- lớp nền: footage ----------------
+// ---------------- lớp nền: footage (LUÔN TRÀN MÀN) ----------------
 const CL = mk('div', '', stage); CL.id = 'canh_lop';
 const PART = KH.part || {};
 function partUrl(pid, t, a) {
@@ -102,52 +110,9 @@ function partUrl(pid, t, a) {
   const i = clamp(Math.floor((t - a) * FPS + 1e-4), 0, p.n - 1) + 1;
   return p.dir + pad5(i) + '.jpg';
 }
-const THE_DOC_W = Math.round(KH.the_doc_cao * 9 / 16);
-
 function dungCanh(c, i) {
   const root = mk('div', 'canh', CL); root.style.display = 'none'; root.style.zIndex = String(i + 1);
-  const o = { c, root, i };
-  if (c.bo_cuc === 'tran') {
-    o.img = mk('img', 'full', root);
-  } else if (c.bo_cuc === 'the_doc') {
-    o.nen = mk('img', 'nen', root); mk('div', 'nen_phu', root);
-    const ch = KH.the_doc_cao, cw = THE_DOC_W, cx = KH.the_doc_x[c.vi_tri] || 960;
-    o.card = mk('div', 'the_doc', root);
-    css(o.card, { left: (cx - cw / 2) + 'px', top: ((H - ch) / 2 - 6) + 'px', width: cw + 'px', height: ch + 'px' });
-    o.img = mk('img', '', o.card); mk('div', 'bong', o.card);
-  } else if (c.bo_cuc === 'the_anh') {
-    o.nen = mk('img', 'nen', root); mk('div', 'nen_phu', root);
-    const p = PART[c.lop[0]] || { w: 1200, h: 800 };
-    const mw = c.vi_tri === 'giua' ? 1180 : 790, mh = 720;
-    const s = Math.min(mw / p.w, mh / p.h);
-    const iw = Math.round(p.w * s), ih = Math.round(p.h * s);
-    const cx = c.vi_tri === 'trai' ? 550 : (c.vi_tri === 'phai' ? 1370 : 960);
-    o.card = mk('div', 'the_anh', root);
-    css(o.card, { left: (cx - iw / 2 - 16) + 'px', top: (500 - ih / 2 - 16) + 'px' });
-    o.wrap = mk('div', 'khung_anh', o.card); css(o.wrap, { width: iw + 'px', height: ih + 'px' });
-    o.img = mk('img', '', o.wrap);
-  } else if (c.bo_cuc === 'ghep') {
-    root.style.background = 'transparent';
-    o.bg = mk('div', 'ghep_nen', root);
-    const n = c.lop.length, pw = c.pw;
-    o.o = c.lop.map((pid, k) => {
-      const d = mk('div', 'o_ghep', root); css(d, { left: (k * (pw + KH.khe)) + 'px', width: pw + 'px' });
-      const img = mk('img', '', d); mk('div', 'vien', d);
-      let nhan = null;
-      const nh = (c.nhan || [])[k];
-      if (nh) {
-        const g = mk('div', 'abs', d); css(g, { left: 0, right: 0, bottom: 0, height: '520px', background: 'linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.62))' });
-        nhan = mk('div', 'abs', d); css(nhan, { left: 0, width: pw + 'px', top: '600px', textAlign: 'center' });
-        const t1 = mk('div', 'serif kem_grad', nhan, esc(nh.chu || '')); css(t1, { fontSize: '68px', whiteSpace: 'nowrap' });
-        const t2 = nh.phu ? mk('div', 'tay', nhan, esc(nh.phu)) : null; if (t2) css(t2, { fontSize: '58px', marginTop: '4px', whiteSpace: 'nowrap' });
-        nhan._g = g; nhan._t = [t1, t2].filter(Boolean);
-      }
-      return { d, img, pid, nhan, k };
-    });
-    const luc = c.luc_o && c.luc_o.length ? c.luc_o : c.lop.map((_, k) => c.a + k * .12);
-    o.luc = c.lop.map((_, k) => +(luc[k] ?? luc[luc.length - 1]));
-  }
-  return o;
+  return { c, root, i, img: mk('img', 'full', root) };
 }
 const SC = KH.canh.map(dungCanh);
 
@@ -164,45 +129,11 @@ function kenBurns(cd, u, manh) {
   }
 }
 const tfKB = (k, w, h) => `translate(${(k.x * w).toFixed(2)}px,${(k.y * h).toFixed(2)}px) scale(${k.s.toFixed(5)})`;
-
 function veCanh(o, t) {
   const c = o.c, u = clamp((t - c.a) / Math.max(.01, c.b - c.a));
   const anh = (c.loai_nguon || [])[0] === 'anh';
-  if (c.bo_cuc === 'tran') {
-    setSrc(o.img, partUrl(c.lop[0], t, c.a));
-    o.img.style.transform = tfKB(kenBurns(c.chuyen_dong, u, anh ? 1 : .55), W, H);
-  } else if (c.bo_cuc === 'the_doc' || c.bo_cuc === 'the_anh') {
-    setSrc(o.nen, partUrl(c.nen, t, c.a));
-    o.nen.style.transform = `scale(${(1.04 + .05 * u).toFixed(4)})`;
-    setSrc(o.img, partUrl(c.lop[0], t, c.a));
-    o.img.style.transform = tfKB(kenBurns(c.chuyen_dong, u, anh ? .8 : .45), 1, 1);
-    // thẻ hạ cánh: nổi lên + phóng nhẹ (không lặp lại khi cảnh trước cũng là thẻ cùng chỗ)
-    const truoc = SC[o.i - 1]?.c;
-    const noi = !(truoc && truoc.bo_cuc === c.bo_cuc && truoc.vi_tri === c.vi_tri);
-    const e = noi ? P(t, c.tu - c.d_in * .2, .75, E.outC) : 1;
-    const rot = (c.nghieng || 0) + (c.bo_cuc === 'the_anh' ? (c.vi_tri === 'phai' ? 2.2 : -2.2) * (c.nghieng === 0 ? 1 : 0) : 0);
-    o.card.style.transform = `translateY(${((1 - e) * 80).toFixed(1)}px) scale(${(.9 + .1 * e + .015 * u).toFixed(4)}) rotate(${(rot * e).toFixed(2)}deg)`;
-    o.card.style.opacity = (noi ? clamp(e * 1.6) : 1).toFixed(3);
-    if (o.wrap) o.img.style.transformOrigin = '50% 50%';
-  } else if (c.bo_cuc === 'ghep') {
-    let het = 0;
-    for (const p of o.o) {
-      const t0 = o.luc[p.k];
-      const e = P(t, t0, .7, E.outE);
-      het = Math.max(het, t0 + .7);
-      const dir = p.k % 2 ? -1 : 1;
-      p.d.style.transform = `translateY(${((1 - e) * H * dir).toFixed(1)}px)`;
-      show(p.d, t >= t0 - .02);
-      setSrc(p.img, partUrl(p.pid, t, c.a));
-      p.img.style.transform = tfKB(kenBurns(p.k % 2 ? 'zoom_ra' : 'zoom_vao', u, (c.loai_nguon || [])[p.k] === 'anh' ? .8 : .45), 1, 1);
-      if (p.nhan) {
-        const v = P(t, t0 + .45, .55);
-        p.nhan._g.style.opacity = v.toFixed(3);
-        p.nhan._t.forEach((x, j) => { const w = P(t, t0 + .5 + j * .18, .5); x.style.opacity = w.toFixed(3); x.style.transform = `translateY(${((1 - w) * 26).toFixed(1)}px)`; });
-      }
-    }
-    o.bg.style.opacity = P(t, het - .2, .3).toFixed(3);
-  }
+  setSrc(o.img, partUrl(c.lop[0], t, c.a));
+  o.img.style.transform = tfKB(kenBurns(c.chuyen_dong, u, anh ? 1 : .55), W, H);
 }
 
 // ---------------- lớp màu phim, hạt, loé, màn đen, khung điện ảnh ----------------
@@ -217,8 +148,9 @@ const DEN = mk('div', '', stage); DEN.id = 'den';
 const BAR_T = mk('div', 'bar', stage); BAR_T.id = 'bar_tren';
 const BAR_D = mk('div', 'bar', stage); BAR_D.id = 'bar_duoi';
 const MO_DAU_0 = (KH.do_hoa || []).filter(d => d.loai === 'mo_dau').map(d => d.tu)[0];
-const BAR_HET = KH.dien_anh === false ? -1 : (MO_DAU_0 != null ? MO_DAU_0 : -1);
-// CÚ DROP (người dùng 13/11/2026: đoạn đầu phải có lực): mỗi mo_dau (trừ drop:false) = loé trắng + rung khung 0,4 s đúng lúc chữ đập vào
+// khung điện ảnh 2.35:1 mở màn: có teaser → mở ra lúc giọng vào (KH.bar_het); không teaser → lúc chữ drop đầu tiên
+const BAR_HET = KH.dien_anh === false ? -1 : (KH.bar_het != null ? KH.bar_het : (MO_DAU_0 != null ? MO_DAU_0 : -1));
+// CÚ DROP: mỗi mo_dau (trừ drop:false) = loé trắng + rung khung 0,4 s đúng lúc chữ đập vào
 const DROP = (KH.do_hoa || []).filter(d => d.loai === 'mo_dau' && d.drop !== false).map(d => d.tu);
 
 function veMau(t) {
@@ -228,12 +160,11 @@ function veMau(t) {
   BAR_T.style.height = b.toFixed(1) + 'px'; BAR_D.style.height = b.toFixed(1) + 'px';
   show(BAR_T, b > .5); show(BAR_D, b > .5);
   let den = 0;                                                   // vào THẲNG hình ở khung 0 (khung đầu = ảnh xem trước YouTube)
-  if (KH.dur - t < .5) den = Math.max(den, P(t, KH.dur - .5, .5, E.ioS)); // tắt dần cuối
+  if (KH.dur - t < .5) den = Math.max(den, P(t, KH.dur - .5, .5, E.ioS));
   DEN.style.opacity = den.toFixed(3);
 }
 
 // ---------------- ghép cảnh + chuyển cảnh ----------------
-const CAT_O_SAU = 1e-6;
 function apDung(o, s) {
   show(o.root, true);
   css(o.root, { opacity: (s.o ?? 1).toFixed ? (s.o ?? 1).toFixed(3) : String(s.o), transform: s.tf || 'none', filter: s.f || 'none', clipPath: s.clip || 'none' });
@@ -251,32 +182,32 @@ function ghepCanh(t) {
     switch (c.chuyen) {
       case 'cat': if (t < c.tu) B = { o: 0 }; else A = { o: 0 }; break;
       case 'hoa_tan': B = { o: E.ioS(u) }; break;
-      case 'zoom_muot': {                       // ZOOM MƯỢT: cảnh cũ đẩy vào 1 → 1,18, cảnh mới thu 1,12 → 1 chồng lên từ từ (không loé, không nhoè)
+      case 'zoom_muot': {
         const e = E.ioS(u);
         A = { tf: `scale(${(1 + .18 * e).toFixed(4)})` };
         B = { o: e, tf: `scale(${(1.12 - .12 * E.outC(u)).toFixed(4)})` };
         break;
       }
       case 'nhoe': { const b = Math.sin(Math.PI * u); A = { f: `brightness(${(1 + .25 * b).toFixed(3)})` }; B = { o: E.ioS(u), f: `brightness(${(1 + .25 * b).toFixed(3)})` }; break; }
-      case 'lia': case 'lia_doc': {           // TRƯỢT CÓ CHIỀU SÂU: cảnh cũ lùi chậm + tối dần, cảnh mới trượt phủ lên (êm, sắc nét)
+      case 'lia': case 'lia_doc': {
         const e = E.ioC(u), doc = c.chuyen === 'lia_doc';
         A = { tf: (doc ? `translateY(${(-H * .3 * e).toFixed(1)}px)` : `translateX(${(-W * .3 * e).toFixed(1)}px)`) + ` scale(${(1 - .05 * e).toFixed(4)})`,
           f: `brightness(${(1 - .5 * e).toFixed(3)})` };
         B = { tf: doc ? `translateY(${(H * (1 - e)).toFixed(1)}px)` : `translateX(${(W * (1 - e)).toFixed(1)}px)` };
         break;
       }
-      case 'zoom': {                            // zoom xuyên sắc nét: cảnh cũ phóng vụt → loé → cảnh mới thu từ 1,3 về 1
+      case 'zoom': {
         if (u < .5) { A = { tf: `scale(${(1 + .45 * E.inC(u * 2)).toFixed(4)})` }; B = { o: 0 }; }
         else { A = { o: 0 }; B = { tf: `scale(${(1.3 - .3 * E.outC((u - .5) * 2)).toFixed(4)})` }; }
         trang = .55 * Math.max(0, 1 - Math.abs(u - .5) * 5); break;
       }
-      case 'phong': {                           // cắt + PHÓNG: cắt cứng ở tu, cảnh mới đập vào từ 1,22 về 1 (nhịp hook)
+      case 'phong': {
         if (t < c.tu) { A = { tf: `scale(${(1 + .06 * P(t, c.tu - .15, .15, E.inC)).toFixed(4)})` }; B = { o: 0 }; }
         else { A = { o: 0 }; B = { tf: `scale(${(1.22 - .22 * P(t, c.tu, .32, E.outC)).toFixed(4)})` }; trang = .35 * (1 - P(t, c.tu, .18, E.outC)); }
         break;
       }
       case 'loe': { B = { o: E.ioS(u) }; loe = Math.pow(Math.sin(Math.PI * u), .8); trang = .1 * Math.pow(Math.sin(Math.PI * u), 3); break; }
-      case 'truot': {                           // ĐẨY NGANG: 2 cảnh cùng trượt, êm
+      case 'truot': {
         const e = E.ioC(u);
         A = { tf: `translateX(${(-W * e).toFixed(1)}px)` };
         B = { tf: `translateX(${(W * (1 - e)).toFixed(1)}px)` }; break;
@@ -289,7 +220,6 @@ function ghepCanh(t) {
       }
       default: B = { o: E.ioS(u) };
     }
-    if (c.bo_cuc === 'ghep') { A = {}; B = {}; }       // ô ghép tự trượt vào, cảnh trước nằm dưới tới khi phủ kín
     ra.root.style.zIndex = '1'; vao.root.style.zIndex = '2';
     apDung(ra, A); apDung(vao, B);
   }
@@ -327,8 +257,8 @@ function dong2(parent, text, base, maxW, cls = '') {
   let best = null;
   for (let j = 1; j < ws.length; j++) {
     const a = ws.slice(0, j).join(' '), b = ws.slice(j).join(' ');
-    const ta = mk('span', 'dong', parent, esc(a)); ta.style.fontSize = base + 'px';
-    const tb = mk('span', 'dong', parent, esc(b)); tb.style.fontSize = base + 'px';
+    const ta = mk('span', 'dong ' + cls, parent, esc(a)); ta.style.fontSize = base + 'px';
+    const tb = mk('span', 'dong ' + cls, parent, esc(b)); tb.style.fontSize = base + 'px';
     const m = Math.max(rong(ta), rong(tb)); parent.innerHTML = '';
     if (!best || m < best.m) best = { a, b, m };
   }
@@ -358,9 +288,14 @@ function khoi(vt, y = 470) {   // khối chữ căn theo vùng, tâm dọc ở y
   return b;
 }
 function vaoRa(t, d, ra = .45) { return { on: t >= d.tu - .02 && t <= d.den + .02, r: P(t, d.den - ra, ra, E.inC) }; }
-const tachChu = (parent, text) => chars(text).map(ch => mk('span', 'ch', parent, esc(ch)));
+function hangNhan(parent, text, co = 32, giua = false) {   // ── NHÃN ── (gạch ngọc + chữ in giãn)
+  const r = mk('div', '', parent); css(r, { display: 'flex', alignItems: 'center', gap: '18px' });
+  const g1 = mk('div', 'gach_n', r); const tx = mk('div', 'nhan_nho', r, esc(text)); css(tx, { fontSize: co + 'px' });
+  const g2 = giua ? mk('div', 'gach_n', r) : null;
+  return { r, g1, tx, g2 };
+}
 
-// bản đồ Việt Nam cách điệu (đường viền Natural Earth, LUÔN có Hoàng Sa / Trường Sa)
+// bản đồ Việt Nam (đường viền Natural Earth, LUÔN có Hoàng Sa / Trường Sa)
 const VN = window.VN_BAN_DO || null;
 function chieu(lat, lon, bb, w, h) {        // equirectangular có hiệu chỉnh cos(vĩ độ giữa)
   const k = Math.cos((bb[1] + bb[3]) / 2 * Math.PI / 180);
@@ -368,42 +303,210 @@ function chieu(lat, lon, bb, w, h) {        // equirectangular có hiệu chỉn
   const ox = (w - (bb[2] - bb[0]) * k * s) / 2, oy = (h - (bb[3] - bb[1]) * s) / 2;
   return [ox + (lon - bb[0]) * k * s, oy + (bb[3] - lat) * s];
 }
-function svgBanDo(w, h, mau = 'rgba(255,246,230,.9)') {
+function svgBanDo(w, h, o = {}) {
   if (!VN) return '';
+  const vien = o.vien || 'rgba(255,255,255,.9)', to = o.to || 'rgba(79,227,208,.16)', chu = o.chu || 'rgba(255,255,255,.8)', cham = o.cham || vien;
   const bb = VN.bbox;
   const path = VN.duong.map(ring => 'M' + ring.map(([lo, la]) => chieu(la, lo, bb, w, h).map(v => v.toFixed(1)).join(',')).join('L') + 'Z').join('');
   const dao = (VN.dao || []).map(q => {
     const pts = q.diem.map(([la, lo]) => chieu(la, lo, bb, w, h));
     const nhan = chieu(q.nhan[0], q.nhan[1], bb, w, h);
-    return pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${(w / 210).toFixed(1)}" fill="${mau}"/>`).join('') +
-      `<text x="${nhan[0].toFixed(1)}" y="${nhan[1].toFixed(1)}" fill="rgba(255,246,230,.75)" font-family="BVP" font-weight="600" font-size="${(w / 24).toFixed(1)}" text-anchor="middle">${esc(q.ten)}</text>`;
+    return pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${(w / 190).toFixed(1)}" fill="${cham}"/>`).join('') +
+      `<text x="${nhan[0].toFixed(1)}" y="${nhan[1].toFixed(1)}" fill="${chu}" font-family="BVP" font-weight="700" font-size="${(w / 19).toFixed(1)}" text-anchor="middle">${esc(q.ten)}</text>`;
   }).join('');
-  return `<path d="${path}" fill="rgba(244,198,106,.16)" stroke="${mau}" stroke-width="${(w / 170).toFixed(1)}" stroke-linejoin="round"/>${dao}`;
+  return `<path d="${path}" fill="${to}" stroke="${vien}" stroke-width="${(w / 170).toFixed(1)}" stroke-linejoin="round"/>${dao}`;
 }
+
+// ---------------- BẢN ĐỒ A → B kiểu Google Maps (ảnh vệ tinh thật, camera tính sẵn ở ban_do_that.py) ----------------
+// Ô ảnh nạp theo nhu cầu: __seek chờ ô của khung đó decode xong (CHO) rồi mới vẽ canvas (VE_SAU); ô lâu không dùng thì nhả.
+const CHO = [], VE_SAU = [];
+const ANH_O = new Map();
+let KHUNG_SO = 0;
+function oAnh(base, z, x, y) {
+  const k = `${z}_${x}_${y}`;
+  let o = ANH_O.get(k);
+  if (!o) { const im = new Image(); im.src = base + k + '.jpg'; o = { im, p: im.decode().catch(() => null) }; ANH_O.set(k, o); }
+  o.dung = KHUNG_SO;
+  if (!o.im.complete) CHO.push(o.p);
+  return o.im;
+}
+function donAnhO() {
+  if (ANH_O.size < 900) return;
+  for (const [k, o] of ANH_O) if (KHUNG_SO - o.dung > 40) { o.im.src = ''; ANH_O.delete(k); }
+}
+const MAY_BAY_TREN = `<svg viewBox="0 0 100 100"><defs><linearGradient id="mbg" x1="0" x2="1"><stop offset="0" stop-color="#E9EDF2"/><stop offset=".5" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D5DBE3"/></linearGradient></defs>
+  <path d="M50 2C55 2 57 9 57 17L57 36L95 57L95 66L57 55L56 79L69 89L69 95L50 90L31 95L31 89L44 79L43 55L5 66L5 57L43 36L43 17C43 9 45 2 50 2Z" fill="url(#mbg)" stroke="rgba(30,40,55,.45)" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M50 8V86" stroke="rgba(30,40,55,.18)" stroke-width="2"/><circle cx="50" cy="12" r="3.2" fill="#22324a"/></svg>`;
+const GHIM_GG = `<svg viewBox="0 0 74 98" width="74" height="98"><path d="M37 95C37 95 5 57 5 33.5A32 32 0 0 1 69 33.5C69 57 37 95 37 95Z" fill="#EA4335" stroke="#B3261E" stroke-width="3" stroke-linejoin="round"/><circle cx="37" cy="33" r="12.5" fill="#7A1C14"/></svg>`;
+const IC_PT = { o_to: 'o_to', xe_may: 'xe_may', xe_buyt: 'xe_buyt', tau_hoa: 'tau_hoa', tau_thuy: 'tau', xe_dap: 'xe_may', di_bo: 'di_bo', may_bay: 'may_bay', khong: 'o_to' };
+let BD_U = 0;
+function banDoAB(d, o) {
+  const u = ++BD_U;
+  const el = mk('div', 'dh', LOP); css(el, FULL);
+  const bd = d.bd;
+  if (!bd || !bd.cam || !bd.cam.length) { console.error('bản đồ ' + d.id + ': thiếu bd (chưa chuẩn bị bản đồ thật)'); return { el, init() { }, ve() { show(el, false); } }; }
+  const n = mk('div', 'bd_ab', el);
+  const cv = mk('canvas', 'bd_cv', n); cv.width = W; cv.height = H;
+  const g = cv.getContext('2d'); g.imageSmoothingQuality = 'high';
+  mk('div', 'bd_toi', n);
+  const [FX, FY] = bd.foc || [1110, 470];
+  const R = bd.duong;
+  const cum = [0];
+  for (let i = 1; i < R.length; i++) cum.push(cum[i - 1] + Math.hypot(R[i][0] - R[i - 1][0], R[i][1] - R[i - 1][1]));
+  const LT = cum[cum.length - 1] || 1e-9;
+  const pt = d.phuong_tien || 'o_to', may = pt === 'may_bay';
+  n.insertAdjacentHTML('beforeend', `<svg class="bd_tuyen" width="${W}" height="${H}">
+    <path class="v0" fill="none" stroke="rgba(26,79,176,.8)" stroke-width="${may ? 0 : 15}" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="m0" fill="none" stroke="${may ? 'rgba(255,255,255,.85)' : '#A9C8FB'}" stroke-width="${may ? 5 : 8}" stroke-linecap="round" stroke-linejoin="round" ${may ? 'stroke-dasharray="3 16"' : ''}/>
+    <path class="v1" fill="none" stroke="#1A4FB0" stroke-width="${may ? 13 : 17}" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="s1" fill="none" stroke="#4C8DF6" stroke-width="${may ? 8 : 10}" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
+  const pV0 = n.querySelector('.v0'), pM0 = n.querySelector('.m0'), pV1 = n.querySelector('.v1'), pS1 = n.querySelector('.s1');
+  const songA = mk('div', 'bd_song', n), dotA = mk('div', 'bd_a', n);
+  const xe = mk('div', 'bd_xe', n, may ? `<div class="mb">${MAY_BAY_TREN}</div>` : `<div class="ic">${icon(IC_PT[pt] || 'o_to')}</div>`);
+  const ghim = mk('div', 'bd_ghim', n, GHIM_GG);
+  const tagA = mk('div', 'bd_tag', n, esc(d.xuat_phat.ten)), tagB = mk('div', 'bd_tag den', n, esc(d.diem_den.ten));
+  // thẻ thông tin kiểu Google Maps: tuyến · ≈ giờ (xanh lá) · km (đếm theo xe chạy) · ghi chú ước tính
+  const the = mk('div', 'the_tt', el);
+  const coGio = !!d.chu_gio;
+  the.innerHTML = `<div class="tt_nhan">${esc(o.the_nhan || T.tuyen || '')}</div>
+    <div class="tt_tuyen"><span>${esc(d.xuat_phat.ten)}</span><span class="mui">→</span><span>${esc(d.diem_den.ten)}</span></div>
+    <div class="tt_hang"><div class="tt_ic">${icon(IC_PT[pt] || 'o_to')}</div>${coGio ? `<div class="tt_gio">${esc(d.chu_gio)}</div>` : ''}<div class="${coGio ? 'tt_km' : 'tt_gio'}"></div></div>
+    ${d.chu_ghi ? `<div class="tt_ghi">${esc(d.chu_ghi)}</div>` : ''}`;
+  const kmEl = the.querySelector('.tt_hang > div:last-child');
+  const kmSo = d.km_so, kmChu = d.chu_km || '';
+  const fmtKm = x => { let s = x >= 20 ? String(Math.round(x)) : x.toFixed(1); if (NN === 'vi') s = s.replace('.', ','); return s + ' km'; };
+  // bản đồ Việt Nam nhỏ góc phải (có Hoàng Sa, Trường Sa) + tuyến A → B
+  let vn = null, vnLine = null, vnLen = 1;
+  if (VN) {
+    const mw = 196, mh = 300;
+    vn = mk('div', 'the_vn', el);
+    const [ax, ay] = chieu(d.xuat_phat.toa_do[0], d.xuat_phat.toa_do[1], VN.bbox, mw, mh);
+    const [bx, by] = chieu(d.diem_den.toa_do[0], d.diem_den.toa_do[1], VN.bbox, mw, mh);
+    vnLen = Math.hypot(bx - ax, by - ay) || 1;
+    vn.innerHTML = `<svg width="${mw}" height="${mh}" viewBox="0 0 ${mw} ${mh}" style="display:block;overflow:visible">${svgBanDo(mw, mh, { to: '#E6EDF2', vien: '#8D99A6', chu: '#5F6368', cham: '#8D99A6' })}
+      <line class="vn_l" x1="${f1(ax)}" y1="${f1(ay)}" x2="${f1(bx)}" y2="${f1(by)}" stroke="#4C8DF6" stroke-width="4" stroke-linecap="round" stroke-dasharray="${f1(vnLen)}" stroke-dashoffset="${f1(vnLen)}"/>
+      <circle cx="${f1(ax)}" cy="${f1(ay)}" r="5" fill="#fff" stroke="#1A4FB0" stroke-width="3"/>
+      <circle cx="${f1(bx)}" cy="${f1(by)}" r="6.5" fill="#EA4335" stroke="#fff" stroke-width="2.5"/></svg>`;
+    vnLine = vn.querySelector('.vn_l');
+  }
+  // tên điểm đến lớn khi tới nơi
+  const tn = mk('div', 'toi_noi', el);
+  const tnN = o.nhan ? hangNhan(tn, o.nhan, 32, true) : null;
+  const tnMask = mk('div', 'mask', tn); const tnTen = mk('div', 'tit', tnMask, esc(o.ten)); css(tnTen, { whiteSpace: 'nowrap' });
+  const tnPhu = o.phu ? mk('div', 'nghieng', tn, esc(o.phu)) : null;
+  if (tnPhu) css(tnPhu, { fontSize: '40px', marginTop: '14px', whiteSpace: 'nowrap' });   // 14 px: chừa chỗ dấu nặng (VỊNH HẠ LONG)
+  if (tnN) css(tnN.r, { marginBottom: '8px' });
+  const camTai = t => {
+    const f = clamp((t - d.tu) * FPS, 0, bd.cam.length - 1), i = Math.floor(f), j = Math.min(bd.cam.length - 1, i + 1), k = f - i;
+    const a = bd.cam[i], b = bd.cam[j];
+    return [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
+  };
+  const diemTai = kp => {
+    const L = kp * LT;
+    let i = 1; while (i < cum.length - 1 && cum[i] < L) i++;
+    const a = R[i - 1], b = R[i], s = cum[i] - cum[i - 1], k = s > 0 ? (L - cum[i - 1]) / s : 0;
+    let j = i; while (j < R.length - 1 && Math.hypot(R[j][0] - a[0], R[j][1] - a[1]) < LT * .004) j++;
+    const q = R[j];
+    return { i, x: lerp(a[0], b[0], k), y: lerp(a[1], b[1], k), goc: Math.atan2(q[1] - a[1], q[0] - a[0]) };
+  };
+  const dat = (e, x, y) => css(e, { left: f1(x) + 'px', top: f1(y) + 'px' });
+  let wA = 0, hA = 0, wB = 0, hB = 0;
+  return {
+    el,
+    init() {
+      wA = tagA.offsetWidth; hA = tagA.offsetHeight; wB = tagB.offsetWidth; hB = tagB.offsetHeight;
+      vua(tnTen, o.co || 150, 1180);
+      const w = tn.offsetWidth;
+      css(tn, { left: f1(clamp(FX - w / 2, 640, W - 96 - w)) + 'px', top: (FY + 58) + 'px' });
+      if (kmSo == null) kmEl.textContent = kmChu;
+      HOP.push({ el: tnTen, d }); HOP.push({ el: the, d });
+    },
+    ve(t) {
+      const v = vaoRa(t, d, .45); show(el, v.on); if (!v.on) return;
+      const e = P(t, d.tu, .4, E.outC);
+      css(n, { opacity: (clamp(e * 1.6) * (1 - v.r)).toFixed(3), transform: `scale(${(1.07 - .07 * e + .05 * v.r).toFixed(4)})` });
+      const [fx, fy, z] = camTai(t), sc = 256 * Math.pow(2, z);
+      const P2 = (x, y) => [(x - fx) * sc + FX, (y - fy) * sc + FY];
+      const L = Math.max(1, Math.min(18, Math.floor(z + .5))), ve = [];
+      for (const lv of [Math.max(1, L - 2), L]) {
+        const nn = Math.pow(2, lv), s = 256 * Math.pow(2, z - lv);
+        const x0 = Math.floor((fx - FX / sc) * nn), x1 = Math.floor((fx + (W - FX) / sc) * nn);
+        const y0 = Math.max(0, Math.floor((fy - FY / sc) * nn)), y1 = Math.min(nn - 1, Math.floor((fy + (H - FY) / sc) * nn));
+        for (let tx = x0; tx <= x1; tx++) for (let ty = y0; ty <= y1; ty++) {
+          const im = oAnh(bd.tile, lv, md(tx, nn), ty);
+          ve.push([im, (tx / nn - fx) * sc + FX, (ty / nn - fy) * sc + FY, s]);
+        }
+      }
+      VE_SAU.push(() => {
+        g.fillStyle = '#0d1624'; g.fillRect(0, 0, W, H);
+        for (const [im, x, y, s] of ve) if (im.complete && im.naturalWidth) g.drawImage(im, x - .4, y - .4, s + .8, s + .8);
+      });
+      // tuyến: cả tuyến xanh nhạt hiện trước, tuyến xanh đậm chạy theo xe
+      const SS = R.map(p => P2(p[0], p[1]));
+      const dd = a => a.map((p, i) => (i ? 'L' : 'M') + f1(p[0]) + ' ' + f1(p[1])).join('');
+      const full = dd(SS);
+      const hien = P(t, d.tu + .2, .45);
+      pV0.setAttribute('d', full); pM0.setAttribute('d', full);
+      css(pV0, { opacity: (hien * .85).toFixed(3) }); css(pM0, { opacity: hien.toFixed(3) });
+      const kp = P(t, d.luc_di, Math.max(.3, d.luc_den - d.luc_di), E.ioS);
+      const vt = diemTai(kp), pv = P2(vt.x, vt.y);
+      const chay = kp > 0 ? dd(SS.slice(0, vt.i).concat([pv])) : '';
+      pV1.setAttribute('d', chay); pS1.setAttribute('d', chay);
+      // xe / máy bay
+      const kx = P(t, d.luc_di - .3, .35, E.outB), kr = P(t, d.luc_den - .05, .3);
+      dat(xe, pv[0], pv[1]); css(xe, { opacity: (clamp(kx * 2) * (1 - kr)).toFixed(3) });
+      if (xe.firstElementChild) {
+        if (may) css(xe.firstElementChild, { transform: `rotate(${f1(vt.goc * 57.2958 + 90)}deg) scale(${(.5 + .5 * kx).toFixed(3)})` });
+        else css(xe.firstElementChild, { transform: `scale(${(.5 + .5 * kx).toFixed(3)})` });
+      }
+      // điểm đi: chấm xanh "vị trí" + sóng lan
+      const pa = SS[0], pb = SS[SS.length - 1];
+      dat(dotA, pa[0], pa[1]); css(dotA, { opacity: P(t, d.tu + .1, .3).toFixed(3) });
+      { const pr = md(t - d.tu, 1.6) / 1.2; dat(songA, pa[0], pa[1]); css(songA, { opacity: pr <= 1 ? (.9 * (1 - pr)).toFixed(3) : '0', transform: `scale(${(1 + 1.4 * E.outC(Math.min(1, pr))).toFixed(3)})` }); }
+      { const k = P(t, d.tu + .3, .4), duoi = pa[1] + 30 + hA < 900;
+        dat(tagA, clamp(pa[0] - wA / 2, 40, W - 40 - wA), duoi ? pa[1] + 30 : pa[1] - 30 - hA);
+        css(tagA, { opacity: (k * (1 - .4 * P(t, d.luc_den, .4))).toFixed(3), transform: `translateY(${f1(12 * (1 - k))}px)` }); }
+      // điểm đến: nhãn đỏ khi lùi xa → ghim Google rơi lúc tới → tên lớn
+      { const k = P(t, d.tu + .45, .4) * (1 - P(t, d.luc_den + .05, .3)), tren = pb[1] - 40 - hB > 120;
+        dat(tagB, clamp(pb[0] - wB / 2, 40, W - 40 - wB), tren ? pb[1] - 40 - hB : pb[1] + 26);
+        css(tagB, { opacity: k.toFixed(3) }); }
+      const kg = P(t, d.luc_den - .1, .55, E.drop);
+      css(ghim, { left: f1(pb[0] - 37) + 'px', top: f1(pb[1] - 96) + 'px', opacity: clamp(kg * 3).toFixed(3), transform: `translateY(${f1(-120 * (1 - kg))}px)` });
+      // thẻ thông tin + km đếm theo xe chạy
+      { const k = P(t, d.tu + .3, .5, E.outB);
+        css(the, { opacity: (clamp(k * 1.5) * (1 - v.r)).toFixed(3), transform: `translateX(${f1(-60 * (1 - k))}px) scale(${(.92 + .08 * k).toFixed(3)})` });
+        if (kmSo != null) { const s = fmtKm(kmSo * kp); const txt = coGio ? `(${s})` : '≈ ' + s; if (kmEl.textContent !== txt) kmEl.textContent = txt; } }
+      if (vn) { const k = P(t, d.tu + .45, .5, E.outB);
+        css(vn, { opacity: (clamp(k * 1.5) * (1 - v.r)).toFixed(3), transform: `scale(${(.8 + .2 * k).toFixed(3)})` });
+        vnLine.setAttribute('stroke-dashoffset', f1(vnLen * (1 - kp))); }
+      // tên điểm đến
+      { const ka = P(t, d.luc_den + .15, .45, E.outC);
+        css(tn, { opacity: (clamp(ka * 1.6) * (1 - v.r)).toFixed(3) });
+        tnTen.style.transform = `translateY(${f1((1 - ka) * 105)}%)`;
+        if (tnN) { const a = P(t, d.luc_den + .05, .35, E.outE); tnN.tx.style.letterSpacing = (.6 - .34 * a).toFixed(3) + 'em';
+          tnN.g1.style.transform = `scaleX(${a.toFixed(3)})`; if (tnN.g2) tnN.g2.style.transform = `scaleX(${a.toFixed(3)})`; }
+        if (tnPhu) { const a = P(t, d.luc_den + .4, .4); tnPhu.style.opacity = a.toFixed(3); tnPhu.style.transform = `translateY(${f1((1 - a) * 16)}px)`; } }
+    },
+  };
+}
+
 const LAM = {};
-// 1. MỞ ĐẦU — CÚ DROP: tên chủ đề ĐẬP vào trọn chữ ngay khung đầu (phóng 1,28 → 1 trong 0,32 s), vệt sáng vàng quét qua,
-//    dòng chữ in giãn trên, viết tay vàng quét ngay sau 0,2 s, dòng dưới. Kèm loé trắng + rung khung (ghepCanh) + tiếng nổ trầm.
-//    Người dùng 13/11/2026: "đoạn đầu edit chưa oki" — chữ phải hiện NGAY (≤ 0,4 s), không chạy từng chữ, không nhoè.
+// 1. MỞ ĐẦU — CÚ DROP: tên chủ đề ĐẬP vào trọn chữ (phóng 1,28 → 1 trong 0,32 s), vệt sáng ngọc quét qua, nhãn giãn chữ trên,
+//    dòng nghiêng ngay sau 0,2 s, dòng dưới. Kèm loé trắng + rung khung (ghepCanh) + tiếng nổ trầm. Chữ hiện NGAY, không chạy từng chữ.
 LAM.mo_dau = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
+  const el = mk('div', 'dh', LOP); css(el, FULL);
   const sc = scrim(el, d.vi_tri, .5);
   const b = khoi(d.vi_tri, d.y ?? 470); el.appendChild(b);
-  const tren = d.tren ? mk('div', '', b) : null;
-  let l1, l2, trenTxt;
-  if (tren) {
-    css(tren, { display: 'flex', alignItems: 'center', gap: '26px', marginBottom: '14px' });
-    l1 = mk('div', 'vach', tren); css(l1, { position: 'relative', width: '150px' });
-    trenTxt = mk('div', 'caps', tren, esc(d.tren)); css(trenTxt, { fontSize: '34px', color: 'var(--kem)', textShadow: '0 2px 12px rgba(0,0,0,.6)' });
-    l2 = mk('div', 'vach', tren); css(l2, { position: 'relative', width: '150px' });
-  }
-  const chinh = mk('div', 'serif chu_drop', b, esc(d.chinh)); css(chinh, { whiteSpace: 'nowrap', lineHeight: '1' });
-  const tay = d.viet_tay ? mk('div', 'tay', b, esc(d.viet_tay)) : null;
-  const duoi = d.duoi ? mk('div', 'caps', b, esc(d.duoi)) : null;
-  if (duoi) css(duoi, { fontSize: '28px', color: 'rgba(255,246,230,.92)', marginTop: '26px', letterSpacing: '.34em', textShadow: '0 2px 12px rgba(0,0,0,.7)' });
+  const tren = d.tren ? hangNhan(b, d.tren, 36, d.vi_tri === 'giua') : null;
+  if (tren) css(tren.r, { marginBottom: '16px' });
+  const chinh = mk('div', 'tit chu_sang', b, esc(d.chinh)); css(chinh, { whiteSpace: 'nowrap', lineHeight: '.92' });
+  const tay = d.viet_tay ? mk('div', 'nghieng dam', b, esc(d.viet_tay)) : null;
+  const duoi = d.duoi ? mk('div', 'nhan_nho', b, esc(d.duoi)) : null;
+  if (duoi) css(duoi, { fontSize: '30px', color: '#fff', marginTop: '24px', letterSpacing: '.34em' });
   return {
     el, init() {
-      const co = vua(chinh, d.co || 230, VUNG[d.vi_tri].w * .94);
-      if (tay) { vua(tay, 96, VUNG[d.vi_tri].w * .9); css(tay, { marginTop: (co * .02) + 'px', transform: 'rotate(-3deg)' }); }
+      const co = vua(chinh, d.co || 250, VUNG[d.vi_tri].w * .94);
+      if (tay) { vua(tay, 68, VUNG[d.vi_tri].w * .9); css(tay, { marginTop: (co * .05) + 'px', transform: 'rotate(-2deg)' }); }
       HOP.push({ el: chinh, d }); if (tay) HOP.push({ el: tay, d });
     },
     ve(t) {
@@ -412,15 +515,15 @@ LAM.mo_dau = d => {
       const e = P(t, d.tu, .32, E.outC);
       chinh.style.opacity = P(t, d.tu - .02, .08).toFixed(3);
       chinh.style.transform = `scale(${(1.28 - .28 * e).toFixed(4)})`;
-      chinh.style.letterSpacing = (.12 - .09 * P(t, d.tu, .9, E.outE)).toFixed(4) + 'em';
+      chinh.style.letterSpacing = (.1 - .096 * P(t, d.tu, .9, E.outE)).toFixed(4) + 'em';
       chinh.style.backgroundPosition = `${(100 - 100 * P(t, d.tu + .2, .9, E.ioS)).toFixed(1)}% 50%`;
       if (tren) {
         const a = P(t, d.tu + .04, .25, E.outC);
-        trenTxt.style.opacity = a.toFixed(3); trenTxt.style.letterSpacing = (.6 - .2 * a).toFixed(3) + 'em';
-        l1.style.transform = `scaleX(${a.toFixed(3)})`; l1.style.transformOrigin = '100% 50%';
-        l2.style.transform = `scaleX(${a.toFixed(3)})`; l2.style.transformOrigin = '0% 50%';
+        tren.tx.style.opacity = a.toFixed(3); tren.tx.style.letterSpacing = (.6 - .34 * a).toFixed(3) + 'em';
+        tren.g1.style.transform = `scaleX(${a.toFixed(3)})`; tren.g1.style.transformOrigin = '100% 50%';
+        if (tren.g2) { tren.g2.style.transform = `scaleX(${a.toFixed(3)})`; tren.g2.style.transformOrigin = '0% 50%'; }
       }
-      if (tay) { const w = P(t, d.tu + .2, .5, E.outC); tay.style.clipPath = `inset(-20% ${((1 - w) * 100).toFixed(1)}% -20% -5%)`; }
+      if (tay) { const w = P(t, d.tu + .2, .45, E.outC); tay.style.clipPath = `inset(-30% ${((1 - w) * 100).toFixed(1)}% -30% -5%)`; }
       if (duoi) { const a = P(t, d.tu + .35, .3); duoi.style.opacity = a.toFixed(3); duoi.style.transform = `translateY(${((1 - a) * 14).toFixed(1)}px)`; }
       b.style.opacity = (1 - v.r).toFixed(3);
       b.style.transform = `scale(${(1 + .03 * v.r).toFixed(4)})`;
@@ -428,73 +531,64 @@ LAM.mo_dau = d => {
   };
 };
 
-// 1b. HOOK_TU — chữ khoá của từng vế câu hook: KHỐI CHỮ in đậm đập vào ĐÚNG khung cắt (≤ 0,25 s), nhãn địa danh nhỏ có ghim,
-//     hoặc kieu "cau" = câu hỏi serif nghiêng (khung đầu video). Tắt gọn ở den (0,12 s) — cảnh sau có chữ mới.
+// 1b. HOOK_TU — chữ khoá của từng vế câu hook / teaser: khối chữ IN HOA nghiêng đập vào ĐÚNG khung cắt (≤ 0,25 s) + vạch ngọc quét
+//     dưới chữ, nhãn nhỏ có ghim; kieu "cau" = câu hỏi chữ nghiêng (khung đầu video). Tắt gọn ở den (0,12 s).
 LAM.hook_tu = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
-  const cau = d.kieu === 'cau';
-  const sc = scrim(el, d.vi_tri, cau ? .62 : .45);
+  const el = mk('div', 'dh', LOP); css(el, FULL);
+  const cau = d.kieu === 'cau', giua = d.vi_tri === 'giua';
+  const sc = scrim(el, d.vi_tri, cau ? .6 : .45);
   const b = khoi(d.vi_tri, d.y ?? (cau ? 560 : 520)); el.appendChild(b);
   const nh = d.nhan ? mk('div', '', b) : null;
   if (nh) {
-    css(nh, { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' });
-    const ic = mk('span', '', nh, icon(d.icon || 'ghim')); css(ic, { width: '42px', height: '42px', color: 'var(--vang)', display: 'inline-flex', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,.7))' });
-    const tx = mk('span', 'caps', nh, esc(d.nhan)); css(tx, { fontSize: '34px', color: 'var(--vang)', letterSpacing: '.3em', textShadow: '0 2px 10px rgba(0,0,0,.75)' });
+    css(nh, { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' });
+    const ic = mk('span', '', nh, icon(d.icon || 'ghim')); css(ic, { width: '40px', height: '40px', color: 'var(--nhan)', display: 'inline-flex', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,.7))' });
+    const tx = mk('span', 'nhan_nho', nh, esc(d.nhan)); css(tx, { fontSize: '34px' });
   }
-  const chu = mk('div', cau ? 'bong_chu' : 'kem_grad', b, esc(d.chu));
-  if (cau) css(chu, { fontFamily: 'PFI', fontWeight: '700', color: '#FFFFFF', lineHeight: '1.1', whiteSpace: 'nowrap',
-    textShadow: '0 3px 18px rgba(0,0,0,.85), 0 1px 3px rgba(0,0,0,.8)' });
-  else css(chu, { fontFamily: 'AN', lineHeight: '1', letterSpacing: '.02em', whiteSpace: 'nowrap', textTransform: 'uppercase' });
+  const chu = mk('div', cau ? 'nghieng dam' : 'tit_i', b, esc(d.chu)); css(chu, { whiteSpace: 'nowrap' });
+  const vach = cau ? null : mk('div', 'vach_n', b);
   return {
-    el, init() { vua(chu, d.co || (cau ? 92 : 190), VUNG[d.vi_tri].w * .96); HOP.push({ el: chu, d }); },
+    el, init() {
+      vua(chu, d.co || (cau ? 84 : 190), VUNG[d.vi_tri].w * .96);
+      if (vach) css(vach, { position: 'relative', width: f1(Math.min(rong(chu) * .42, 420)) + 'px', marginTop: '16px' });
+      HOP.push({ el: chu, d });
+    },
     ve(t) {
       const on = t >= d.tu - .02 && t < d.den; show(el, on); if (!on) return;
       const r = P(t, d.den - .12, .12, E.inC);
-      sc.style.opacity = ((d.tu <= .01 ? 1 : P(t, d.tu, .12)) * (1 - r)).toFixed(3);
-      const ngay = d.tu <= .01;                 // chữ ở khung 0 (ảnh xem trước YouTube) phải ĐỦ ngay, không chạy vào
+      const ngay = d.tu <= .01;                 // chữ ở khung 0 (ảnh xem trước YouTube) phải ĐỦ ngay
+      sc.style.opacity = ((ngay ? 1 : P(t, d.tu, .12)) * (1 - r)).toFixed(3);
       const e = ngay ? 1 : P(t, d.tu, .25, E.outC);
       chu.style.opacity = ngay ? '1' : P(t, d.tu - .02, .06).toFixed(3);
       chu.style.transform = `scale(${(1.25 - .25 * e + .04 * P(t, d.tu + .25, d.den - d.tu, E.lin)).toFixed(4)})`;
-      if (nh) { const a = P(t, d.tu + .08, .2, E.outC); nh.style.opacity = a.toFixed(3); nh.style.transform = `translateX(${((1 - a) * -30).toFixed(1)}px)`; }
+      if (vach) { const a = ngay ? 1 : P(t, d.tu + .08, .3, E.outE); vach.style.transform = `scaleX(${a.toFixed(3)})`; vach.style.transformOrigin = giua ? '50% 50%' : '0 50%'; }
+      if (nh) { const a = P(t, d.tu + .08, .2, E.outC); nh.style.opacity = (ngay ? 1 : a).toFixed(3); nh.style.transform = `translateX(${((1 - (ngay ? 1 : a)) * -30).toFixed(1)}px)`; }
       b.style.opacity = (1 - r).toFixed(3);
     },
   };
 };
 
-// 2. CHƯƠNG — số viền vàng tô dần + "ĐIỂM ĐẾN" + TÊN serif lớn + dòng mô tả; đặt ở vùng trống cạnh thẻ dọc
+// 2. CHƯƠNG — có toa_do (+ bd): BẢN ĐỒ A → B toàn màn (từ điểm trước tới điểm này, km + giờ), tới nơi hiện tên lớn.
+//    Không bản đồ: số viền ngọc tô dần + nhãn "ĐIỂM ĐẾN" + TÊN in hoa lớn + dòng nghiêng.
 LAM.chuong = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
-  const sc = scrim(el, d.vi_tri, .66);
+  if (d.bd) return banDoAB(d, { nhan: `${T.dan_chuong || 'Điểm đến'} ${d.so || ''}`.trim(), ten: d.ten, phu: d.phu, co: d.co, the_nhan: T.tuyen });
+  const el = mk('div', 'dh', LOP); css(el, FULL);
+  const sc = scrim(el, d.vi_tri, .64);
   const b = khoi(d.vi_tri, d.y ?? 470); el.appendChild(b);
-  const hang = mk('div', '', b); css(hang, { display: 'flex', alignItems: 'flex-end', gap: '30px', marginBottom: '8px' });
+  const hang = mk('div', '', b); css(hang, { display: 'flex', alignItems: 'flex-end', gap: '28px', marginBottom: '6px' });
   const so = mk('div', 'so_vien', hang, esc(d.so || '01'));
   const so2 = mk('div', 'to', so, esc(d.so || '01'));
-  const nh = mk('div', 'nhan_chuong', hang); css(nh, { marginBottom: '38px' });
-  const g = mk('div', 'gach', nh);
-  const nt = mk('div', 'caps', nh, esc(d.nhan || T.dan_chuong || 'Điểm đến')); css(nt, { fontSize: '30px', color: 'var(--vang)' });
-  const ten = mk('div', '', b); css(ten, { lineHeight: '1.02' });
+  const nh = mk('div', 'nhan_chuong', hang); css(nh, { marginBottom: '34px' });
+  const g = mk('div', 'gach_n', nh);
+  const nt = mk('div', 'nhan_nho', nh, esc(d.nhan || T.dan_chuong || 'Điểm đến')); css(nt, { fontSize: '32px' });
+  const ten = mk('div', '', b); css(ten, { lineHeight: '.94' });
   const phu = d.phu ? mk('div', '', b) : null;
-  if (phu) { css(phu, { display: 'flex', alignItems: 'center', gap: '14px', marginTop: '22px', fontWeight: '600', fontSize: '38px', color: 'var(--kem)' });
-    const ic = mk('span', '', phu, icon(d.icon || 'ghim')); css(ic, { width: '40px', height: '40px', color: 'var(--vang)', display: 'inline-flex' });
-    mk('span', 'bong_chu', phu, esc(d.phu)); }
-  // thẻ bản đồ góc: Việt Nam (có Hoàng Sa, Trường Sa) + ghim toả sóng ở điểm đến — khi có toa_do
-  let the = null;
-  if (d.toa_do && VN) {
-    const mw = 230, mh = 262, phaiThe = d.vi_tri !== 'phai';
-    the = mk('div', 'abs', el);
-    css(the, { [phaiThe ? 'right' : 'left']: '96px', top: '64px', width: (mw + 36) + 'px', padding: '18px 18px 14px', borderRadius: '24px',
-      background: 'linear-gradient(170deg, rgba(18,22,30,.78), rgba(8,10,14,.70))', boxShadow: '0 20px 50px rgba(0,0,0,.45), inset 0 0 0 1.5px rgba(244,198,106,.45)' });
-    const [px, py] = chieu(d.toa_do[0], d.toa_do[1], VN.bbox, mw, mh);
-    the.innerHTML = `<svg width="${mw}" height="${mh}" viewBox="0 0 ${mw} ${mh}" style="display:block;overflow:visible">${svgBanDo(mw, mh, 'rgba(255,246,230,.85)')}
-      <circle class="song_ghim" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="10" fill="none" stroke="#F4C66A" stroke-width="3"/>
-      <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="7.5" fill="#FF3B3B" stroke="#FFF6E6" stroke-width="2.5"/></svg>`;
-    const nt2 = mk('div', 'caps', the, esc(d.ten_ngan || d.ten)); css(nt2, { fontSize: '19px', color: 'var(--vang)', textAlign: 'center', marginTop: '8px', letterSpacing: '.22em', whiteSpace: 'nowrap', overflow: 'hidden' });
-    the._song = the.querySelector('.song_ghim');
-  }
+  if (phu) { css(phu, { display: 'flex', alignItems: 'center', gap: '14px', marginTop: '22px' });
+    const ic = mk('span', '', phu, icon(d.icon || 'ghim')); css(ic, { width: '40px', height: '40px', color: 'var(--nhan)', display: 'inline-flex' });
+    const tx = mk('span', 'nghieng', phu, esc(d.phu)); css(tx, { fontSize: '40px' }); }
   let dong = [];
   return {
     el, init() {
-      dong = dong2(ten, d.ten, d.co || 150, VUNG[d.vi_tri].w * .98, 'serif kem_grad').map(bocMask);
+      dong = dong2(ten, d.ten, d.co || 160, VUNG[d.vi_tri].w * .98, 'tit').map(bocMask);
       if (d.vi_tri === 'giua') hang.style.justifyContent = 'center';
       HOP.push({ el: ten, d });
     },
@@ -505,130 +599,128 @@ LAM.chuong = d => {
       so.style.opacity = e0.toFixed(3); so.style.transform = `translateX(${((1 - e0) * -50).toFixed(1)}px)`;
       const f = P(t, d.tu + .15, .6, E.ioS); so2.style.clipPath = `inset(${((1 - f) * 100).toFixed(1)}% 0 0 0)`;
       const e1 = P(t, d.tu + .05, .35, E.outE); g.style.transform = `scaleX(${e1.toFixed(3)})`; g.style.transformOrigin = '0 50%';
-      nt.style.opacity = e1.toFixed(3); nt.style.letterSpacing = (.6 - .28 * e1).toFixed(3) + 'em';
+      nt.style.opacity = e1.toFixed(3); nt.style.letterSpacing = (.6 - .34 * e1).toFixed(3) + 'em';
       dong.forEach((x, i) => { const e = P(t, d.tu + .05 + i * .08, .4, E.outC); x.style.transform = `translateY(${((1 - e) * 105).toFixed(1)}%)`; });
       if (phu) { const e = P(t, d.tu + .3, .35); phu.style.opacity = e.toFixed(3); phu.style.transform = `translateY(${((1 - e) * 18).toFixed(1)}px)`; }
       b.style.opacity = (1 - v.r).toFixed(3); b.style.transform = `translateX(${(-40 * v.r).toFixed(1)}px)`;
-      if (the) {
-        const e = P(t, d.tu + .25, .4, E.outB);
-        the.style.opacity = (P(t, d.tu + .25, .2) * (1 - v.r)).toFixed(3); the.style.transform = `scale(${(.7 + .3 * e).toFixed(3)})`;
-        the.style.transformOrigin = d.vi_tri !== 'phai' ? '100% 0' : '0 0';
-        const r = ((t - d.tu) % 1.4 + 1.4) % 1.4 / 1.4;
-        the._song.setAttribute('r', (8 + 26 * r).toFixed(1)); the._song.setAttribute('opacity', (1 - r).toFixed(3));
-      }
     },
   };
 };
 
-// 3. ĐỊA DANH — thẻ góc dưới (lower third): vòng vàng có icon, tên serif, dòng nhỏ chữ in giãn
+// 2b. HÀNH TRÌNH — lời nói di chuyển A → B: cùng bản đồ vệ tinh kiểu Google Maps (số giờ / km theo lời, không có thì ước tính "≈")
+LAM.hanh_trinh = d => banDoAB(d, { nhan: d.nhan || '', ten: d.diem_den.ten, phu: d.phu, co: d.co, the_nhan: T.tuyen });
+
+// 3. ĐỊA DANH — góc dưới: tròn ngọc có icon, vạch ngọc dọc, tên in hoa, dòng nghiêng
 LAM.dia_danh = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
-  const g = mk('div', 'man_toi', el);
+  const el = mk('div', 'dh', LOP); css(el, FULL);
+  const gr = mk('div', 'man_toi', el);
   const phai = d.vi_tri === 'phai';
-  css(g, { [phai ? 'right' : 'left']: 0, top: '560px', width: '1100px', height: '420px',
+  css(gr, { [phai ? 'right' : 'left']: 0, top: '560px', width: '1100px', height: '420px',
     background: `radial-gradient(ellipse 60% 55% at ${phai ? '80%' : '20%'} 60%, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)` });
   const k = mk('div', 'abs', el);
-  const tron = mk('div', 'ld_tron', k, icon(d.icon || 'ghim')); css(tron, { width: '96px', height: '96px' });
-  const ten = mk('div', 'abs serif bong_chu', k, esc(d.ten)); css(ten, { fontWeight: '800', color: 'var(--kem)', whiteSpace: 'nowrap' });
-  const phu = d.phu ? mk('div', 'abs caps', k, esc(d.phu)) : null;
-  if (phu) css(phu, { fontSize: '27px', color: 'var(--vang)', whiteSpace: 'nowrap', textShadow: '0 2px 10px rgba(0,0,0,.7)' });
-  const vach = mk('div', 'abs', k); css(vach, { height: '3px', background: 'linear-gradient(90deg, var(--vang), rgba(244,198,106,0))' });
+  const tron = mk('div', 'ld_tron', k, icon(d.icon || 'ghim'));
+  const vach = mk('div', 'ld_vach', k);
+  const ten = mk('div', 'abs tit', k, esc(d.ten)); css(ten, { whiteSpace: 'nowrap' });
+  const phu = d.phu ? mk('div', 'abs nghieng ngoc', k, esc(d.phu)) : null;
+  if (phu) css(phu, { fontSize: '32px', whiteSpace: 'nowrap' });
   return {
     el, init() {
-      const co = vua(ten, 78, 820);
+      const co = vua(ten, 84, 820);
       const wt = rong(ten), wp = phu ? rong(phu) : 0, wmax = Math.max(wt, wp);
-      const x0 = phai ? W - 96 - 84 - 26 - wmax : 96, by = 830;          // đáy khối y 830 (trên sub)
+      const by = 840;
       css(k, { left: '0px', top: '0px' });
-      css(tron, { left: (phai ? W - 96 - 96 : 96) + 'px', top: (by - 96 - (phu ? 14 : 0)) + 'px' });
-      const tx = phai ? x0 - 12 : 96 + 96 + 28;
-      css(ten, { left: tx + 'px', top: (by - co * 1.18 - (phu ? 46 : 0)) + 'px', textAlign: phai ? 'right' : 'left', width: wmax + 'px' });
-      if (phu) css(phu, { left: tx + 'px', top: (by - 34) + 'px', textAlign: phai ? 'right' : 'left', width: wmax + 'px' });
-      css(vach, { left: tx + 'px', top: (by - (phu ? 46 : 0) + 4) + 'px', width: Math.min(wmax, 460) + 'px' });
-      if (phai) vach.style.background = 'linear-gradient(270deg, var(--vang), rgba(244,198,106,0))', vach.style.left = (tx + wmax - Math.min(wmax, 420)) + 'px';
+      const hk = co * .96 + (phu ? 46 : 0);
+      css(tron, { left: (phai ? W - 96 - 84 : 96) + 'px', top: (by - hk / 2 - 42) + 'px' });
+      const tx = phai ? W - 96 - 84 - 30 - wmax : 96 + 84 + 30;
+      css(vach, { left: (phai ? W - 96 - 84 - 16 : 96 + 84 + 12) + 'px', top: (by - hk) + 'px', height: hk + 'px' });
+      css(ten, { left: tx + (phai ? 0 : 6) + 'px', top: (by - hk) + 'px', textAlign: phai ? 'right' : 'left', width: wmax + 'px' });
+      if (phu) css(phu, { left: tx + (phai ? 0 : 6) + 'px', top: (by - 44) + 'px', textAlign: phai ? 'right' : 'left', width: wmax + 'px' });
       HOP.push({ el: ten, d });
     },
     ve(t) {
       const v = vaoRa(t, d, .4); show(el, v.on); if (!v.on) return;
-      g.style.opacity = (P(t, d.tu, .5) * (1 - v.r)).toFixed(3);
-      const e0 = P(t, d.tu, .55, E.outB);
+      gr.style.opacity = (P(t, d.tu, .5) * (1 - v.r)).toFixed(3);
+      const e0 = P(t, d.tu, .5, E.outB);
       tron.style.transform = `scale(${e0.toFixed(3)}) rotate(${((1 - e0) * -90).toFixed(1)}deg)`;
-      const e1 = P(t, d.tu + .06, .38, E.outC);
+      const ev = P(t, d.tu + .05, .35, E.outE); vach.style.transform = `scaleY(${ev.toFixed(3)})`; vach.style.transformOrigin = '50% 100%';
+      const e1 = P(t, d.tu + .08, .38, E.outC);
       ten.style.clipPath = phai ? `inset(-30% -5% -30% ${((1 - e1) * 100).toFixed(1)}%)` : `inset(-30% ${((1 - e1) * 100).toFixed(1)}% -30% -5%)`;
       ten.style.transform = `translateX(${((1 - e1) * (phai ? 30 : -30)).toFixed(1)}px)`;
-      const e2 = P(t, d.tu + .2, .4, E.outC);
-      vach.style.transform = `scaleX(${e2.toFixed(3)})`; vach.style.transformOrigin = phai ? '100% 50%' : '0 50%';
-      if (phu) { phu.style.opacity = e2.toFixed(3); phu.style.letterSpacing = (.5 - .2 * e2).toFixed(3) + 'em'; }
+      if (phu) { const e2 = P(t, d.tu + .22, .4, E.outC); phu.style.opacity = e2.toFixed(3); phu.style.transform = `translateY(${((1 - e2) * 12).toFixed(1)}px)`; }
       k.style.opacity = (1 - v.r).toFixed(3); k.style.transform = `translateX(${(v.r * (phai ? 40 : -40)).toFixed(1)}px)`;
     },
   };
 };
 
-// 4. TỪ KHOÁ — từng chữ bật đúng giây đọc (kiểu serif / tay / sans)
+// 4. TỪ KHOÁ — từng chữ bật đúng giây đọc (tit in hoa / nghiêng ngọc)
 LAM.tu_khoa = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
+  const el = mk('div', 'dh', LOP); css(el, FULL);
   const sc = scrim(el, d.vi_tri, .5);
   const b = khoi(d.vi_tri, d.y ?? 470); el.appendChild(b);
-  const hang = mk('div', '', b); css(hang, { display: 'flex', alignItems: 'baseline', gap: '30px', whiteSpace: 'nowrap', flexWrap: 'nowrap' });
+  const cot = (d.muc || []).length >= 3;   // ≥ 3 từ: xếp CỘT (1 hàng dài đè người / mặt — soát 14/11/2026)
+  const hang = mk('div', '', b); css(hang, cot ? { display: 'flex', flexDirection: 'column', alignItems: d.vi_tri === 'giua' ? 'center' : 'flex-start', gap: '0px', whiteSpace: 'nowrap', lineHeight: '1.04' }
+    : { display: 'flex', alignItems: 'baseline', gap: '28px', whiteSpace: 'nowrap', flexWrap: 'nowrap' });
   const ms = (d.muc || []).map(m => {
-    const k = m.kieu || 'serif';
-    const e = mk('span', k === 'tay' ? 'tay' : (k === 'sans' ? 'bong_chu' : 'serif kem_grad'), hang, esc(m.chu));
-    if (k === 'sans') css(e, { fontWeight: '900', textTransform: 'uppercase', color: 'var(--kem)' });
+    const k = m.kieu || 'tit';
+    const e = mk('span', k === 'tay' ? 'nghieng dam ngoc' : 'tit', hang, esc(m.chu));
     e.style.display = 'inline-block';
     return { e, m, k };
   });
   return {
     el, init() {
-      const base = d.co || 120;
-      ms.forEach(x => x.e.style.fontSize = (base * (x.k === 'tay' ? 1.0 : (x.k === 'sans' ? .8 : 1))) + 'px');
-      const w = rong(hang), mw = VUNG[d.vi_tri].w;
-      if (w > mw) ms.forEach(x => x.e.style.fontSize = (parseFloat(x.e.style.fontSize) * mw / w).toFixed(1) + 'px');
+      const base = d.co || 130;
+      ms.forEach(x => x.e.style.fontSize = (base * (x.k === 'tay' ? .6 : 1)) + 'px');
+      const mw = (VUNG[d.vi_tri] || VUNG.giua).w;
+      if (cot) ms.forEach(x => { const w = rong(x.e); if (w > mw) x.e.style.fontSize = (parseFloat(x.e.style.fontSize) * mw / w).toFixed(1) + 'px'; });
+      else { const w = rong(hang); if (w > mw) ms.forEach(x => x.e.style.fontSize = (parseFloat(x.e.style.fontSize) * mw / w).toFixed(1) + 'px'); }
       HOP.push({ el: hang, d });
     },
     ve(t) {
       const v = vaoRa(t, d, .45); show(el, v.on); if (!v.on) return;
       sc.style.opacity = (P(t, d.tu, .5) * (1 - v.r)).toFixed(3);
       for (const x of ms) {
-        const e = P(t, x.m.luc, .5, E.outB), a = P(t, x.m.luc, .3);
+        const e = P(t, x.m.luc, .45, E.outB), a = P(t, x.m.luc, .25);
         x.e.style.opacity = a.toFixed(3);
-        x.e.style.transform = `translateY(${((1 - P(t, x.m.luc, .5)) * 40).toFixed(1)}px) scale(${(.75 + .25 * e).toFixed(4)})`;
-        if (x.k === 'tay') x.e.style.clipPath = `inset(-30% ${((1 - P(t, x.m.luc, .7, E.ioS)) * 100).toFixed(1)}% -30% -5%)`;
+        x.e.style.transform = `translateY(${((1 - P(t, x.m.luc, .45)) * 36).toFixed(1)}px) scale(${(.78 + .22 * e).toFixed(4)})`;
+        if (x.k === 'tay') x.e.style.clipPath = `inset(-30% ${((1 - P(t, x.m.luc, .55, E.ioS)) * 100).toFixed(1)}% -30% -5%)`;
       }
       b.style.opacity = (1 - v.r).toFixed(3);
     },
   };
 };
 
-// 5. TIÊU ĐỀ ĐOẠN — dòng dẫn chữ in + chữ khoá serif vàng (2 dòng cân) + viết tay kem
+// 5. TIÊU ĐỀ ĐOẠN — nhãn ngọc + chữ khoá IN HOA trắng (2 dòng cân, trượt lên trong mặt nạ) + dòng nghiêng ngọc
 LAM.tieu_de = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
+  const el = mk('div', 'dh', LOP); css(el, FULL);
   const sc = scrim(el, d.vi_tri, .55);
   const b = khoi(d.vi_tri, d.y ?? 470); el.appendChild(b);
-  const dan = d.dan ? mk('div', 'caps', b, esc(d.dan)) : null;
-  if (dan) css(dan, { fontSize: '36px', color: 'var(--vang)', marginBottom: '64px', textShadow: '0 2px 12px rgba(0,0,0,.6)' });
-  const khoa = mk('div', '', b); css(khoa, { lineHeight: '1.0' });
-  const tay = d.viet_tay ? mk('div', 'tay', b, esc(d.viet_tay)) : null;
-  if (tay) css(tay, { color: 'var(--kem)', marginTop: '22px', transform: 'rotate(-2deg)' });
+  const dan = d.dan ? hangNhan(b, d.dan, 34, d.vi_tri === 'giua') : null;
+  if (dan) css(dan.r, { marginBottom: '22px' });
+  const khoa = mk('div', '', b); css(khoa, { lineHeight: '.94' });
+  const tay = d.viet_tay ? mk('div', 'nghieng dam ngoc', b, esc(d.viet_tay)) : null;
+  if (tay) css(tay, { marginTop: '18px', whiteSpace: 'nowrap' });
   let dong = [];
   return {
     el, init() {
-      dong = dong2(khoa, d.khoa, d.co || 150, VUNG[d.vi_tri].w * .97, 'serif vang_grad').map(bocMask);
-      if (tay) vua(tay, 84, VUNG[d.vi_tri].w * .9);
+      dong = dong2(khoa, d.khoa, d.co || 160, VUNG[d.vi_tri].w * .97, 'tit').map(bocMask);
+      if (tay) vua(tay, 58, VUNG[d.vi_tri].w * .9);
       HOP.push({ el: khoa, d }); if (tay) HOP.push({ el: tay, d });
     },
     ve(t) {
       const v = vaoRa(t, d, .45); show(el, v.on); if (!v.on) return;
       sc.style.opacity = (P(t, d.tu, .5) * (1 - v.r)).toFixed(3);
-      if (dan) { const e = P(t, d.tu, .35, E.outE); dan.style.opacity = e.toFixed(3); dan.style.letterSpacing = (.7 - .38 * e).toFixed(3) + 'em'; }
+      if (dan) { const e = P(t, d.tu, .35, E.outE); dan.tx.style.opacity = e.toFixed(3); dan.tx.style.letterSpacing = (.6 - .34 * e).toFixed(3) + 'em';
+        dan.g1.style.transform = `scaleX(${e.toFixed(3)})`; dan.g1.style.transformOrigin = '0 50%'; if (dan.g2) dan.g2.style.transform = `scaleX(${e.toFixed(3)})`; }
       dong.forEach((x, i) => { const e = P(t, d.tu + .03 + i * .08, .4, E.outC); x.style.transform = `translateY(${((1 - e) * 105).toFixed(1)}%)`; });
-      if (tay) { const e = P(t, d.tu + .3, .5, E.outC); tay.style.clipPath = `inset(-30% ${((1 - e) * 100).toFixed(1)}% -30% -5%)`; }
+      if (tay) { const e = P(t, d.tu + .3, .45, E.outC); tay.style.clipPath = `inset(-30% ${((1 - e) * 100).toFixed(1)}% -30% -5%)`; }
       b.style.opacity = (1 - v.r).toFixed(3); b.style.transform = `scale(${(1 + .03 * v.r).toFixed(4)})`;
     },
   };
 };
 
-// 6. CHIP — viên kính có icon vàng, bật lần lượt (mặc định hàng TRÊN, trời thường trống)
+// 6. CHIP — viên trắng có icon ngọc, bật lần lượt (mặc định hàng TRÊN, trời thường trống)
 LAM.chip = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
+  const el = mk('div', 'dh', LOP); css(el, FULL);
   const ms = (d.muc || []).map(m => {
     const c = mk('div', 'chip', el); mk('div', 'ic', c, icon(m.icon || 'sao')); mk('span', '', c, esc(m.chu));
     return { c, m };
@@ -637,11 +729,10 @@ LAM.chip = d => {
     el, init() {
       const y = d.y ?? 96, gap = 18;
       const ws = ms.map(x => x.c.getBoundingClientRect().width);
-      let tong = ws.reduce((a, b) => a + b, 0) + gap * (ws.length - 1);
+      const tong = ws.reduce((a, b) => a + b, 0) + gap * (ws.length - 1);
       let x = d.vi_tri === 'phai' ? W - 96 - tong : (d.vi_tri === 'giua' ? (W - tong) / 2 : 96);
-      if (tong > W - 192) {                         // quá dài → xếp dọc
-        ms.forEach((m, i) => css(m.c, { left: (d.vi_tri === 'phai' ? W - 96 - ws[i] : 96) + 'px', top: (y + i * 92) + 'px' }));
-      } else ms.forEach((m, i) => { css(m.c, { left: x + 'px', top: y + 'px' }); x += ws[i] + gap; });
+      if (tong > W - 192) ms.forEach((m, i) => css(m.c, { left: (d.vi_tri === 'phai' ? W - 96 - ws[i] : 96) + 'px', top: (y + i * 88) + 'px' }));
+      else ms.forEach((m, i) => { css(m.c, { left: x + 'px', top: y + 'px' }); x += ws[i] + gap; });
       ms.forEach(m => HOP.push({ el: m.c, d }));
     },
     ve(t) {
@@ -655,79 +746,80 @@ LAM.chip = d => {
   };
 };
 
-// 7. SỐ LỚN — đếm lên đúng giây đọc số
+// 7. SỐ LỚN — số ngọc in hoa đếm lên đúng giây đọc số
 const fmtSo = x => { const s = String(Math.round(x)); return s.replace(/\B(?=(\d{3})+(?!\d))/g, ['vi', 'de', 'id', 'es', 'it', 'pt'].includes(NN) ? '.' : ','); };
 LAM.so_lon = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
+  const el = mk('div', 'dh', LOP); css(el, FULL);
   const sc = scrim(el, d.vi_tri, .55);
   const b = khoi(d.vi_tri, d.y ?? 470); el.appendChild(b);
-  const hang = mk('div', '', b); css(hang, { display: 'flex', alignItems: 'baseline', gap: '14px', whiteSpace: 'nowrap' });
-  const tt = d.tien_to ? mk('span', 'serif kem_grad', hang, esc(d.tien_to)) : null;
-  const so = mk('span', 'vang_grad', hang); css(so, { fontFamily: 'AN', fontSize: (d.co || 230) + 'px', lineHeight: '1' });
-  const ht = d.hau_to ? mk('span', 'serif kem_grad', hang, esc(d.hau_to)) : null;
-  [tt, ht].forEach(x => x && css(x, { fontSize: ((d.co || 230) * .42) + 'px' }));
-  const nhan = d.nhan ? mk('div', 'caps', b, esc(d.nhan)) : null;
-  if (nhan) css(nhan, { fontSize: '30px', color: 'var(--kem)', marginTop: '6px', textShadow: '0 2px 12px rgba(0,0,0,.6)' });
+  const hang = mk('div', '', b); css(hang, { display: 'flex', alignItems: 'baseline', gap: '16px', whiteSpace: 'nowrap' });
+  const tt = d.tien_to ? mk('span', 'tit', hang, esc(d.tien_to)) : null;
+  const so = mk('span', 'tit', hang); css(so, { fontSize: (d.co || 260) + 'px', color: 'var(--nhan)', lineHeight: '.9' });
+  const ht = d.hau_to ? mk('span', 'tit', hang, esc(d.hau_to)) : null;
+  [tt, ht].forEach(x => x && css(x, { fontSize: ((d.co || 260) * .4) + 'px' }));
+  const nhan = d.nhan ? mk('div', 'nhan_nho', b, esc(d.nhan)) : null;
+  if (nhan) css(nhan, { fontSize: '32px', color: '#fff', marginTop: '10px' });
   const dich = parseFloat(String(d.so).replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.')) || 0;
   const dem = +(d.dem_tu ?? d.tu + .3);
   return {
-    el, init() { so.textContent = fmtSo(dich); vua(hang, 1, 99999); HOP.push({ el: hang, d }); },
+    el, init() { so.textContent = fmtSo(dich); HOP.push({ el: hang, d }); },
     ve(t) {
       const v = vaoRa(t, d, .4); show(el, v.on); if (!v.on) return;
       sc.style.opacity = (P(t, d.tu, .5) * (1 - v.r)).toFixed(3);
       so.textContent = fmtSo(dich * P(t, dem, 1.3, E.outE));
       const e = P(t, d.tu, .55, E.outB);
       hang.style.transform = `scale(${(.7 + .3 * e).toFixed(4)})`; hang.style.opacity = P(t, d.tu, .3).toFixed(3);
-      if (nhan) { const a = P(t, d.tu + .5, .6); nhan.style.opacity = a.toFixed(3); nhan.style.letterSpacing = (.6 - .28 * a).toFixed(3) + 'em'; }
+      if (nhan) { const a = P(t, d.tu + .5, .6); nhan.style.opacity = a.toFixed(3); nhan.style.letterSpacing = (.6 - .34 * a).toFixed(3) + 'em'; }
       b.style.opacity = (1 - v.r).toFixed(3);
     },
   };
 };
 
-// 8. LIỆT KÊ — bảng kính tối, dòng dẫn vàng, mục tick vàng hiện đúng giây đọc
+// 8. LIỆT KÊ — KHÔNG hộp (khách chê bảng tối + thẻ ảnh "giống màn dọc"): nhãn ngọc + mục IN HOA, số thứ tự ngọc, hiện đúng giây đọc
 LAM.liet_ke = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
-  const bg = mk('div', 'bang', el);
-  const dan = d.dan ? mk('div', 'dan', bg, esc(d.dan)) : null;
-  const ms = (d.muc || []).map(m => {
-    const r = mk('div', 'muc', bg); const tk = mk('div', 'tick', r, icon(m.icon || 'tich')); const tx = mk('span', 'bong_chu', r, esc(m.chu));
-    return { r, tk, tx, m };
+  const el = mk('div', 'dh', LOP); css(el, FULL);
+  const phai = d.vi_tri === 'phai';
+  const sc = scrim(el, phai ? 'phai' : 'trai', .62);
+  const bg = mk('div', 'lk', el);
+  const dan = d.dan ? hangNhan(bg, d.dan, 34) : null;
+  if (dan) dan.r.classList.add('dan_lk');
+  const ms = (d.muc || []).map((m, i) => {
+    const r = mk('div', 'muc', bg); const so = mk('span', 'so_m', r, String(i + 1).padStart(2, '0')); const tx = mk('span', 'chu_m', r, esc(m.chu));
+    return { r, so, tx, m };
   });
   return {
     el, init() {
-      const wmax = Math.max(...ms.map(x => rong(x.tx))) + 82 + 96, wd = dan ? rong(dan) + 96 : 0;
-      const w = Math.min(VUNG[d.vi_tri === 'phai' ? 'phai' : 'trai'].w, Math.max(wmax, wd, 520));
-      if (wmax > w) ms.forEach(x => vua(x.tx, 50, w - 82 - 96));
+      const wmax = Math.max(...ms.map(x => rong(x.tx)));
+      if (wmax > 720) ms.forEach(x => vua(x.tx, 70, 720));
+      const w = Math.min(820, Math.max(...ms.map(x => rong(x.tx))) + 86);
       const h = bg.getBoundingClientRect().height;
-      const x = d.vi_tri === 'phai' ? W - 130 - w : (d.vi_tri === 'giua' ? (W - w) / 2 : 130);
-      css(bg, { left: x + 'px', top: Math.max(80, 470 - h / 2) + 'px', width: w + 'px' });
+      css(bg, { left: (phai ? W - 130 - w : 130) + 'px', top: Math.max(80, 470 - h / 2) + 'px', width: w + 'px' });
       HOP.push({ el: bg, d });
     },
     ve(t) {
       const v = vaoRa(t, d, .4); show(el, v.on); if (!v.on) return;
-      const e = P(t, d.tu, .55, E.outE);
-      bg.style.opacity = (e * (1 - v.r)).toFixed(3);
-      bg.style.transform = `translateX(${((1 - e) * (d.vi_tri === 'phai' ? 60 : -60) + v.r * -30).toFixed(1)}px)`;
-      if (dan) dan.style.letterSpacing = (.5 - .22 * e).toFixed(3) + 'em';
+      sc.style.opacity = (P(t, d.tu, .5) * (1 - v.r)).toFixed(3);
+      if (dan) { const e = P(t, d.tu, .4, E.outE); dan.tx.style.opacity = e.toFixed(3); dan.tx.style.letterSpacing = (.6 - .34 * e).toFixed(3) + 'em'; dan.g1.style.transform = `scaleX(${e.toFixed(3)})`; dan.g1.style.transformOrigin = '0 50%'; }
       for (const x of ms) {
-        const a = P(t, x.m.luc, .45, E.outC), s = P(t, x.m.luc, .5, E.outB);
-        x.r.style.opacity = a.toFixed(3); x.r.style.transform = `translateX(${((1 - a) * -36).toFixed(1)}px)`;
-        x.tk.style.transform = `scale(${(.4 + .6 * s).toFixed(3)})`;
-        x.tk.style.background = `rgba(244,198,106,${(.22 * P(t, x.m.luc + .2, .3)).toFixed(3)})`;
+        const a = P(t, x.m.luc, .4, E.outC), s = P(t, x.m.luc, .45, E.outB);
+        x.r.style.opacity = a.toFixed(3); x.r.style.transform = `translateX(${((1 - a) * -40).toFixed(1)}px)`;
+        x.so.style.transform = `scale(${(.5 + .5 * s).toFixed(3)})`;
       }
+      bg.style.opacity = (1 - v.r).toFixed(3); bg.style.transform = `translateX(${(v.r * -30).toFixed(1)}px)`;
     },
   };
 };
 
-// 9. TRÍCH — câu nói nổi bật trong ngoặc kép lớn
+// 9. TRÍCH — ngoặc kép ngọc lớn + câu nghiêng
 LAM.trich = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
+  const el = mk('div', 'dh', LOP); css(el, FULL);
   const sc = scrim(el, d.vi_tri, .6);
   const b = khoi(d.vi_tri, d.y ?? 470); el.appendChild(b);
-  const ng = mk('div', 'serif vang_grad', b, '“'); css(ng, { fontSize: '220px', lineHeight: '.6', height: '110px' });
-  const noi = mk('div', 'bong_chu', b); css(noi, { fontFamily: 'PFI', fontWeight: '600', fontSize: (d.co || 68) + 'px', lineHeight: '1.2', maxWidth: (VUNG[d.vi_tri].w * .92) + 'px' });
+  const ng = mk('div', 'tit', b, '“'); css(ng, { fontSize: '240px', lineHeight: '.6', height: '110px', color: 'var(--nhan)' });
+  const noi = mk('div', 'nghieng'); b.appendChild(noi);
+  css(noi, { fontSize: (d.co || 64) + 'px', lineHeight: '1.22', maxWidth: (VUNG[d.vi_tri].w * .92) + 'px' });
   const ws = words(d.noi).map(w => mk('span', 'ch', noi, esc(w + ' ')));
-  const tg = d.tac_gia ? mk('div', 'tay', b, esc('— ' + d.tac_gia)) : null; if (tg) css(tg, { fontSize: '60px', marginTop: '16px' });
+  const tg = d.tac_gia ? mk('div', 'nhan_nho', b, esc('— ' + d.tac_gia)) : null; if (tg) css(tg, { fontSize: '32px', marginTop: '18px' });
   return {
     el, init() { HOP.push({ el: noi, d }); },
     ve(t) {
@@ -742,9 +834,9 @@ LAM.trich = d => {
   };
 };
 
-// 10. BẢN ĐỒ — Việt Nam, ghim rơi đúng giây đọc tên
+// 10. BẢN ĐỒ VIỆT NAM — ghim đỏ rơi đúng giây đọc tên (tổng kết nhiều điểm)
 LAM.ban_do = d => {
-  const el = mk('div', 'dh', LOP); css(el, { left: 0, top: 0, width: W + 'px', height: H + 'px' });
+  const el = mk('div', 'dh', LOP); css(el, FULL);
   const sc = scrim(el, d.vi_tri, .62);
   const mw = 520, mh = 880, x0 = d.vi_tri === 'phai' ? W - 140 - mw : (d.vi_tri === 'giua' ? (W - mw) / 2 : 140), y0 = 70;
   const box = mk('div', 'abs', el); css(box, { left: x0 + 'px', top: y0 + 'px', width: mw + 'px', height: mh + 'px' });
@@ -753,11 +845,11 @@ LAM.ban_do = d => {
   const ps = (d.diem || []).map(p => {
     const [x, y] = chieu(p.toa_do[0], p.toa_do[1], bb, mw, mh);
     const g = mk('div', 'abs', box); css(g, { left: x + 'px', top: y + 'px' });
-    const vong = mk('div', 'abs', g); css(vong, { left: '-30px', top: '-30px', width: '60px', height: '60px', borderRadius: '50%', border: '3px solid var(--vang)' });
-    const ghim = mk('div', 'abs', g, icon('ghim')); css(ghim, { left: '-24px', top: '-50px', width: '48px', height: '48px', color: 'var(--vang)', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,.6))' });
-    ghim.querySelector('svg').setAttribute('fill', 'rgba(244,198,106,.95)');
-    const ten = mk('div', 'abs bong_chu', g, esc(p.ten)); const trai = p.nhan === 'trai';
-    css(ten, { top: '-34px', [trai ? 'right' : 'left']: '34px', fontWeight: '800', fontSize: '38px', whiteSpace: 'nowrap', color: 'var(--kem)' });
+    const vong = mk('div', 'abs', g); css(vong, { left: '-30px', top: '-30px', width: '60px', height: '60px', borderRadius: '50%', border: '3px solid var(--nhan)' });
+    const ghim = mk('div', 'abs', g, GHIM_GG); css(ghim, { left: '-22px', top: '-58px', width: '44px', height: '58px' });
+    ghim.querySelector('svg').setAttribute('width', '44'); ghim.querySelector('svg').setAttribute('height', '58');
+    const ten = mk('div', 'abs bd_tag', g, esc(p.ten)); const trai = p.nhan === 'trai';
+    css(ten, { top: '-50px', [trai ? 'right' : 'left']: '30px', fontSize: '28px', padding: '6px 16px 7px' });
     return { g, vong, ghim, ten, p };
   });
   return {
@@ -777,12 +869,58 @@ LAM.ban_do = d => {
   };
 };
 
+// 11. BÌNH LUẬN ẢO — thẻ bình luận kiểu YouTube (Anh / Hàn, khen + chê nhẹ) trượt vào cột phải, mỗi thẻ đúng `luc`
+const CO = {
+  KR: '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="5" fill="#CD2E3A"/><path d="M10 10a5 5 0 0 0 10 0a2.5 2.5 0 0 0-5 0a2.5 2.5 0 0 1-5 0z" fill="#0047A0"/><g stroke="#111" stroke-width="1.2"><path d="M4.2 5.6l3-2.2M4.9 6.6l3-2.2M5.6 7.6l3-2.2M21.4 12.4l3 2.2M22.1 11.4l3 2.2M22.8 10.4l3 2.2M21.4 7.6l3-2.2M22.1 8.6l3-2.2M4.2 14.4l3 2.2M4.9 13.4l3 2.2"/></g></svg>',
+  US: '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#fff"/><g fill="#B22234"><rect y="0" width="30" height="1.54"/><rect y="3.08" width="30" height="1.54"/><rect y="6.16" width="30" height="1.54"/><rect y="9.24" width="30" height="1.54"/><rect y="12.32" width="30" height="1.54"/><rect y="15.4" width="30" height="1.54"/><rect y="18.46" width="30" height="1.54"/></g><rect width="13" height="10.8" fill="#3C3B6E"/><g fill="#fff"><circle cx="2.5" cy="2.2" r=".6"/><circle cx="5.5" cy="2.2" r=".6"/><circle cx="8.5" cy="2.2" r=".6"/><circle cx="11" cy="2.2" r=".6"/><circle cx="4" cy="4.8" r=".6"/><circle cx="7" cy="4.8" r=".6"/><circle cx="10" cy="4.8" r=".6"/><circle cx="2.5" cy="7.4" r=".6"/><circle cx="5.5" cy="7.4" r=".6"/><circle cx="8.5" cy="7.4" r=".6"/><circle cx="11" cy="7.4" r=".6"/></g></svg>',
+  GB: '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#012169"/><path d="M0 0l30 20M30 0L0 20" stroke="#fff" stroke-width="4"/><path d="M0 0l30 20M30 0L0 20" stroke="#C8102E" stroke-width="1.6"/><path d="M15 0v20M0 10h30" stroke="#fff" stroke-width="6"/><path d="M15 0v20M0 10h30" stroke="#C8102E" stroke-width="3.4"/></svg>',
+  AU: '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#012169"/><g transform="scale(.5)"><path d="M0 0l30 20M30 0L0 20" stroke="#fff" stroke-width="4"/><path d="M15 0v20M0 10h30" stroke="#fff" stroke-width="6"/><path d="M15 0v20M0 10h30" stroke="#C8102E" stroke-width="3.4"/></g><g fill="#fff"><circle cx="7.5" cy="15.5" r="1.6"/><circle cx="22" cy="5" r="1"/><circle cx="25.5" cy="9" r="1"/><circle cx="19" cy="10" r="1"/><circle cx="22" cy="16" r="1.1"/></g></svg>',
+  CA: '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#fff"/><rect width="7.5" height="20" fill="#D52B1E"/><rect x="22.5" width="7.5" height="20" fill="#D52B1E"/><path d="M15 4l1.2 2.6 2.2-.8-.8 3.6 2-1-.6 2.4 1.6.6-3.6 2.4.4 1.4H15.6V17h-1.2v-1.8h-1.8l.4-1.4-3.6-2.4 1.6-.6-.6-2.4 2 1-.8-3.6 2.2.8z" fill="#D52B1E"/></svg>',
+  VN: '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#DA251D"/><path d="M15 4.2l1.5 4.5h4.7l-3.8 2.8 1.4 4.5L15 13.2 11.2 16l1.4-4.5-3.8-2.8h4.7z" fill="#FFCD00"/></svg>',
+};
+const MAU_AV = ['#E8710A', '#1A73E8', '#9334E6', '#188038', '#D93025', '#007B83', '#C5221F', '#5E35B1', '#F29900', '#00897B'];
+const bamChu = s => { let h = 7; for (const c of String(s)) h = (h * 31 + c.codePointAt(0)) >>> 0; return h; };
+LAM.binh_luan = d => {
+  const el = mk('div', 'dh', LOP); css(el, FULL);
+  const cot = mk('div', 'bl_cot', el);
+  if (d.vi_tri === 'trai') css(cot, { left: '96px' });
+  const ms = (d.muc || []).map(m => {
+    const c = mk('div', 'bl', cot);
+    const ten = String(m.ten || 'traveler');
+    const av = mk('div', 'bl_av', c, esc(chars(ten.replace(/^@/, ''))[0] || 'T').toUpperCase()); av.style.background = MAU_AV[bamChu(ten) % MAU_AV.length];
+    const than = mk('div', 'bl_than', c);
+    mk('div', 'bl_dau', than, `<b>${esc(ten)}</b>${m.co && CO[m.co] ? `<span class="co">${CO[m.co]}</span>` : ''}<span class="tg">${esc(m.tg || '')}</span>`);
+    mk('div', 'bl_chu', than, esc(m.chu));
+    const chan = mk('div', 'bl_chan', than, `${icon('thich')}<span>${esc(m.thich || '')}</span>${icon('khong_thich')}<span style="margin-left:14px">${esc(m.tra_loi || '')}</span>`);
+    const tim = mk('span', 'tim_tg', chan, S(IC.tim)); tim.querySelector('svg').setAttribute('fill', '#FF2D55');
+    return { c, m, tim };
+  });
+  return {
+    el, init() {
+      let y = 0;
+      for (const x of ms) { css(x.c, { top: y + 'px' }); y += x.c.offsetHeight + 16; }
+      ms.forEach(x => HOP.push({ el: x.c, d }));
+    },
+    ve(t) {
+      const v = vaoRa(t, d, .4); show(el, v.on); if (!v.on) return;
+      ms.forEach((x, i) => {
+        const l = +(x.m.luc ?? d.tu + i * 1.25);
+        const a = P(t, l, .45, E.outB), o = P(t, l, .2);
+        const r = P(t, d.den - .4 + i * .06, .34, E.inC);
+        css(x.c, { opacity: (o * (1 - r)).toFixed(3), transform: `translateX(${f1((1 - a) * 90 + r * 120)}px) scale(${(.94 + .06 * a).toFixed(3)})` });
+        const k = P(t, l + 1.1, .35, E.outB);
+        css(x.tim, { opacity: P(t, l + 1.1, .15).toFixed(3), transform: `scale(${(.3 + .7 * k).toFixed(3)})` });
+      });
+    },
+  };
+};
+
 const DH = (KH.do_hoa || []).map(d => { const f = LAM[d.loai]; if (!f) { console.error('loại đồ hoạ lạ: ' + d.loai); return null; } const g = f(d); g.d = d; return g; }).filter(Boolean);
 
-// ---------------- sub karaoke ----------------
+// ---------------- sub: hộp tối bo góc từng dòng, chữ đang đọc xanh ngọc ----------------
 const SUB = mk('div', '', stage); SUB.id = 'sub';
-css(SUB, { bottom: (H - 990) + 'px' });
-let subCum = -1, subW = [];
+css(SUB, { bottom: (H - 1000) + 'px' });
+let subCum = -1, subW = [], subBox = [];
 function veSub(t) {
   const ds = KH.sub || [];
   const cta = KH.cta;
@@ -790,110 +928,122 @@ function veSub(t) {
   for (let i = 0; i < ds.length; i++) if (ds[i].tu <= t && t < ds[i].den) { k = i; break; }
   if (cta && t >= cta.tu + .35) k = -1;               // màn kết có chữ riêng
   if (k !== subCum) {
-    SUB.innerHTML = ''; subW = []; subCum = k;
+    SUB.innerHTML = ''; subW = []; subBox = []; subCum = k;
     if (k >= 0) for (const dg of ds[k].dong) {
-      const line = mk('div', 'sd', SUB);
+      const hang = mk('div', 'hang', SUB);
+      const line = mk('div', 'sd', hang); subBox.push(line);
       dg.forEach((w, j) => { const s = mk('span', 'w', line, esc(w.w)); subW.push({ s, w }); if (j < dg.length - 1) line.appendChild(document.createTextNode(' ')); });
-      if (rong(line) > 1720) line.style.fontSize = (50 * 1720 / rong(line)).toFixed(1) + 'px';
+      if (line.offsetWidth > 1720) line.style.fontSize = (44 * 1680 / line.offsetWidth).toFixed(1) + 'px';
     }
   }
   if (k < 0) return;
-  const c = ds[k], e = P(t, c.tu, .14);
-  SUB.style.opacity = e.toFixed(3); SUB.style.transform = `translateY(${((1 - e) * 10).toFixed(1)}px)`;
+  const c = ds[k], e = P(t, c.tu, .12);
+  SUB.style.opacity = e.toFixed(3); SUB.style.transform = `translateY(${((1 - e) * 8).toFixed(1)}px)`;
   subW.forEach((x, i) => {
     const nx = subW[i + 1]?.w.s ?? x.w.e + .3;
-    const on = t >= x.w.s - .02 && t < Math.max(nx, x.w.e) - .02;
-    x.s.classList.toggle('on', on);
-    const p = on ? 1 + .06 * (1 - P(t, x.w.s, .2)) : 1;
-    x.s.style.transform = p > 1.001 ? `scale(${p.toFixed(3)})` : 'none';
+    x.s.classList.toggle('on', t >= x.w.s - .02 && t < Math.max(nx, x.w.e) - .02);
   });
 }
 
-// ---------------- màn kết YouTube: kênh + câu hỏi / lựa chọn + nút ĐĂNG KÝ có tay bấm, chuông, thích ----------------
+// ---------------- màn kết: CẢM ƠN ĐÃ XEM + mời Thích & Đăng ký (khách 14/11/2026) — câu hỏi / lựa chọn ở trên, nút ĐĂNG KÝ có tay bấm,
+//                  chuông, Thích + tim bay, Chia sẻ ----------------
 const C = KH.cta;
 const CT = mk('div', '', stage); CT.id = 'cta'; show(CT, false);
 let CTA = null;
 if (C) {
   const toi = mk('div', 'cta_toi', CT);
-  const X = 150;
-  const vong = mk('div', 'vong', CT); css(vong, { left: (X - 12) + 'px', top: '108px' });
-  const vt = mk('div', 'vong_trong', CT); css(vt, { left: (X - 6) + 'px', top: '114px' });
-  const av = mk('div', 'avatar', CT); css(av, { left: X + 'px', top: '120px' });
   const ten = (KH.kenh && KH.kenh.ten) || '';
-  if (KH.kenh && KH.kenh.avatar_url) mk('img', '', av).src = KH.kenh.avatar_url;
-  else av.innerHTML = ten ? esc(chars(ten)[0].toUpperCase()) : S(IC.la_ban).replace('<svg', '<svg width="96" height="96"');
-  const tk = mk('div', 'ten_kenh', CT); css(tk, { left: (X + 240) + 'px', top: '150px' });
-  if (ten) { mk('span', 'bong_chu', tk, esc(ten)); mk('span', 'tich', tk, S(IC.tich)); }
-  const hd = KH.kenh && KH.kenh.handle ? mk('div', 'handle', CT, esc(KH.kenh.handle)) : null; if (hd) css(hd, { left: (X + 242) + 'px', top: '226px' });
-  const cau = mk('div', 'abs', CT); css(cau, { left: X + 'px', top: '350px', width: '760px' });
-  const chu_cau = C.cau_hoi || C.tieu_de;
-  const lc = (C.lua_chon || []).map((x, i) => { const c = mk('div', 'chip', CT); const n = mk('div', 'ic', c); n.innerHTML = `<span style="font-family:AN;font-size:32px">${i + 1}</span>`; mk('span', '', c, esc(x)); return c; });
-  const nut = mk('div', 'nut_dk', CT); css(nut, { left: X + 'px', top: '800px', width: '420px' });
-  const nutIc = mk('span', '', nut, S(IC.chuong)); show(nutIc, false); nutIc.style.display = 'none';
+  let kenh = null;
+  if (ten) {
+    kenh = mk('div', 'cta_kenh', CT);
+    const av = mk('div', 'avatar', kenh);
+    if (KH.kenh.avatar_url) mk('img', '', av).src = KH.kenh.avatar_url; else av.textContent = chars(ten)[0].toUpperCase();
+    const tk = mk('div', 'ten_kenh', kenh); mk('span', 'bong_chu', tk, esc(ten)); mk('span', 'tich', tk, S(IC.tich));
+    if (KH.kenh.handle) mk('div', 'handle', kenh, esc(KH.kenh.handle));
+  }
+  const coCau = !!C.cau_hoi;
+  const cau = coCau ? mk('div', 'abs', CT) : null;
+  if (cau) css(cau, { left: '160px', width: '1600px', top: '168px', textAlign: 'center' });
+  const lc = (C.lua_chon || []).map((x, i) => { const c = mk('div', 'lua', CT); mk('div', 'so', c, String(i + 1)); mk('span', '', c, esc(x)); return c; });
+  const Y0 = coCau ? (lc.length ? 380 : 320) : 250;
+  const camOn = mk('div', 'abs', CT); css(camOn, { left: '0px', width: W + 'px', top: Y0 + 'px', textAlign: 'center' });
+  const camMask = mk('div', 'mask', camOn); const camTx = mk('div', 'tit', camMask, esc(C.cam_on || T.cam_on || '')); css(camTx, { whiteSpace: 'nowrap', display: 'inline-block' });
+  const vach = mk('div', 'vach_n', CT);
+  const moi = mk('div', 'abs nghieng', CT, esc(C.loi_moi || T.loi_moi || '')); css(moi, { left: '0px', width: W + 'px', textAlign: 'center', whiteSpace: 'nowrap' });
+  const nut = mk('div', 'nut_dk', CT);
+  const nutIc = mk('span', '', nut, S(IC.chuong)); nutIc.style.display = 'none';
   const nutTx = mk('span', '', nut, esc(C.nut));
   const quet = mk('div', 'quet', nut);
-  const song = mk('div', 'song', CT); css(song, { left: X + 'px', top: '800px', width: '420px', height: '104px' });
-  const thich = mk('div', 'nut_tron', CT, S(IC.thich)); css(thich, { left: (X + 460) + 'px', top: '800px' });
-  const chiase = mk('div', 'nut_tron', CT, S(IC.chia_se)); css(chiase, { left: (X + 588) + 'px', top: '800px' });
-  const nThich = mk('div', 'nhan_nut', CT, esc(C.thich)); css(nThich, { left: (X + 432) + 'px', top: '914px' });
-  const nCs = mk('div', 'nhan_nut', CT, esc(C.chia_se)); css(nCs, { left: (X + 560) + 'px', top: '914px' });
-  const tay = C.viet_tay ? mk('div', 'tay', CT, esc(C.viet_tay)) : null; if (tay) css(tay, { position: 'absolute', left: X + 'px', top: '935px', fontSize: '56px', whiteSpace: 'nowrap', transform: 'rotate(-2deg)', transformOrigin: '0 50%' });
+  const song = mk('div', 'song', CT);
+  const thich = mk('div', 'nut_tron', CT, S(IC.thich));
+  const chuong = mk('div', 'nut_tron', CT, S(IC.chuong));
+  const chiase = mk('div', 'nut_tron', CT, S(IC.chia_se));
+  const nThich = mk('div', 'nhan_nut', CT, esc(C.thich)), nCs = mk('div', 'nhan_nut', CT, esc(C.chia_se));
+  const nCh = mk('div', 'nhan_nut', CT, esc(C.chuong_nhan || ''));
   const hand = mk('div', 'tay_bam', CT, TAY);
-  const tims = [0, 1, 2, 3, 4, 5].map(i => { const h = mk('div', 'tim_bay', CT, S(IC.tim)); h.querySelector('svg').setAttribute('fill', '#FF3355'); return h; });
-  let dongCau = [], YN = 800;
+  const tims = [0, 1, 2, 3, 4, 5].map(() => { const h = mk('div', 'tim_bay', CT, S(IC.tim)); h.querySelector('svg').setAttribute('fill', '#FF3355'); return h; });
+  let dongCau = [], YN = 760, XN = 552, XT = 0, XC = 0, XS = 0;
   CTA = {
     init() {
-      dongCau = dong2(cau, chu_cau, 80, 760, 'serif kem_grad').map(bocMask);
-      const hc = cau.getBoundingClientRect().height;
-      let y = 360 + hc + 34, x = X;
-      lc.forEach((c, i) => { const w = c.getBoundingClientRect().width; if (x + w > X + 780) { x = X; y += 92; } css(c, { left: x + 'px', top: y + 'px' }); x += w + 18; });
-      if (tay) { vua(tay, 56, 760); css(tay, { top: (y + 98) + 'px' }); y += 98 + 70; } else y += 98;
-      YN = Math.max(780, Math.min(840, y + 14));
-      [nut, song, thich, chiase].forEach(e => e.style.top = YN + 'px');
-      [nThich, nCs].forEach(e => e.style.top = (YN + 112) + 'px');
+      if (cau) dongCau = dong2(cau, C.cau_hoi, 58, 1560, 'nghieng dam').map(bocMask);
+      const hc = cau ? cau.getBoundingClientRect().height : 0;
+      // lựa chọn: 1 hàng giữa
+      const ws = lc.map(c => c.getBoundingClientRect().width), tong = ws.reduce((a, b) => a + b, 0) + 18 * Math.max(0, ws.length - 1);
+      let x = (W - tong) / 2;
+      lc.forEach((c, i) => { css(c, { left: f1(x) + 'px', top: f1(168 + hc + 30) + 'px' }); x += ws[i] + 18; });
+      const co = vua(camTx, 150, 1600);
+      const yC = Y0 + co * .94;
+      css(vach, { left: (W / 2 - 150) + 'px', width: '300px', top: f1(yC + 34) + 'px' });   // +34: chừa dấu nặng (CẢM ƠN BẠN)
+      vua(moi, 42, 1600); css(moi, { top: f1(yC + 66) + 'px' });
+      YN = Math.round(Math.min(860, yC + 66 + 70 + 34));
+      const wN = 440, gap = 30; XN = Math.round((W - (wN + 3 * 104 + 3 * gap)) / 2);
+      XT = XN + wN + gap; XC = XT + 104 + gap; XS = XC + 104 + gap;
+      css(nut, { left: XN + 'px', top: YN + 'px', width: wN + 'px' });
+      css(song, { left: XN + 'px', top: YN + 'px', width: wN + 'px', height: '104px' });
+      css(thich, { left: XT + 'px', top: YN + 'px' }); css(chuong, { left: XC + 'px', top: YN + 'px' }); css(chiase, { left: XS + 'px', top: YN + 'px' });
+      css(nThich, { left: (XT - 28) + 'px', top: (YN + 112) + 'px' }); css(nCs, { left: (XS - 28) + 'px', top: (YN + 112) + 'px' }); css(nCh, { left: (XC - 28) + 'px', top: (YN + 112) + 'px' });
     },
     ve(t) {
       const on = t >= C.tu - .02; show(CT, on); if (!on) return;
-      const e = P(t, C.tu, .6, E.ioS);
-      toi.style.opacity = e.toFixed(3);
-      const a = P(t, C.tu + .1, .55, E.outB);
-      [vong, vt, av].forEach(x => { x.style.transform = `scale(${a.toFixed(3)})`; x.style.opacity = P(t, C.tu + .1, .25).toFixed(3); });
-      vong.style.transform += ` rotate(${((t - C.tu) * 70).toFixed(1)}deg)`;
-      const b = P(t, C.tu + .3, .6, E.outE);
-      tk.style.opacity = b.toFixed(3); tk.style.transform = `translateX(${((1 - b) * -40).toFixed(1)}px)`;
-      if (hd) hd.style.opacity = P(t, C.tu + .45, .5).toFixed(3);
-      dongCau.forEach((x, i) => { const f = P(t, C.tu + .45 + i * .14, .8, E.outE); x.style.transform = `translateY(${((1 - f) * 105).toFixed(1)}%)`; });
-      lc.forEach((c, i) => { const f = P(t, C.tu + .95 + i * .16, .5, E.outB); c.style.opacity = P(t, C.tu + .95 + i * .16, .25).toFixed(3); c.style.transform = `scale(${(.6 + .4 * f).toFixed(3)})`; });
-      const n = P(t, C.tu + 1.1, .55, E.outB);
-      [nut, thich, chiase, nThich, nCs].forEach(x => { x.style.opacity = P(t, C.tu + 1.1, .3).toFixed(3); x.style.transform = `translateY(${((1 - n) * 40).toFixed(1)}px)`; });
-      if (tay) tay.style.clipPath = `inset(-30% ${((1 - P(t, C.tu + 1.4, 1.0, E.ioS)) * 100).toFixed(1)}% -30% -5%)`;
+      toi.style.opacity = P(t, C.tu, .6, E.ioS).toFixed(3);
+      if (kenh) { const a = P(t, C.tu + .1, .5, E.outB); kenh.style.opacity = P(t, C.tu + .1, .25).toFixed(3); kenh.style.transform = `translateY(${f1((1 - a) * -24)}px)`; }
+      dongCau.forEach((x, i) => { const f = P(t, C.tu + .15 + i * .12, .6, E.outE); x.style.transform = `translateY(${((1 - f) * 105).toFixed(1)}%)`; });
+      lc.forEach((c, i) => { const f = P(t, C.tu + .6 + i * .15, .45, E.outB); c.style.opacity = P(t, C.tu + .6 + i * .15, .2).toFixed(3); c.style.transform = `scale(${(.6 + .4 * f).toFixed(3)})`; });
+      const tc = C.luc_cam_on ?? C.tu + 1.2;
+      const ec = P(t, tc, .32, E.outC);
+      camTx.style.opacity = P(t, tc - .02, .08).toFixed(3); camTx.style.transform = `scale(${(1.25 - .25 * ec).toFixed(4)})`;
+      vach.style.transform = `scaleX(${P(t, tc + .15, .4, E.outE).toFixed(3)})`;
+      { const a = P(t, tc + .3, .45); moi.style.opacity = a.toFixed(3); moi.style.transform = `translateY(${f1((1 - a) * 18)}px)`; }
+      const n = P(t, tc + .6, .55, E.outB);
+      [nut, thich, chuong, chiase, nThich, nCs, nCh].forEach(x => { x.style.opacity = P(t, tc + .6, .3).toFixed(3); x.style.transform = `translateY(${((1 - n) * 40).toFixed(1)}px)`; });
       // nút đăng ký: bóng quét + sóng lan trước khi bấm; bấm → xám "ĐÃ ĐĂNG KÝ" + chuông lắc
       const da = t >= C.luc_bam;
       nut.classList.toggle('da', da);
       nutTx.textContent = da ? C.nut_da : C.nut;
       nutIc.style.display = da ? 'inline-flex' : 'none';
-      if (da) { const r = clamp((t - C.luc_chuong) / .8); nutIc.style.transform = `rotate(${(Math.sin(r * Math.PI * 5) * 22 * (1 - r)).toFixed(1)}deg)`; nutIc.style.transformOrigin = '50% 10%'; }
-      const q = ((t - C.tu - 1.3) % 1.4 + 1.4) % 1.4 / 1.4;
-      quet.style.left = (-160 + q * 640).toFixed(1) + 'px'; show(quet, !da && t > C.tu + 1.3);
-      const sq = ((t - C.tu - 1.3) % 1.1 + 1.1) % 1.1 / 1.1;
-      show(song, !da && t > C.tu + 1.3); song.style.opacity = ((1 - sq) * .8).toFixed(3); song.style.transform = `scale(${(1 + sq * .22).toFixed(3)}, ${(1 + sq * .6).toFixed(3)})`;
+      const chg = da && t >= C.luc_chuong;
+      chuong.style.background = chg ? 'var(--nhan)' : 'rgba(255,255,255,.16)'; chuong.style.color = chg ? '#07302B' : '#fff';
+      if (chg) { const r = clamp((t - C.luc_chuong) / .8); chuong.style.transform += ` rotate(${(Math.sin(r * Math.PI * 5) * 22 * (1 - r)).toFixed(1)}deg)`; }
+      const q = ((t - tc - .9) % 1.4 + 1.4) % 1.4 / 1.4;
+      quet.style.left = (-160 + q * 680).toFixed(1) + 'px'; show(quet, !da && t > tc + .9);
+      const sq = ((t - tc - .9) % 1.1 + 1.1) % 1.1 / 1.1;
+      show(song, !da && t > tc + .9); song.style.opacity = ((1 - sq) * .8).toFixed(3); song.style.transform = `scale(${(1 + sq * .2).toFixed(3)}, ${(1 + sq * .6).toFixed(3)})`;
       const ep = da ? 1 - .06 * Math.sin(clamp((t - C.luc_bam) / .25) * Math.PI) : 1;
       nut.style.transform += ` scale(${ep.toFixed(3)})`;
-      // thích: tô xanh + tim bay
       const th = t >= C.luc_thich;
-      thich.style.background = th ? '#3EA6FF' : 'rgba(255,255,255,.14)';
+      thich.style.background = th ? '#3EA6FF' : 'rgba(255,255,255,.16)';
       const tp = th ? 1 + .25 * Math.sin(clamp((t - C.luc_thich) / .35) * Math.PI) : 1;
       thich.style.transform += ` scale(${tp.toFixed(3)})`;
       tims.forEach((h, i) => {
         const r = clamp((t - C.luc_thich - i * .07) / 1.1);
         show(h, th && r > 0 && r < 1);
         const ang = -90 + (i - 2.5) * 22;
-        h.style.left = (X + 512 + Math.cos(ang * Math.PI / 180) * 120 * r).toFixed(1) + 'px';
+        h.style.left = (XT + 32 + Math.cos(ang * Math.PI / 180) * 120 * r).toFixed(1) + 'px';
         h.style.top = (YN + 30 + Math.sin(ang * Math.PI / 180) * 160 * r).toFixed(1) + 'px';
         h.style.opacity = (1 - r).toFixed(3); h.style.transform = `scale(${(.6 + .6 * r).toFixed(3)})`;
       });
       // tay: vào → bấm Đăng ký → sang bấm Thích → ra
-      const p1 = [X + 300, YN + 52], p2 = [X + 512, YN + 52], p0 = [X + 700, 1180], p3 = [X + 760, 1200];
+      const p1 = [XN + 300, YN + 52], p2 = [XT + 52, YN + 52], p0 = [XN + 520, 1200], p3 = [XT + 260, 1220];
       let hx, hy, nhan = 0;
       if (t < C.luc_bam - .75) { hx = p0[0]; hy = p0[1]; }
       else if (t < C.luc_bam) { const u = P(t, C.luc_bam - .75, .65, E.ioC); hx = lerp(p0[0], p1[0], u); hy = lerp(p0[1], p1[1], u); nhan = P(t, C.luc_bam - .12, .12); }
@@ -916,28 +1066,40 @@ function hatNhieu() {
   HAT.style.backgroundImage = `url(${c.toDataURL()})`;
 }
 window.__ready = (async () => {
-  const fams = ['900 40px PF', '700 40px PF', '600 40px PFI', '700 40px DS', '400 40px AN', '700 40px BVP', '800 40px BVP', '600 40px BVP', '900 40px BVP', '700 40px MS', '600 40px MS'];
-  await Promise.all(fams.map(f => document.fonts.load(f, 'ÀẢÃẠăâđêôơư Việt Nam 0123')));
+  const fams = ['900 40px BC', '900 40px BCI', '800 40px BCE', '600 40px MSI', '700 40px MSI', '500 40px BVP', '600 40px BVP', '700 40px BVP',
+    '800 40px BVP', '900 40px BVP', '700 40px MS'];
+  await Promise.all(fams.map(f => document.fonts.load(f, 'ÀẢÃẠăâđêôơư ỂẤỮ Việt Nam 0123')));
   await document.fonts.ready;
   hatNhieu();
   // đo chữ cần phần tử ĐANG HIỆN (display:none → bề rộng 0): bật tạm lúc init rồi ẩn lại
   for (const g of DH) { show(g.el, true); g.init && g.init(); show(g.el, false); }
   if (CTA) { show(CT, true); CTA.init(); show(CT, false); }
+  // mặt nạ chữ: đệm theo CỠ CHỮ THẬT bên trong (em của .mask là cỡ chữ cha ~16 px → đệm 5 px cắt mất dấu nặng / dấu hỏi:
+  // "VỊNH HẠ LONG" ra "VINH HA LONG", soát 14/11/2026). Lề âm bằng đệm → bố cục không đổi.
+  for (const m of document.querySelectorAll('.mask')) {
+    let fs = 0; for (const c of m.querySelectorAll('*')) fs = Math.max(fs, parseFloat(getComputedStyle(c).fontSize) || 0);
+    if (!fs) continue;
+    const tr = f1(fs * .26), du = f1(fs * .36), ng = f1(fs * .05);
+    css(m, { padding: `${tr}px ${ng}px ${du}px`, margin: `-${tr}px -${ng}px -${du}px` });
+  }
 })();
 window.__seek = async (t) => {
-  DS.length = 0;
+  DS.length = 0; KHUNG_SO++;
   veMau(t);
   ghepCanh(t);
   for (const g of DH) g.ve(t);
   veSub(t);
   CTA && CTA.ve(t);
   if (DS.length) await Promise.all(DS.map(i => i.decode().catch(() => { })));
+  if (CHO.length) await Promise.all(CHO.splice(0));          // ô ảnh vệ tinh của khung này
+  for (const f of VE_SAU.splice(0)) f();
+  donAnhO();
   return true;
 };
 window.__bao_cao = () => {
   const o = [];
   const vis = el => { let e = el; while (e && e !== stage) { const s = getComputedStyle(e); if (s.display === 'none' || +s.opacity < .5) return false; e = e.parentElement; } return true; };
   for (const h of HOP) if (vis(h.el)) { const r = h.el.getBoundingClientRect(); o.push({ loai: h.d.loai, id: h.d.id, x: r.left, y: r.top, w: r.width, h: r.height }); }
-  if (SUB.childElementCount && +SUB.style.opacity > .5) for (const l of SUB.children) { const r = document.createRange(); r.selectNodeContents(l); const b = r.getBoundingClientRect(); o.push({ loai: 'sub', id: 'sub', x: b.left, y: b.top, w: b.width, h: b.height }); }
+  if (subBox.length && +SUB.style.opacity > .5) for (const l of subBox) { const b = l.getBoundingClientRect(); o.push({ loai: 'sub', id: 'sub', x: b.left, y: b.top, w: b.width, h: b.height }); }
   return o;
 };
