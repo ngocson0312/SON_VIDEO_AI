@@ -1,0 +1,246 @@
+{
+ "video": "D:\\____TTT_____\\KH_Test\\Vinh\\Vinh\\POV\\Video_Thô.mp4",
+ "out": "D:\\____TTT_____\\KH_Test\\Vinh\\Vinh\\POV\\Video_Thô_POV.mp4",
+ "bpm": 100,
+ "nhac": "mau",
+ "nhac_vol": 0.1,
+ "title": [
+  "POV:",
+  "BẠN LÀ HLV ĐÓN KHÁCH",
+  "VÀO PHÒNG TẬP"
+ ],
+ "title_hi": [
+  "HLV"
+ ],
+ "title_y": 215,
+ "sub": [
+  [
+   -0.05,
+   1.53
+  ],
+  [
+   26.05,
+   26.75
+  ],
+  [
+   28.2,
+   30.25
+  ],
+  [
+   64.57,
+   65.89
+  ],
+  [
+   67.25,
+   69.09
+  ],
+  [
+   69.85,
+   70.83
+  ],
+  [
+   71.25,
+   73.31
+  ],
+  [
+   73.21,
+   74.69
+  ],
+  [
+   74.59,
+   76.73
+  ],
+  [
+   78.17,
+   79.53
+  ],
+  [
+   80.29,
+   81.71
+  ],
+  [
+   81.61,
+   82.29
+  ],
+  [
+   82.19,
+   85.63
+  ],
+  [
+   98.55,
+   105.25
+  ],
+  [
+   110.53,
+   113.79
+  ],
+  [
+   113.65,
+   117.0
+  ],
+  [
+   118.15,
+   120.6
+  ],
+  [
+   125.25,
+   127.35
+  ]
+ ],
+ "labels": [
+  [
+   18.2,
+   "PHÒNG TRỊ LIỆU"
+  ],
+  [
+   33.3,
+   "KHU TẬP GYM"
+  ]
+ ],
+ "rec_hud": false,
+ "scenes": [
+  {
+   "src": 0,
+   "beats": 12,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05
+  },
+  {
+   "src": 16.5,
+   "beats": 11,
+   "voice": false,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 25,
+   "beats": 10,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 33,
+   "beats": 8,
+   "voice": false,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 40,
+   "beats": 2,
+   "voice": false,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 49.5,
+   "beats": 6,
+   "voice": false,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 62.5,
+   "beats": 12,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 69.7,
+   "beats": 12,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05,
+   "zbase": 1.12,
+   "tam": [
+    0.55,
+    0.55
+   ],
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 76.9,
+   "beats": 7,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 81.1,
+   "beats": 8,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05,
+   "zbase": 1.12,
+   "tam": [
+    0.55,
+    0.55
+   ],
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 98,
+   "beats": 13,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 110.5,
+   "beats": 9,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 115.9,
+   "beats": 9,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05,
+   "zbase": 1.12,
+   "tam": [
+    0.55,
+    0.55
+   ],
+   "trans": "fade",
+   "ov": 0.5
+  },
+  {
+   "src": 124.8,
+   "beats": 5,
+   "voice": true,
+   "zoom": "in",
+   "zslow": 0.05,
+   "trans": "fade",
+   "ov": 0.5
+  }
+ ],
+ "cta": {
+  "dur": 4.6,
+  "y": 930
+ }
+}
